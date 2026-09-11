@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="VFXEngine/VFXEngine.vcxproj" Id="bf7008c5-fd35-47da-8771-af9a5b721d6f" />
+</Solution>

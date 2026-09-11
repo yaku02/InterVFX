@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="プリコンパイル済みヘッダー">
+      <UniqueIdentifier>{a0590f6d-4d69-46f3-a6e1-610ad365ee5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{57ec3e52-cbb1-4f15-8cb0-6d43ce9546bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GpuResource">
+      <UniqueIdentifier>{4f00058c-8369-4948-8c01-d8b79026998c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{4a6656ec-0268-4353-b1f9-55ea88060f22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Dx12Wrapper">
+      <UniqueIdentifier>{35e313cd-dd49-4367-8303-7c499a611714}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering">
+      <UniqueIdentifier>{03902f79-9639-452e-b9ba-40d5b6c19ad8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\Hdr">
+      <UniqueIdentifier>{88585822-322a-4414-afd3-851810794f87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\BackBuffer">
+      <UniqueIdentifier>{6c97aa6f-1cec-4684-9c32-acf6bbfdec88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\Gbuffer">
+      <UniqueIdentifier>{9ea6f30f-ebef-4418-bc1c-f02e3229e552}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Engine">
+      <UniqueIdentifier>{7d950589-30d6-4022-9611-89e3c221fb4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Frame">
+      <UniqueIdentifier>{a09dee05-0656-4aa4-927c-98399ffe7983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI">
+      <UniqueIdentifier>{af0353fd-2a52-4a61-a713-e9f6831acc6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Window">
+      <UniqueIdentifier>{9b5d2188-76a3-422c-a7f5-115b77dd0028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline">
+      <UniqueIdentifier>{43aca87d-cbdc-4c2e-a3f3-081f3b5f9dcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Utility">
+      <UniqueIdentifier>{a592bcc3-47ec-45fe-a74d-d807c2db54b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline\Builder">
+      <UniqueIdentifier>{a518f512-cca8-453e-944b-7b49c2862e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline\Compiler">
+      <UniqueIdentifier>{352e77c4-2a23-4ef8-9c9d-7d63a9a9711c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI\Debug">
+      <UniqueIdentifier>{c980bbe3-518e-4174-9129-b70ccdf14f32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI\Asset">
+      <UniqueIdentifier>{bd824d7b-17ff-46e9-b614-eb3833d51603}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI\Scene">
+      <UniqueIdentifier>{52533369-beb6-46f2-8588-3624a9bfdf8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Texture">
+      <UniqueIdentifier>{874bdb21-89ab-4583-9307-97ce7cccbc29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\VFX">
+      <UniqueIdentifier>{3bf1f1bc-2acf-4e0d-892a-223f98fc6a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline\RootSignature">
+      <UniqueIdentifier>{26415d6e-9df1-4b0e-938d-54436e170fca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\pch.cpp">
+      <Filter>プリコンパイル済みヘッダー</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\main.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GpuResourceManager.cpp">
+      <Filter>Engine\GpuResource</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Debugger.cpp">
+      <Filter>Engine\UI\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\imgui_impl_win32.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\imgui_impl_dx12.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Dx12Wrapper.cpp">
+      <Filter>Engine\Dx12Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RenderingManager.cpp">
+      <Filter>Engine\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\HdrBuffer.cpp">
+      <Filter>Engine\Rendering\Hdr</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BackBufferManager.cpp">
+      <Filter>Engine\Rendering\BackBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Gbuffer.cpp">
+      <Filter>Engine\Rendering\Gbuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Engine.cpp">
+      <Filter>Engine\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIManager.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Window.cpp">
+      <Filter>Engine\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PSOBuilder.cpp">
+      <Filter>Engine\Pipeline\Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ShaderCompiler.cpp">
+      <Filter>Engine\Pipeline\Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AssetUI.cpp">
+      <Filter>Engine\UI\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SceneUI.cpp">
+      <Filter>Engine\UI\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\TextureManager.cpp">
+      <Filter>Engine\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXPipeline.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\RootSignatureManager.cpp">
+      <Filter>Engine\Pipeline\RootSignature</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\pch.h">
+      <Filter>プリコンパイル済みヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\GpuResourceManager.h">
+      <Filter>Engine\GpuResource</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\GpuResourceStructs.h">
+      <Filter>Engine\GpuResource</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Debugger.h">
+      <Filter>Engine\UI\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Dx12Wrapper.h">
+      <Filter>Engine\Dx12Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\RenderingManager.h">
+      <Filter>Engine\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\HdrBuffer.h">
+      <Filter>Engine\Rendering\Hdr</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BackBufferManager.h">
+      <Filter>Engine\Rendering\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Gbuffer.h">
+      <Filter>Engine\Rendering\Gbuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BackBufferSetting.h">
+      <Filter>Engine\Rendering\BackBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Engine.h">
+      <Filter>Engine\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FrameSetting.h">
+      <Filter>Engine\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIManager.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Window.h">
+      <Filter>Engine\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\PipelineStructs.h">
+      <Filter>Engine\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\RootParamLayout.h">
+      <Filter>Engine\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\StringConverter.h">
+      <Filter>Engine\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\PSOBuilder.h">
+      <Filter>Engine\Pipeline\Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\ShaderCompiler.h">
+      <Filter>Engine\Pipeline\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\LogStream.h">
+      <Filter>Engine\UI\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\AssetUI.h">
+      <Filter>Engine\UI\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SceneUI.h">
+      <Filter>Engine\UI\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\AssetStructs.h">
+      <Filter>Engine\UI\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\TextureLoader.h">
+      <Filter>Engine\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\TextureManager.h">
+      <Filter>Engine\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\TextureStructs.h">
+      <Filter>Engine\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXPipeline.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\RootSignatureManager.h">
+      <Filter>Engine\Pipeline\RootSignature</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
