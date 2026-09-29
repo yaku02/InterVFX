@@ -7,6 +7,8 @@
 #include "UIManager.h"
 #include "Debugger.h"
 #include "TextureManager.h"
+#include "RootSignatureManager.h"
+#include "VFXManager.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -42,17 +44,37 @@ int main()
 			texMgr.Init(initDesc);
 		}
 
+		RootSignatureManager rootSigMgr;
+		{
+			rootSigMgr.Init(dx12Wrapper.GetDevice().Get());
+		}
+
+		VFXManager vfxMgr;
+		{
+			VFXManager::InitDesc initDesc{
+				.window = window,
+				.dx12 = dx12Wrapper,
+				.gpuResMgr = gpuResMgr,
+				.texMgr = texMgr
+			};
+			vfxMgr.Init(initDesc);
+		}
+
 		UIManager uiMgr;
 		{
 			UIManager::InitDesc initDesc{
 				.window = window,
 				.dx12 = dx12Wrapper,
 				.gpuResMgr = gpuResMgr,
-				.backBufferMgr = backBufferMgr
+				.backBufferMgr = backBufferMgr,
+				.vfxAssetEditor = vfxMgr.GetAssetEditor(),
+				.vfxInstEditor = vfxMgr.GetInstEditor(),
 			};
 			uiMgr.Init(initDesc);
 		}
 		
+		dx12Wrapper.ExecuteInitCommands();
+		engine.WaitForGpu();
 		Debugger::Log("Initialize succeeded\n");
 		
 		MSG msg = {};
@@ -99,8 +121,10 @@ int main()
 
 		}
 
+		engine.WaitForGpu();
 		uiMgr.ShutDown();
 		window.ShutDown();
+		vfxMgr.ShutDown();
 	}
 
 #ifdef _DEBUG

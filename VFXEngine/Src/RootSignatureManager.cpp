@@ -29,13 +29,13 @@ HRESULT RootSignatureManager::CreateCommonRootSignature(ID3D12Device* dev)
 	rsDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE
 		| D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
 
-	m_commonRootSignature = CreateRootSignature(dev, rsDesc);
-	if (!m_commonRootSignature) {
+	m_rootSignature = CreateRootSignature(dev, rsDesc);
+	if (!m_rootSignature) {
 		Debugger::Log("[Error] Creattion Common rootSignature failed\n");
 		return E_FAIL;
 	}
 
-	m_commonRootSignature->SetName(L"Common Root Signature");
+	m_rootSignature->SetName(L"Common Root Signature");
 	return S_OK;
 }
 

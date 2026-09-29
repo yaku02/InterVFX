@@ -7,7 +7,7 @@
 
 HRESULT VFXPipeline::CreateGraphicsPipelines()
 {
-	const auto& rootSig = RootSignatureManager::GetCommonRootSignature();
+	const auto& rootSig = RootSignatureManager::GetRootSignature();
 
 	// 共通パラメータ
 	const auto& vsPath = "Engine/Shader/VFXVertexShader.hlsl";
@@ -54,7 +54,7 @@ HRESULT VFXPipeline::CreateGraphicsPipelines()
 
 HRESULT VFXPipeline::CreateComputePipelines()
 {
-	const auto& rootSig = RootSignatureManager::GetCommonRootSignature();
+	const auto& rootSig = RootSignatureManager::GetRootSignature();
 
 	ComputePSODesc update;
 	update.csPath = "Engine/Shader/VFXComputeShader.hlsl";

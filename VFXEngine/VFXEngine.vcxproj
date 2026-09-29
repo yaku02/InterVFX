@@ -193,10 +193,13 @@
     <ClCompile Include="Src\Dx12Wrapper.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
     <ClCompile Include="Src\Gbuffer.cpp" />
+    <ClCompile Include="Src\Geometry.cpp" />
     <ClCompile Include="Src\GpuResourceManager.cpp" />
     <ClCompile Include="Src\HdrBuffer.cpp" />
+    <ClCompile Include="Src\InstUI.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\pch.cpp" />
+    <ClCompile Include="Src\PreviewUI.cpp" />
     <ClCompile Include="Src\PSOBuilder.cpp" />
     <ClCompile Include="Src\RenderingManager.cpp" />
     <ClCompile Include="Src\RootSignatureManager.cpp" />
@@ -204,6 +207,11 @@
     <ClCompile Include="Src\ShaderCompiler.cpp" />
     <ClCompile Include="Src\TextureManager.cpp" />
     <ClCompile Include="Src\UIManager.cpp" />
+    <ClCompile Include="Src\VFXAsset.cpp" />
+    <ClCompile Include="Src\VFXAssetEditor.cpp" />
+    <ClCompile Include="Src\VFXInstance.cpp" />
+    <ClCompile Include="Src\VFXInstEditor.cpp" />
+    <ClCompile Include="Src\VFXManager.cpp" />
     <ClCompile Include="Src\VFXPipeline.cpp" />
     <ClCompile Include="Src\Window.cpp" />
   </ItemGroup>
@@ -217,12 +225,17 @@
     <ClInclude Include="Src\Engine.h" />
     <ClInclude Include="Src\FrameSetting.h" />
     <ClInclude Include="Src\Gbuffer.h" />
+    <ClInclude Include="Src\Geometry.h" />
     <ClInclude Include="Src\GpuResourceManager.h" />
     <ClInclude Include="Src\GpuResourceStructs.h" />
     <ClInclude Include="Src\HdrBuffer.h" />
+    <ClInclude Include="Src\IDGenerator.h" />
+    <ClInclude Include="Src\InstanceStructs.h" />
+    <ClInclude Include="Src\InstUI.h" />
     <ClInclude Include="Src\LogStream.h" />
     <ClInclude Include="Src\pch.h" />
     <ClInclude Include="Src\PipelineStructs.h" />
+    <ClInclude Include="Src\PreviewUI.h" />
     <ClInclude Include="Src\PSOBuilder.h" />
     <ClInclude Include="Src\RenderingManager.h" />
     <ClInclude Include="Src\RootParamLayout.h" />
@@ -234,7 +247,13 @@
     <ClInclude Include="Src\TextureManager.h" />
     <ClInclude Include="Src\TextureStructs.h" />
     <ClInclude Include="Src\UIManager.h" />
+    <ClInclude Include="Src\VFXAsset.h" />
+    <ClInclude Include="Src\VFXAssetEditor.h" />
+    <ClInclude Include="Src\VFXInstance.h" />
+    <ClInclude Include="Src\VFXInstEditor.h" />
+    <ClInclude Include="Src\VFXManager.h" />
     <ClInclude Include="Src\VFXPipeline.h" />
+    <ClInclude Include="Src\VFXStructs.h" />
     <ClInclude Include="Src\Window.h" />
   </ItemGroup>
   <ItemGroup>

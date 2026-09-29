@@ -1,12 +1,23 @@
 #pragma once
+#include "TextureStructs.h"
+#include "IDGenerator.h"
+#include "InstanceStructs.h"
 
 enum class AssetType {
 	VFX,
 	Unkown,
 };
-struct AssetInfo {
+
+struct AssetBaseInfo {
 	AssetType type = AssetType::Unkown;
-	uint32_t id = UINT32_MAX;
+	InstType instType = InstType::Unknown;
+
+	uint32_t id = IDGenerator::INVALID_ID;
 	std::string name = "unknown_asset";
-	D3D12_GPU_DESCRIPTOR_HANDLE iconSrvHandle{};
+	Texture icon{};
+
+	const char* GetTypeName() const {
+		if (type == AssetType::VFX) { return "VFX"; }
+		else { return "Unknown";}
+	}
 };

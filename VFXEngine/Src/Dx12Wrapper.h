@@ -9,7 +9,7 @@ class Dx12Wrapper
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 private:
-	Window* m_window;
+	Window* m_window = nullptr;
 	Debugger debugger;
 
 	ComPtr<IDXGIFactory6> _dxgiFactory = nullptr;
@@ -33,7 +33,7 @@ public :
 
 	~Dx12Wrapper();
 	void Init(Window& window);
-
+	void ExecuteInitCommands();
 	void ResetCommands(UINT backBufferIdx);
 	void ExecuteCommand();
 

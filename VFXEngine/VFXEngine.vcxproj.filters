@@ -70,6 +70,18 @@
     <Filter Include="Engine\Pipeline\RootSignature">
       <UniqueIdentifier>{26415d6e-9df1-4b0e-938d-54436e170fca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Geometry">
+      <UniqueIdentifier>{fd9bdf79-ef0d-4d03-83e7-41181ef5f414}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\IDGenerator">
+      <UniqueIdentifier>{e1b0fecd-47cc-436f-b282-6bef8d0868cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI\Instance">
+      <UniqueIdentifier>{299edd0d-d450-4be5-9b17-14c4ef4e86bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI\Preview">
+      <UniqueIdentifier>{1ccbb337-acf4-4857-b6b2-056045343d89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\pch.cpp">
@@ -147,6 +159,30 @@
     <ClCompile Include="Src\RootSignatureManager.cpp">
       <Filter>Engine\Pipeline\RootSignature</Filter>
     </ClCompile>
+    <ClCompile Include="Src\VFXManager.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Geometry.cpp">
+      <Filter>Engine\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXAsset.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXInstance.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PreviewUI.cpp">
+      <Filter>Engine\UI\Preview</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXAssetEditor.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXInstEditor.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\InstUI.cpp">
+      <Filter>Engine\UI\Instance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\pch.h">
@@ -209,9 +245,6 @@
     <ClInclude Include="Src\LogStream.h">
       <Filter>Engine\UI\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Src\AssetUI.h">
-      <Filter>Engine\UI\Asset</Filter>
-    </ClInclude>
     <ClInclude Include="Src\SceneUI.h">
       <Filter>Engine\UI\Scene</Filter>
     </ClInclude>
@@ -232,6 +265,42 @@
     </ClInclude>
     <ClInclude Include="Src\RootSignatureManager.h">
       <Filter>Engine\Pipeline\RootSignature</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXManager.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXStructs.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Geometry.h">
+      <Filter>Engine\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\IDGenerator.h">
+      <Filter>Engine\IDGenerator</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXAsset.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXInstance.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\InstanceStructs.h">
+      <Filter>Engine\UI\Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\AssetUI.h">
+      <Filter>Engine\UI\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\PreviewUI.h">
+      <Filter>Engine\UI\Preview</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXAssetEditor.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXInstEditor.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\InstUI.h">
+      <Filter>Engine\UI\Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

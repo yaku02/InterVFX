@@ -1,10 +1,19 @@
 #include "pch.h"
-#include "SceneUI.h"
+#include "PreviewUI.h"
 #include "Window.h"
 #include "Dx12Wrapper.h"
 #include "GpuResourceManager.h"
 
-void SceneUI::Render()
+void PreviewUI::Init(const InitDesc& desc)
+{
+	m_window = desc.window;
+	m_dx12 = desc.dx12;
+	m_gpuResMgr = desc.gpuResMgr;
+
+	CreateResource();
+}
+
+void PreviewUI::Render()
 {
 	const auto& cmdList = m_dx12->GetCmdList().Get();
 	// 1. リソースバリア：SHADER_RESOURCE -> RENDER_TARGET
@@ -17,7 +26,7 @@ void SceneUI::Render()
 
 	cmdList->OMSetRenderTargets(1, &m_rtvHandle, FALSE, nullptr);
 
-	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float clearColor[] = { 0.118f, 0.565f, 1.0f, 1.0f };
 	cmdList->ClearRenderTargetView(m_rtvHandle, clearColor, 0, nullptr);
 
 	// -------------------------------------------------------------
@@ -33,36 +42,59 @@ void SceneUI::Render()
 	cmdList->ResourceBarrier(1, &barrier);
 }
 
-void SceneUI::ShowUI()
+
+void PreviewUI::ShowUI()
 {
-	ImGui::Begin("Scene");
+	ImVec2 availSize = ImGui::GetContentRegionAvail();
+	ImGuiWindowFlags childFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
-	// 2. ウィンドウ内の描画可能エリア（表示サイズ）を取得
-	ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-
-	// 3. サイズが有効な場合のみ描画
-	if (viewportSize.x > 0.0f && viewportSize.y > 0.0f)
+	if (ImGui::BeginChild("PreviewViewport", availSize, false, childFlags))
 	{
-		// GPU ハンドルの ptr (UINT64) を ImTextureID (void* または ImTextureID) にキャスト
-		ImTextureID textureId = (ImTextureID)m_srvHandle.ptr;
+		// --- 1. 中央揃えタイトルの描画 ---
+		const char* titleText = "PREVIEW";
 
-		// ImGui にテクスチャと表示サイズを渡して描画
-		ImGui::Image(textureId, viewportSize);
+		// テキスト自体の横幅を計算
+		float titleWidth = ImGui::CalcTextSize(titleText).x;
+
+		// (コンテンツ全体の幅 - テキスト幅) / 2 で中央のX座標を算出
+		float centeredPosX = (ImGui::GetContentRegionAvail().x - titleWidth) * 0.5f;
+		if (centeredPosX > 0.0f)
+		{
+			ImGui::SetCursorPosX(centeredPosX);
+		}
+
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", titleText);
+
+		// --- 2. 下部に細いセパレーター（区切り線）を挿入 ---
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		// --- 3. 残りの領域で画像を描画 ---
+		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+
+		if (viewportSize.x > 0.0f && viewportSize.y > 0.0f)
+		{
+			if (m_srvHandle.ptr != 0)
+			{
+				ImTextureID textureId = (ImTextureID)m_srvHandle.ptr;
+				ImGui::Image(textureId, viewportSize);
+			}
+			else
+			{
+				// 未設定時のテキストも中央揃えにする場合
+				const char* noTexText = "No Preview Texture Set.";
+				float noTexWidth = ImGui::CalcTextSize(noTexText).x;
+				float noTexPosX = (viewportSize.x - noTexWidth) * 0.5f;
+				if (noTexPosX > 0.0f) ImGui::SetCursorPosX(noTexPosX);
+
+				ImGui::TextDisabled("%s", noTexText);
+			}
+		}
 	}
-
-	ImGui::End();
+	ImGui::EndChild();
 }
-
-void SceneUI::Setup(InitDesc& initDesc)
-{
-	m_window = &initDesc.window;
-	m_dx12 = &initDesc.dx12;
-	m_gpuResMgr = &initDesc.gpuResMgr;
-
-	CreateResource();
-}
-
-HRESULT SceneUI::CreateResource()
+HRESULT PreviewUI::CreateResource()
 {
 	const auto& dev = m_dx12->GetDevice().Get();
 	const auto& window_width = m_window->GetWindowWidth();
@@ -80,7 +112,7 @@ HRESULT SceneUI::CreateResource()
 		0,
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
-	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float clearColor[] = { 0.118f, 0.565f, 1.0f, 1.0f };
 
 	D3D12_CLEAR_VALUE cv = CD3DX12_CLEAR_VALUE(
 		DXGI_FORMAT_R16G16B16A16_FLOAT, clearColor);
@@ -108,4 +140,9 @@ HRESULT SceneUI::CreateResource()
 	dev->CreateShaderResourceView(m_buffer.Get(), &srvDesc, srvHandle);
 
 	return S_OK;
+}
+
+void PreviewUI::RegisterRenderingCallback(InstType type, RenderingCallback callback)
+{
+	m_renderingCallbacks[type] = callback;
 }

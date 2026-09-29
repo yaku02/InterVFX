@@ -84,6 +84,7 @@ void Dx12Wrapper::CreateDevice()
 	if (FAILED(hr)) {
 		debugger.Log("D3D12CreateDevice failed.\n");
 	}
+	_dev->SetName(L"Engine_Device");
 }
 
 void Dx12Wrapper::CreateCmdAllocator()
@@ -111,7 +112,6 @@ void Dx12Wrapper::CreateCmdList()
 	if (FAILED(result)) {
 		OutputDebugStringA("Creation cmdList failed\n");
 	}
-	_cmdList->Close();
 }
 
 void Dx12Wrapper::CreateCmdQueue()
@@ -137,6 +137,7 @@ void Dx12Wrapper::CreateCmdQueue()
 	if (result != S_OK) {
 		OutputDebugStringA("cmdQueue is failed\n");
 	}
+	_cmdQueue->SetName(L"Engine_CmdQueue");
 }
 
 void Dx12Wrapper::CreateDepth(int window_width, int window_height)
@@ -197,4 +198,14 @@ void Dx12Wrapper::ExecuteCommand() {
 void Dx12Wrapper::ResetCommands(UINT backBufferIdx) {
 	_cmdAllocators[backBufferIdx]->Reset();
 	_cmdList->Reset(_cmdAllocators[backBufferIdx].Get(), nullptr);
+}
+
+void Dx12Wrapper::ExecuteInitCommands()
+{
+	// 1. 初期化用コマンドの記録を終了
+	_cmdList->Close();
+
+	// 2. コマンドキューで実行
+	ID3D12CommandList* ppCmdLists[] = { _cmdList.Get() };
+	_cmdQueue->ExecuteCommandLists(1, ppCmdLists);
 }

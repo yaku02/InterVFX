@@ -6,13 +6,13 @@ class RootSignatureManager {
 
 
 private:
-	inline static ComPtr<ID3D12RootSignature> m_commonRootSignature = nullptr;
+	inline static ComPtr<ID3D12RootSignature> m_rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> CreateRootSignature(ID3D12Device* dev, D3D12_ROOT_SIGNATURE_DESC& desc);
 
 public:
 	~RootSignatureManager()
 	{
-		m_commonRootSignature.Reset();
+		m_rootSignature.Reset();
 		OutputDebugStringA("RootSigManager Destroy\n");
 	}
 
@@ -22,7 +22,7 @@ public:
 	}
 
 	HRESULT CreateCommonRootSignature(ID3D12Device* dev);
-	static ComPtr<ID3D12RootSignature>& GetCommonRootSignature() { return m_commonRootSignature; }
+	static ComPtr<ID3D12RootSignature>& GetRootSignature() { return m_rootSignature; }
 
 
 };
