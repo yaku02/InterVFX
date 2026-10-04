@@ -30,39 +30,44 @@ public:
         float maxLocalAABB[3] = { 50.0f,  20.0f,  50.0f };
     }cpuParam{};
 
-    struct GPUParam {
-        // --- Size ---
-        float startSize = 1.0f;
-        float endSize = 0.5f;
+    struct CBDesc {
+        struct Param {
+            // --- Size ---
+            float startSize = 1.0f;
+            float endSize = 0.5f;
 
-        // --- Behavior ---
-        float gravity = -0.002f;
-        float drag = 0.1f;
+            // --- Behavior ---
+            float gravity = -0.002f;
+            float drag = 0.1f;
 
-        // --- Color ---
-        float startColor[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-        float endColor[4] = { 1.0f, 1.0f, 1.0f, 0.5f };
+            // --- Color ---
+            float startColor[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
+            float endColor[4] = { 1.0f, 1.0f, 1.0f, 0.5f };
 
-        float emissive = 1.0f;
-        float lifeTime = 5.0f;
+            float emissive = 1.0f;
+            float lifeTime = 5.0f;
 
-        // --- Noise ---
-        float noiseStrength = 0.2f;
+            // --- Noise ---
+            float noiseStrength = 0.2f;
 
-        uint32_t numParticles = 10000;
+            uint32_t numParticles = 10000;
+        }param;
+        
+        struct DescIndices {
+        }descIndices;
 
-    }gpuParam{};
+    }cbDesc{};
 
     struct GPUResource {
-        ConstantBuffer<GPUParam> paramCB;
+        ConstantBuffer<CBDesc> cb;
     }gpuResource{};
 
     void UploadConstBuff()
     {
-        *gpuResource.paramCB.mapData = gpuParam;
+        gpuResource.cb.Upload(cbDesc);
     }
 
-    const uint32_t GetCBVIndex() const { return gpuResource.paramCB.descriptorIndex; }
+    const uint32_t GetCBVIndex() const { return gpuResource.cb.descriptorIndex; }
 
 
 public:

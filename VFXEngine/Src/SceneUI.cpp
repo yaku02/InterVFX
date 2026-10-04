@@ -20,9 +20,25 @@ void SceneUI::Render()
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	cmdList->ClearRenderTargetView(m_rtvHandle, clearColor, 0, nullptr);
 
-	// -------------------------------------------------------------
-	// ※ ここにモデルやメッシュの DrawInstanced 等の描画処理が入ります
-	// -------------------------------------------------------------
+	// ★ 追加：ビューポートとシザー矩形（RECT）の設定
+	D3D12_VIEWPORT viewport = {
+		0.0f, 0.0f,
+		static_cast<float>(m_window->GetWindowWidth()),
+		static_cast<float>(m_window->GetWindowHeight()),
+		0.0f, 1.0f
+	};
+	D3D12_RECT scissorRect = {
+		0, 0,
+		static_cast<LONG>(m_window->GetWindowWidth()),
+		static_cast<LONG>(m_window->GetWindowHeight())
+	};
+	cmdList->RSSetViewports(1, &viewport);
+	cmdList->RSSetScissorRects(1, &scissorRect);
+
+	// 2. GraphicsManagerの処理を開始する（描画コマンドの発行）
+	if (m_renderCallback) {
+		m_renderCallback();
+	}
 
 	// 3. リソースバリア：RENDER_TARGET -> SHADER_RESOURCE (ImGui用)
 	barrier = CD3DX12_RESOURCE_BARRIER::Transition(

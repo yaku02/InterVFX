@@ -127,7 +127,7 @@ void VFXInstEditor::Open(VFXInstance& inst)
 			ImGui::TextUnformatted("Direction");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat3("##Direction", &inst.gpuParam.behavior.direction.x, 0.01f, -1.0f, 1.0f, "%.2f"))
+			if (ImGui::DragFloat3("##Direction", &inst.cbDesc.param.direction.x, 0.01f, -1.0f, 1.0f, "%.2f"))
 			{
 				isChanged = true;
 			}
@@ -137,7 +137,7 @@ void VFXInstEditor::Open(VFXInstance& inst)
 			ImGui::TextUnformatted("Speed");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##Speed", &inst.gpuParam.behavior.speed, 0.1f, 0.0f, 1000.0f, "%.2f"))
+			if (ImGui::DragFloat("##Speed", &inst.cbDesc.param.speed, 0.1f, 0.0f, 1000.0f, "%.2f"))
 			{
 				isChanged = true;
 			}

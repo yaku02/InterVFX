@@ -8,8 +8,7 @@ class GpuResourceManager;
 class TextureManager;
 class VFXAssetEditor;
 class VFXInstEditor;
-class VFXRenderer;
-class VFXUpdater;
+class VFXPass;
 
 class VFXManager {
 private:
@@ -20,8 +19,7 @@ private:
 
 	std::unique_ptr<VFXAssetEditor> m_assetEditor = nullptr;
 	std::unique_ptr<VFXInstEditor> m_instEditor = nullptr;
-	std::unique_ptr<VFXRenderer> m_renderer = nullptr;
-	std::unique_ptr<VFXUpdater> m_updater = nullptr;
+	std::unique_ptr<VFXPass> m_pass = nullptr;
 
 	std::vector<std::shared_ptr<VFXAsset>> m_assets{};
 	std::vector<std::shared_ptr<VFXInstance>> m_insts{};
@@ -49,8 +47,12 @@ public:
 		TextureManager& texMgr;
 	};
 
+	struct ExecuteDesc {
+		uint32_t grobalCBVIndex;
+	};
+
 	void Init(InitDesc& desc);
-	void Execute();
+	void Execute(const ExecuteDesc& desc);
 	void ShutDown();
 
 	VFXAsset* GetAsset(const uint32_t assetID);

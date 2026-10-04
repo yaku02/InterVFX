@@ -8,7 +8,7 @@
 #include "Debugger.h"
 #include "TextureManager.h"
 #include "RootSignatureManager.h"
-#include "VFXManager.h"
+#include "GraphicsManager.h"
 #include "Timer.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -50,15 +50,15 @@ int main()
 			rootSigMgr.Init(dx12Wrapper.GetDevice().Get());
 		}
 
-		VFXManager vfxMgr;
+		GraphicsManager graphicsMgr;
 		{
-			VFXManager::InitDesc initDesc{
+			GraphicsManager::InitDesc desc{
 				.window = window,
 				.dx12 = dx12Wrapper,
 				.gpuResMgr = gpuResMgr,
-				.texMgr = texMgr
+				.texMgr = texMgr,
 			};
-			vfxMgr.Init(initDesc);
+			graphicsMgr.Init(desc);
 		}
 
 		UIManager uiMgr;
@@ -68,8 +68,8 @@ int main()
 				.dx12 = dx12Wrapper,
 				.gpuResMgr = gpuResMgr,
 				.backBufferMgr = backBufferMgr,
-				.vfxAssetEditor = vfxMgr.GetAssetEditor(),
-				.vfxInstEditor = vfxMgr.GetInstEditor(),
+				.vfxAssetEditor = graphicsMgr.GetVFXMgr()->GetAssetEditor(),
+				.vfxInstEditor = graphicsMgr.GetVFXMgr()->GetInstEditor(),
 			};
 			uiMgr.Init(initDesc);
 		}
@@ -130,7 +130,7 @@ int main()
 		engine.WaitForGpu();
 		uiMgr.ShutDown();
 		window.ShutDown();
-		vfxMgr.ShutDown();
+		graphicsMgr.ShutDown();
 	}
 
 #ifdef _DEBUG

@@ -1,15 +1,16 @@
 #include "InSystem.hlsli"
 
-struct PassDescIndices
+struct VFXPassCBDesc
 {
-    uint paramCBVIndex;
+    struct Param
+    {
+        float vfxPassNoise;
+        float3 padding;
+    }param;
+    struct Indices
+    {
+    }indices;
 };
-
-struct PassParam
-{
-    float4 test;
-};
-
 
 ConstantBuffer<PassDescIndices> GetPassIndices()
 {

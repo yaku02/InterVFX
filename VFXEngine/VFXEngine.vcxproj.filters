@@ -58,9 +58,6 @@
     <Filter Include="Engine\Texture">
       <UniqueIdentifier>{874bdb21-89ab-4583-9307-97ce7cccbc29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\VFX">
-      <UniqueIdentifier>{3bf1f1bc-2acf-4e0d-892a-223f98fc6a73}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Pipeline\RootSignature">
       <UniqueIdentifier>{26415d6e-9df1-4b0e-938d-54436e170fca}</UniqueIdentifier>
     </Filter>
@@ -85,11 +82,26 @@
     <Filter Include="Engine\Pipeline\Graphics">
       <UniqueIdentifier>{55dddb2a-14b4-4f43-a28a-438f5d5a571a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\VFX\Shaders">
-      <UniqueIdentifier>{849fad6a-8cad-40ab-a2bb-57058e2a3886}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Timer">
       <UniqueIdentifier>{dc2f6e9d-ccb9-43cc-8a43-9ef096276bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics">
+      <UniqueIdentifier>{dd13a8ce-e94d-4833-833a-7caaa3f1ac2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\VFX">
+      <UniqueIdentifier>{3bf1f1bc-2acf-4e0d-892a-223f98fc6a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\VFX\Shaders">
+      <UniqueIdentifier>{849fad6a-8cad-40ab-a2bb-57058e2a3886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Manager">
+      <UniqueIdentifier>{2b042768-ffba-4b8f-8221-6d958fd64d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{ec6bee1d-07dd-4ee9-aefc-b2f23df5fe87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\VFX\Shaders\Header">
+      <UniqueIdentifier>{807133f4-60ce-40ca-81db-72f6571aa9a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -159,32 +171,29 @@
     <ClCompile Include="Src\TextureManager.cpp">
       <Filter>Engine\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Src\VFXPipelineMgr.cpp">
-      <Filter>Engine\VFX</Filter>
-    </ClCompile>
     <ClCompile Include="Src\RootSignatureManager.cpp">
       <Filter>Engine\Pipeline\RootSignature</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXManager.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\Geometry.cpp">
       <Filter>Engine\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXAsset.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXInstance.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\PreviewUI.cpp">
       <Filter>Engine\UI\Preview</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXAssetEditor.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXInstEditor.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\InstUI.cpp">
       <Filter>Engine\UI\Instance</Filter>
@@ -196,10 +205,19 @@
       <Filter>Engine\Pipeline\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXUpdater.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\VFXRenderer.cpp">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXPass.cpp">
+      <Filter>Engine\Graphics\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GraphicsManager.cpp">
+      <Filter>Engine\Graphics\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\EditorCamera.cpp">
+      <Filter>Engine\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,17 +290,14 @@
     <ClInclude Include="Src\TextureStructs.h">
       <Filter>Engine\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Src\VFXPipelineMgr.h">
-      <Filter>Engine\VFX</Filter>
-    </ClInclude>
     <ClInclude Include="Src\RootSignatureManager.h">
       <Filter>Engine\Pipeline\RootSignature</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXManager.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXStructs.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\Geometry.h">
       <Filter>Engine\Geometry</Filter>
@@ -291,10 +306,10 @@
       <Filter>Engine\IDGenerator</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXAsset.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXInstance.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\InstanceStructs.h">
       <Filter>Engine\UI\Instance</Filter>
@@ -306,10 +321,10 @@
       <Filter>Engine\UI\Preview</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXAssetEditor.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXInstEditor.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\InstUI.h">
       <Filter>Engine\UI\Instance</Filter>
@@ -321,7 +336,7 @@
       <Filter>Engine\Pipeline\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXUpdater.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\ConstantBuffer.h">
       <Filter>Engine\GpuResource</Filter>
@@ -330,21 +345,45 @@
       <Filter>Engine\Timer</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXRenderer.h">
-      <Filter>Engine\VFX</Filter>
+      <Filter>Engine\Graphics\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXPass.h">
+      <Filter>Engine\Graphics\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\GraphicsManager.h">
+      <Filter>Engine\Graphics\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\EditorCamera.h">
+      <Filter>Engine\Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Engine\Shader\VFXAssetSystem.hlsli">
+      <Filter>Engine\Graphics\VFX\Shaders\Header</Filter>
+    </None>
+    <None Include="Engine\Shader\VFXInstSystem.hlsli">
+      <Filter>Engine\Graphics\VFX\Shaders\Header</Filter>
+    </None>
+    <None Include="Engine\Shader\VFXPassSystem.hlsli">
+      <Filter>Engine\Graphics\VFX\Shaders\Header</Filter>
+    </None>
+    <None Include="Engine\Shader\VFXSystem.hlsli">
+      <Filter>Engine\Graphics\VFX\Shaders\Header</Filter>
+    </None>
+    <None Include="Engine\Shader\InSystem.hlsli">
+      <Filter>Engine\Graphics\VFX\Shaders\Header</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Engine\Shader\VFXVS.hlsl">
-      <Filter>Engine\VFX\Shaders</Filter>
+      <Filter>Engine\Graphics\VFX\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Engine\Shader\VFXPS.hlsl">
-      <Filter>Engine\VFX\Shaders</Filter>
+      <Filter>Engine\Graphics\VFX\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Engine\Shader\VFXUpdateCS.hlsl">
-      <Filter>Engine\VFX\Shaders</Filter>
+      <Filter>Engine\Graphics\VFX\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

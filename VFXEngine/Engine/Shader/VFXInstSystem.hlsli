@@ -1,12 +1,5 @@
 #include "InSystem.hlsli"
 
-struct InstDescIndices
-{
-    uint particleSRVIndex;
-    uint particleUAVIndex;
-    uint paramCBVIndex;
-};
-
 struct Particle
 {
     float3 position;
@@ -19,34 +12,54 @@ struct Particle
 
     uint seed;
     float3 custom;
+    float padding; // ★ C++側と16バイト境界を揃えるため追加
 };
 
-struct InstParam
+struct VFXInstParam
 {
     float4x4 transform;
     float3 direction;
     float speed;
 };
 
-ConstantBuffer<InstDescIndices> GetInstIndices()
+struct VFXInstIndices
 {
-    return ResourceDescriptorHeap[g_descIndices.instIndicesCBVIndex];
+    uint particleSRV;
+    uint particleUAV;
+    float2 padding;
+};
+
+struct VFXInstCB
+{
+    VFXInstParam param;
+    VFXInstIndices indices;
+};
+
+// --- インスタンス全体の CBV を取得する関数 ---
+VFXInstCB GetVFXInstCB()
+{
+    ConstantBuffer<VFXInstCB> cb = ResourceDescriptorHeap[g_descIndices.instIndicesCBVIndex];
+    return cb;
 }
 
-StructuredBuffer<Particle> GetParticleST()
+// --- パラメータのみ必要な場合の取得関数 ---
+VFXInstParam GetVFXInstParam()
 {
-    uint srvIndex = GetInstIndices().particleSRVIndex;
-    return ResourceDescriptorHeap[srvIndex];
+    VFXInstCB cb = GetVFXInstCB();
+    return cb.param;
 }
 
-RWStructuredBuffer<Particle> GetParticleRW()
+// --- 読み取り専用 Particle (SRV / StructuredBuffer) の取得 ---
+// ※ 戻り値は Particle 1つではなく「バッファ全体」を返すようにします
+StructuredBuffer<Particle> GetParticleSRV(uint srvIndex)
 {
-    uint uavIndex = GetInstIndices().particleUAVIndex;
-    return ResourceDescriptorHeap[uavIndex];
+    StructuredBuffer<Particle> buffer = ResourceDescriptorHeap[srvIndex];
+    return buffer;
 }
 
-ConstantBuffer<InstParam> GetInstParam()
+// --- 読み書き用 Particle (UAV / RWStructuredBuffer) の取得 ---
+RWStructuredBuffer<Particle> GetParticleUAV(uint uavIndex)
 {
-    uint cbvIndex = GetInstIndices().paramCBVIndex;
-    return ResourceDescriptorHeap[cbvIndex];
+    RWStructuredBuffer<Particle> buffer = ResourceDescriptorHeap[uavIndex];
+    return buffer;
 }

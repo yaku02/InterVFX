@@ -11,10 +11,12 @@ public:
 		Dx12Wrapper& dx12;
 		GpuResourceManager& gpuResMgr;
 	};
-
+		
 	struct RenderDesc {
-		std::vector<std::shared_ptr<VFXInstance>>& instances;
-		std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>>& assetsMap;
+		std::vector<std::shared_ptr<VFXInstance>>* instances = nullptr;
+		std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>>* assetsMap = nullptr;
+		uint32_t globalCBVIndex = UINT32_MAX;
+		uint32_t passCBVIndex = UINT32_MAX;
 	};
 
 private:

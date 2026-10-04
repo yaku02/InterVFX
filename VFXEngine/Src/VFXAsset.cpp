@@ -31,10 +31,10 @@ std::shared_ptr<VFXAsset> VFXAsset::Create(ID3D12Device* dev, GpuResourceManager
 
 HRESULT VFXAsset::CreateGpuResource(GpuResourceManager& gpuResMgr)
 {
-	gpuResource.paramCB = ConstantBuffer<GPUParam>::Create(gpuResMgr);
-	if (gpuResource.paramCB.resource == nullptr || gpuResource.paramCB.mapData == nullptr)
+	gpuResource.cb = ConstantBuffer<CBDesc>::Create(gpuResMgr);
+	if (gpuResource.cb.resource == nullptr || gpuResource.cb.mapData == nullptr)
 	{
-		Debugger::Log("Creation paramCB failed\n");
+		Debugger::Log("Creation VFX asset cb failed\n");
 		return E_FAIL;
 	}
 }

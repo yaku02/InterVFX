@@ -71,4 +71,10 @@ public:
         cb.descriptorIndex = gpuResMgr.CreateCBV(cb.resource, bufferSize);
         return cb; // ムーブコンストラクタ経由で安全に返却される
     }
+
+    void Upload(const T& data) {
+        if (mapData) {
+            *mapData = data; // memcpy(mapData, &data, sizeof(T)); と同等
+        }
+    }
 };

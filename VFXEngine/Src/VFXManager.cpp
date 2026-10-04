@@ -10,23 +10,19 @@
 #include "VFXAssetEditor.h"
 #include "VFXInstEditor.h"
 #include "InstUI.h"
-#include "VFXRenderer.h"
-#include "VFXUpdater.h"
+#include "VFXPass.h"
 
 VFXManager::VFXManager() = default;
 VFXManager::~VFXManager() = default;
 void VFXManager::Init(InitDesc& desc)
 {
-	m_window = &desc.window;
-	m_dx12 = &desc.dx12;
-	m_gpuResMgr = &desc.gpuResMgr;
+    m_window = &desc.window;
+    m_dx12 = &desc.dx12;
+    m_gpuResMgr = &desc.gpuResMgr;
     m_texMgr = &desc.texMgr;
 
-	m_renderer = std::make_unique<VFXRenderer>();
-	m_renderer->Init({ .dx12 = *m_dx12, .gpuResMgr = *m_gpuResMgr });
-
-    m_updater = std::make_unique<VFXUpdater>();
-    m_updater->Init({ .dx12 = *m_dx12, .gpuResMgr = *m_gpuResMgr });
+    m_pass = std::make_unique<VFXPass>();
+    m_pass->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
 
     m_assetEditor = std::make_unique<VFXAssetEditor>();
     m_instEditor = std::make_unique<VFXInstEditor>();
@@ -209,12 +205,23 @@ void VFXManager::ShutDown()
     m_insts.clear();
 }
 
-void VFXManager::Execute()
+void VFXManager::Execute(const ExecuteDesc& desc)
 {
-    if (m_renderer) {
-        m_renderer->Render({ .instances = m_insts, .assetsMap = m_assetsMap });
-    }
-    if (m_updater) {
-        m_updater->Update({ .instances = m_insts, .assetsMap = m_assetsMap });
-    }
+    if (!m_pass) return;
+
+    // PassExecuteDesc 自体は通常の値保持なので {} 初期化が使える
+    VFXPass::PassExecuteDesc passDesc{};
+
+    // --- Update 用の設定 (アドレスを渡してポインタ化) ---
+    passDesc.updateDesc.instances = &m_insts;
+    passDesc.updateDesc.assetsMap = &m_assetsMap;
+    passDesc.updateDesc.globalCBVIndex = desc.grobalCBVIndex;
+
+    // --- Render 用の設定 (アドレスを渡してポインタ化) ---
+    passDesc.renderDesc.instances = &m_insts;
+    passDesc.renderDesc.assetsMap = &m_assetsMap;
+    passDesc.renderDesc.globalCBVIndex = desc.grobalCBVIndex;
+
+    // VFXPass の実行
+    m_pass->Execute(passDesc);
 }

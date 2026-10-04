@@ -1,3 +1,4 @@
+// --- ルート定数などから渡されるインデックスバッファ (register(b0)) ---
 struct DescIndices
 {
     uint globalIndicesCBVIndex;
@@ -8,24 +9,18 @@ struct DescIndices
 
 ConstantBuffer<DescIndices> g_descIndices : register(b0);
 
-struct GlobalDescIndices
-{
-    uint paramCBVIndex;
-};
-
+// --- GlobalCB のパラメータ（C++側の GlobalCBDesc::Param とサイズを合わせる） ---
 struct GlobalParam
 {
-    float mainDeltaTime;
-    float3 padding;
+    float4x4 viewProj; // 64バイト
+    float globalDeltaTime; // 4バイト
+    float3 padding; // 12バイト -> 計 80バイト
 };
 
-ConstantBuffer<GlobalDescIndices> GetGlobalIndices()
+// --- バインドレスヒープから GlobalParam 構造体を取得するヘルパー関数 ---
+GlobalParam GetGlobalParam()
 {
-    return ResourceDescriptorHeap[g_descIndices.globalIndicesCBVIndex];
-}
-
-ConstantBuffer<GlobalParam> GetGlobalParam()
-{
-    uint cbvIndex = GetGlobalIndices().paramCBVIndex;
-    return ResourceDescriptorHeap[cbvIndex];
+    // ConstantBuffer<GlobalParam> としてヒープから読み出す
+    ConstantBuffer<GlobalParam> globalParamCB = ResourceDescriptorHeap[g_descIndices.globalIndicesCBVIndex];
+    return globalParamCB;
 }

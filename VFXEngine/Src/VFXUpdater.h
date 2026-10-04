@@ -23,26 +23,20 @@ public:
 	};
 	
 	struct UpdateDesc {
-		std::vector<std::shared_ptr<VFXInstance>>& instances;
-		std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>>& assetsMap;
+		std::vector<std::shared_ptr<VFXInstance>>* instances = nullptr;
+		std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>>* assetsMap = nullptr;
+		uint32_t globalCBVIndex = UINT32_MAX;
+		uint32_t passCBVIndex = UINT32_MAX;
 	};
 
 private:
 	GpuResourceManager* m_gpuResMgr = nullptr;
 	Dx12Wrapper* m_dx12 = nullptr;
 
-	struct GrobalPassIndices {
-		float padding[4]; //	テスト	16バイトアラインメントのためのパディング
-	};
-
-	ConstantBuffer<GrobalPassIndices> m_grobalPassCB;
-
 	ComputePipeline m_updatePipeline;
 
 	void CreatePipeline(ID3D12Device* dev);
 public:
 	void Init(const InitDesc& desc);
-	HRESULT CreateGrobalPassCB(GpuResourceManager& gpuResMgr);
-
 	void Update(const UpdateDesc& desc);
 };

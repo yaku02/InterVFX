@@ -192,10 +192,12 @@
     <ClCompile Include="Src\ComputePipeline.cpp" />
     <ClCompile Include="Src\Debugger.cpp" />
     <ClCompile Include="Src\Dx12Wrapper.cpp" />
+    <ClCompile Include="Src\EditorCamera.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
     <ClCompile Include="Src\Gbuffer.cpp" />
     <ClCompile Include="Src\Geometry.cpp" />
     <ClCompile Include="Src\GpuResourceManager.cpp" />
+    <ClCompile Include="Src\GraphicsManager.cpp" />
     <ClCompile Include="Src\GraphicsPipeline.cpp" />
     <ClCompile Include="Src\HdrBuffer.cpp" />
     <ClCompile Include="Src\InstUI.cpp" />
@@ -213,6 +215,7 @@
     <ClCompile Include="Src\VFXInstance.cpp" />
     <ClCompile Include="Src\VFXInstEditor.cpp" />
     <ClCompile Include="Src\VFXManager.cpp" />
+    <ClCompile Include="Src\VFXPass.cpp" />
     <ClCompile Include="Src\VFXRenderer.cpp" />
     <ClCompile Include="Src\VFXUpdater.cpp" />
     <ClCompile Include="Src\Window.cpp" />
@@ -226,12 +229,14 @@
     <ClInclude Include="Src\ConstantBuffer.h" />
     <ClInclude Include="Src\Debugger.h" />
     <ClInclude Include="Src\Dx12Wrapper.h" />
+    <ClInclude Include="Src\EditorCamera.h" />
     <ClInclude Include="Src\Engine.h" />
     <ClInclude Include="Src\FrameSetting.h" />
     <ClInclude Include="Src\Gbuffer.h" />
     <ClInclude Include="Src\Geometry.h" />
     <ClInclude Include="Src\GpuResourceManager.h" />
     <ClInclude Include="Src\GpuResourceStructs.h" />
+    <ClInclude Include="Src\GraphicsManager.h" />
     <ClInclude Include="Src\GraphicsPipeline.h" />
     <ClInclude Include="Src\HdrBuffer.h" />
     <ClInclude Include="Src\IDGenerator.h" />
@@ -256,6 +261,7 @@
     <ClInclude Include="Src\VFXInstance.h" />
     <ClInclude Include="Src\VFXInstEditor.h" />
     <ClInclude Include="Src\VFXManager.h" />
+    <ClInclude Include="Src\VFXPass.h" />
     <ClInclude Include="Src\VFXRenderer.h" />
     <ClInclude Include="Src\VFXUpdater.h" />
     <ClInclude Include="Src\VFXStructs.h" />

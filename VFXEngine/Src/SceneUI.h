@@ -5,6 +5,8 @@ class Dx12Wrapper;
 class GpuResourceManager;
 
 class SceneUI {
+	using RenderCallback = std::function<void()>;
+
 private:
 	Window* m_window = nullptr;
 	Dx12Wrapper* m_dx12 = nullptr;
@@ -14,6 +16,8 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE m_rtvHandle{};
 	D3D12_GPU_DESCRIPTOR_HANDLE m_srvHandle{};
 	
+	inline static RenderCallback m_renderCallback;
+
 	HRESULT CreateResource();
 
 public:
@@ -25,4 +29,9 @@ public:
 	void Setup(InitDesc& initDesc);
 	void ShowUI();
 	void Render();
+
+	static void RegisterRenderCallback(RenderCallback callback) {
+		m_renderCallback = callback;
+	}
+
 };

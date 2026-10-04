@@ -46,43 +46,38 @@ public:
 
     }cpuParam{};
 
-    struct GPUParam {
-        struct {
-            DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
-        } transform;
-
-        struct {
+    struct CBDesc {
+        struct Param {
+            DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
             DirectX::XMFLOAT3 direction = { 0.0f, 1.0f, 0.0f };
             float speed = 1.0f;
-        } behavior;
+        }param{};
 
         struct DescIndices {
             uint32_t particleSRV = UINT32_MAX;
             uint32_t particleUAV = UINT32_MAX;
             float padding[2];
-        }descIndices;
-
-    }gpuParam{};
+        }descIndices{};
+    }cbDesc{};
 
     struct GPUResource {
+        ConstantBuffer<CBDesc> cb;
+
         Microsoft::WRL::ComPtr<ID3D12Resource> particleBuffer = nullptr;
         D3D12_GPU_DESCRIPTOR_HANDLE particleSRVHandle{}; // プレビュー用
 
         Microsoft::WRL::ComPtr<ID3D12Resource> uploadBuffer = nullptr; // Upload用の一時的バッファ ExecuteCommandListが行われるまで保持
 
-        ConstantBuffer<GPUParam> paramCB;
-
     }gpuResource{};
 
     void UploadConstBuff()
     {
-        gpuParam.transform.world =
+        cbDesc.param.transform =
             DirectX::XMMatrixTranspose(cpuParam.world);
-
-        *gpuResource.paramCB.mapData = gpuParam;
+        gpuResource.cb.Upload(cbDesc);
     }
 
-	const uint32_t GetCBVIndex() const { return gpuResource.paramCB.descriptorIndex; }
+	const uint32_t GetCBVIndex() const { return gpuResource.cb.descriptorIndex; }
 public:
 	static std::shared_ptr<VFXInstance> Create(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr);
 	HRESULT CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr);

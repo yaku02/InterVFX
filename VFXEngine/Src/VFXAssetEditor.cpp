@@ -91,10 +91,10 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Max Particles");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			int maxParticles = static_cast<int>(asset.gpuParam.numParticles);
+			int maxParticles = static_cast<int>(asset.cbDesc.param.numParticles);
 			if (ImGui::DragInt("##MaxParticles", &maxParticles, 100, 1, 1000000))
 			{
-				asset.gpuParam.numParticles = static_cast<uint32_t>(maxParticles);
+				asset.cbDesc.param.numParticles = static_cast<uint32_t>(maxParticles);
 				isChanged = true;
 			}
 
@@ -103,7 +103,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Life Time");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##LifeTime", &asset.gpuParam.lifeTime, 0.1f, 0.01f, 60.0f, "%.2f s"))
+			if (ImGui::DragFloat("##LifeTime", &asset.cbDesc.param.lifeTime, 0.1f, 0.01f, 60.0f, "%.2f s"))
 			{
 				isChanged = true;
 			}
@@ -150,7 +150,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Start");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##StartSize", &asset.gpuParam.startSize, 0.05f, 0.0f, 100.0f, "%.2f"))
+			if (ImGui::DragFloat("##StartSize", &asset.cbDesc.param.startSize, 0.05f, 0.0f, 100.0f, "%.2f"))
 			{
 				isChanged = true;
 			}
@@ -160,7 +160,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("End");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##EndSize", &asset.gpuParam.endSize, 0.05f, 0.0f, 100.0f, "%.2f"))
+			if (ImGui::DragFloat("##EndSize", &asset.cbDesc.param.endSize, 0.05f, 0.0f, 100.0f, "%.2f"))
 			{
 				isChanged = true;
 			}
@@ -181,7 +181,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Gravity");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##Gravity", &asset.gpuParam.gravity, 0.0001f, -10.0f, 10.0f, "%.4f"))
+			if (ImGui::DragFloat("##Gravity", &asset.cbDesc.param.gravity, 0.0001f, -10.0f, 10.0f, "%.4f"))
 			{
 				isChanged = true;
 			}
@@ -190,7 +190,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Drag");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##Drag", &asset.gpuParam.drag, 0.01f, 0.0f, 10.0f, "%.2f"))
+			if (ImGui::DragFloat("##Drag", &asset.cbDesc.param.drag, 0.01f, 0.0f, 10.0f, "%.2f"))
 			{
 				isChanged = true;
 			}
@@ -200,7 +200,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Turbulence");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##Noise", &asset.gpuParam.noiseStrength, 0.01f, 0.0f, 10.0f, "%.2f"))
+			if (ImGui::DragFloat("##Noise", &asset.cbDesc.param.noiseStrength, 0.01f, 0.0f, 10.0f, "%.2f"))
 			{
 				isChanged = true;
 			}
@@ -226,7 +226,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Start");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::ColorEdit4("##StartColor", asset.gpuParam.startColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float))
+			if (ImGui::ColorEdit4("##StartColor", asset.cbDesc.param.startColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float))
 			{
 				isChanged = true;
 			}
@@ -236,7 +236,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("End");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::ColorEdit4("##EndColor", asset.gpuParam.endColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float))
+			if (ImGui::ColorEdit4("##EndColor", asset.cbDesc.param.endColor, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float))
 			{
 				isChanged = true;
 			}
@@ -251,7 +251,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TextUnformatted("Emissive");
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
-			if (ImGui::DragFloat("##Emissive", &asset.gpuParam.emissive, 0.1f, 0.0f, 100.0f, "%.1f"))
+			if (ImGui::DragFloat("##Emissive", &asset.cbDesc.param.emissive, 0.1f, 0.0f, 100.0f, "%.1f"))
 			{
 				isChanged = true;
 			}
@@ -274,6 +274,6 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 
 	if (isChanged)
 	{
-		asset.UploadConstBuff();
+		asset.gpuResource.cb.Upload(asset.cbDesc);
 	}
 }

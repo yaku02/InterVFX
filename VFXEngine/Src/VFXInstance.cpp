@@ -31,7 +31,7 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 	const auto& dev = dx12.GetDevice().Get();
 	const auto& cmdList = dx12.GetCmdList().Get();
 
-	const auto numParticles = asset.gpuParam.numParticles;
+	const auto numParticles = asset.cbDesc.param.numParticles;
 	// パーティクルバッファ作成
 	{
 		D3D12_HEAP_PROPERTIES heapProp =
@@ -108,7 +108,7 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU =
-			gpuResMgr.AllocateDescriptor(&gpuResource.particleSRVHandle, &gpuParam.descIndices.particleSRV);
+			gpuResMgr.AllocateDescriptor(&gpuResource.particleSRVHandle, &cbDesc.descIndices.particleSRV);
 		dev->CreateShaderResourceView(gpuResource.particleBuffer.Get(), &srvDesc, srvHandleCPU);
 
 		// UAVの作成
@@ -122,7 +122,7 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 		uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE uavHandleCPU =
-			gpuResMgr.AllocateDescriptor(nullptr, &gpuParam.descIndices.particleUAV);
+			gpuResMgr.AllocateDescriptor(nullptr, &cbDesc.descIndices.particleUAV);
 
 		dev->CreateUnorderedAccessView(
 			gpuResource.particleBuffer.Get(), nullptr, &uavDesc, uavHandleCPU);
@@ -130,10 +130,10 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 
 	// 定数バッファ作成
 	{
-		gpuResource.paramCB = ConstantBuffer<GPUParam>::Create(gpuResMgr);
-		if(gpuResource.paramCB.resource == nullptr || gpuResource.paramCB.mapData == nullptr)
+		gpuResource.cb = ConstantBuffer<CBDesc>::Create(gpuResMgr);
+		if(gpuResource.cb.resource == nullptr || gpuResource.cb.mapData == nullptr)
 		{
-			Debugger::Log("Creation paramCB failed\n");
+			Debugger::Log("Creation VFX Instance CB failed\n");
 			return E_FAIL;
 		}
 	}
