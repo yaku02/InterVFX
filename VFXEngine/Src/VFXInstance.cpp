@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "VFXInstance.h"
-#include "VFXStructs.h"
 #include "VFXAsset.h"
 #include "GpuResourceManager.h"
 #include "Dx12Wrapper.h"
 #include "Debugger.h"
+#include "ConstantBuffer.h"
 
 std::shared_ptr<VFXInstance> VFXInstance::Create(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr)
 {
@@ -108,7 +108,7 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU =
-			gpuResMgr.AllocateDescriptor(&gpuResource.particleSRVHandle, &gpuParam.indices.srvIndex);
+			gpuResMgr.AllocateDescriptor(&gpuResource.particleSRVHandle, &gpuParam.descIndices.particleSRV);
 		dev->CreateShaderResourceView(gpuResource.particleBuffer.Get(), &srvDesc, srvHandleCPU);
 
 		// UAVの作成
@@ -122,7 +122,7 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 		uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE uavHandleCPU =
-			gpuResMgr.AllocateDescriptor(nullptr, &gpuParam.indices.uavIndex);
+			gpuResMgr.AllocateDescriptor(nullptr, &gpuParam.descIndices.particleUAV);
 
 		dev->CreateUnorderedAccessView(
 			gpuResource.particleBuffer.Get(), nullptr, &uavDesc, uavHandleCPU);
@@ -130,16 +130,12 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuRe
 
 	// 定数バッファ作成
 	{
-		uint32_t bufferSize = (sizeof(VFXInstance::GPUParam) + 0xff) & ~0xff;
-
-		gpuResMgr.CreateConstantBuffer<VFXInstance::GPUParam>(
-			gpuResource.constBuff,
-			bufferSize,
-			&gpuResource.constBuffMapData,
-			L"VFX Inst ConstantBuffer"
-		);
-
-		gpuResource.cbvIndex = gpuResMgr.CreateCBV(gpuResource.constBuff, bufferSize);
+		gpuResource.paramCB = ConstantBuffer<GPUParam>::Create(gpuResMgr);
+		if(gpuResource.paramCB.resource == nullptr || gpuResource.paramCB.mapData == nullptr)
+		{
+			Debugger::Log("Creation paramCB failed\n");
+			return E_FAIL;
+		}
 	}
 	return S_OK;
 }

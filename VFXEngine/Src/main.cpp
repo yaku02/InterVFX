@@ -9,6 +9,7 @@
 #include "TextureManager.h"
 #include "RootSignatureManager.h"
 #include "VFXManager.h"
+#include "Timer.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -72,6 +73,9 @@ int main()
 			};
 			uiMgr.Init(initDesc);
 		}
+
+		Timer mainTimer;
+		mainTimer.Init();
 		
 		dx12Wrapper.ExecuteInitCommands();
 		engine.WaitForGpu();
@@ -94,6 +98,8 @@ int main()
 				DispatchMessage(&msg);
 			}
 			if (!isRunning) break;
+
+			mainTimer.Update();
 
 			engine.PrepareFrame();
 			dx12Wrapper.ResetCommands(backBufferMgr.GetCurrentBackBufferIndex());

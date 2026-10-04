@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -189,18 +189,19 @@
     </ClCompile>
     <ClCompile Include="Src\AssetUI.cpp" />
     <ClCompile Include="Src\BackBufferManager.cpp" />
+    <ClCompile Include="Src\ComputePipeline.cpp" />
     <ClCompile Include="Src\Debugger.cpp" />
     <ClCompile Include="Src\Dx12Wrapper.cpp" />
     <ClCompile Include="Src\Engine.cpp" />
     <ClCompile Include="Src\Gbuffer.cpp" />
     <ClCompile Include="Src\Geometry.cpp" />
     <ClCompile Include="Src\GpuResourceManager.cpp" />
+    <ClCompile Include="Src\GraphicsPipeline.cpp" />
     <ClCompile Include="Src\HdrBuffer.cpp" />
     <ClCompile Include="Src\InstUI.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\pch.cpp" />
     <ClCompile Include="Src\PreviewUI.cpp" />
-    <ClCompile Include="Src\PSOBuilder.cpp" />
     <ClCompile Include="Src\RenderingManager.cpp" />
     <ClCompile Include="Src\RootSignatureManager.cpp" />
     <ClCompile Include="Src\SceneUI.cpp" />
@@ -212,7 +213,8 @@
     <ClCompile Include="Src\VFXInstance.cpp" />
     <ClCompile Include="Src\VFXInstEditor.cpp" />
     <ClCompile Include="Src\VFXManager.cpp" />
-    <ClCompile Include="Src\VFXPipeline.cpp" />
+    <ClCompile Include="Src\VFXRenderer.cpp" />
+    <ClCompile Include="Src\VFXUpdater.cpp" />
     <ClCompile Include="Src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +222,8 @@
     <ClInclude Include="Src\AssetUI.h" />
     <ClInclude Include="Src\BackBufferManager.h" />
     <ClInclude Include="Src\BackBufferSetting.h" />
+    <ClInclude Include="Src\ComputePipeline.h" />
+    <ClInclude Include="Src\ConstantBuffer.h" />
     <ClInclude Include="Src\Debugger.h" />
     <ClInclude Include="Src\Dx12Wrapper.h" />
     <ClInclude Include="Src\Engine.h" />
@@ -228,15 +232,14 @@
     <ClInclude Include="Src\Geometry.h" />
     <ClInclude Include="Src\GpuResourceManager.h" />
     <ClInclude Include="Src\GpuResourceStructs.h" />
+    <ClInclude Include="Src\GraphicsPipeline.h" />
     <ClInclude Include="Src\HdrBuffer.h" />
     <ClInclude Include="Src\IDGenerator.h" />
     <ClInclude Include="Src\InstanceStructs.h" />
     <ClInclude Include="Src\InstUI.h" />
     <ClInclude Include="Src\LogStream.h" />
     <ClInclude Include="Src\pch.h" />
-    <ClInclude Include="Src\PipelineStructs.h" />
     <ClInclude Include="Src\PreviewUI.h" />
-    <ClInclude Include="Src\PSOBuilder.h" />
     <ClInclude Include="Src\RenderingManager.h" />
     <ClInclude Include="Src\RootParamLayout.h" />
     <ClInclude Include="Src\RootSignatureManager.h" />
@@ -246,18 +249,69 @@
     <ClInclude Include="Src\TextureLoader.h" />
     <ClInclude Include="Src\TextureManager.h" />
     <ClInclude Include="Src\TextureStructs.h" />
+    <ClInclude Include="Src\Timer.h" />
     <ClInclude Include="Src\UIManager.h" />
     <ClInclude Include="Src\VFXAsset.h" />
     <ClInclude Include="Src\VFXAssetEditor.h" />
     <ClInclude Include="Src\VFXInstance.h" />
     <ClInclude Include="Src\VFXInstEditor.h" />
     <ClInclude Include="Src\VFXManager.h" />
-    <ClInclude Include="Src\VFXPipeline.h" />
+    <ClInclude Include="Src\VFXRenderer.h" />
+    <ClInclude Include="Src\VFXUpdater.h" />
     <ClInclude Include="Src\VFXStructs.h" />
     <ClInclude Include="Src\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Engine\Shader\InSystem.hlsli" />
+    <None Include="Engine\Shader\VFXAssetSystem.hlsli" />
+    <None Include="Engine\Shader\VFXInstSystem.hlsli" />
+    <None Include="Engine\Shader\VFXPassSystem.hlsli" />
+    <None Include="Engine\Shader\VFXSystem.hlsli" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Engine\Shader\VFXPS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Engine\Shader\VFXUpdateCS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Engine\Shader\VFXVS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

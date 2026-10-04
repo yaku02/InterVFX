@@ -46,12 +46,6 @@
     <Filter Include="Engine\Utility">
       <UniqueIdentifier>{a592bcc3-47ec-45fe-a74d-d807c2db54b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Pipeline\Builder">
-      <UniqueIdentifier>{a518f512-cca8-453e-944b-7b49c2862e1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Pipeline\Compiler">
-      <UniqueIdentifier>{352e77c4-2a23-4ef8-9c9d-7d63a9a9711c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\UI\Debug">
       <UniqueIdentifier>{c980bbe3-518e-4174-9129-b70ccdf14f32}</UniqueIdentifier>
     </Filter>
@@ -81,6 +75,21 @@
     </Filter>
     <Filter Include="Engine\UI\Preview">
       <UniqueIdentifier>{1ccbb337-acf4-4857-b6b2-056045343d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline\ShaderCompiler">
+      <UniqueIdentifier>{352e77c4-2a23-4ef8-9c9d-7d63a9a9711c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline\Compute">
+      <UniqueIdentifier>{17b11395-2565-45d0-bf35-8e5dc39a7e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Pipeline\Graphics">
+      <UniqueIdentifier>{55dddb2a-14b4-4f43-a28a-438f5d5a571a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\VFX\Shaders">
+      <UniqueIdentifier>{849fad6a-8cad-40ab-a2bb-57058e2a3886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Timer">
+      <UniqueIdentifier>{dc2f6e9d-ccb9-43cc-8a43-9ef096276bd6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,11 +147,8 @@
     <ClCompile Include="Src\Window.cpp">
       <Filter>Engine\Window</Filter>
     </ClCompile>
-    <ClCompile Include="Src\PSOBuilder.cpp">
-      <Filter>Engine\Pipeline\Builder</Filter>
-    </ClCompile>
     <ClCompile Include="Src\ShaderCompiler.cpp">
-      <Filter>Engine\Pipeline\Compiler</Filter>
+      <Filter>Engine\Pipeline\ShaderCompiler</Filter>
     </ClCompile>
     <ClCompile Include="Src\AssetUI.cpp">
       <Filter>Engine\UI\Asset</Filter>
@@ -153,7 +159,7 @@
     <ClCompile Include="Src\TextureManager.cpp">
       <Filter>Engine\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Src\VFXPipeline.cpp">
+    <ClCompile Include="Src\VFXPipelineMgr.cpp">
       <Filter>Engine\VFX</Filter>
     </ClCompile>
     <ClCompile Include="Src\RootSignatureManager.cpp">
@@ -182,6 +188,18 @@
     </ClCompile>
     <ClCompile Include="Src\InstUI.cpp">
       <Filter>Engine\UI\Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ComputePipeline.cpp">
+      <Filter>Engine\Pipeline\Compute</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GraphicsPipeline.cpp">
+      <Filter>Engine\Pipeline\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXUpdater.cpp">
+      <Filter>Engine\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXRenderer.cpp">
+      <Filter>Engine\VFX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,20 +245,14 @@
     <ClInclude Include="Src\Window.h">
       <Filter>Engine\Window</Filter>
     </ClInclude>
-    <ClInclude Include="Src\PipelineStructs.h">
-      <Filter>Engine\Pipeline</Filter>
-    </ClInclude>
     <ClInclude Include="Src\RootParamLayout.h">
       <Filter>Engine\Pipeline</Filter>
     </ClInclude>
     <ClInclude Include="Src\StringConverter.h">
       <Filter>Engine\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Src\PSOBuilder.h">
-      <Filter>Engine\Pipeline\Builder</Filter>
-    </ClInclude>
     <ClInclude Include="Src\ShaderCompiler.h">
-      <Filter>Engine\Pipeline\Compiler</Filter>
+      <Filter>Engine\Pipeline\ShaderCompiler</Filter>
     </ClInclude>
     <ClInclude Include="Src\LogStream.h">
       <Filter>Engine\UI\Debug</Filter>
@@ -260,7 +272,7 @@
     <ClInclude Include="Src\TextureStructs.h">
       <Filter>Engine\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Src\VFXPipeline.h">
+    <ClInclude Include="Src\VFXPipelineMgr.h">
       <Filter>Engine\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\RootSignatureManager.h">
@@ -302,8 +314,37 @@
     <ClInclude Include="Src\InstUI.h">
       <Filter>Engine\UI\Instance</Filter>
     </ClInclude>
+    <ClInclude Include="Src\ComputePipeline.h">
+      <Filter>Engine\Pipeline\Compute</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\GraphicsPipeline.h">
+      <Filter>Engine\Pipeline\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXUpdater.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\ConstantBuffer.h">
+      <Filter>Engine\GpuResource</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Timer.h">
+      <Filter>Engine\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXRenderer.h">
+      <Filter>Engine\VFX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Engine\Shader\VFXVS.hlsl">
+      <Filter>Engine\VFX\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shader\VFXPS.hlsl">
+      <Filter>Engine\VFX\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shader\VFXUpdateCS.hlsl">
+      <Filter>Engine\VFX\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

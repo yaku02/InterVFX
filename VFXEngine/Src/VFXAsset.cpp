@@ -10,13 +10,13 @@ std::shared_ptr<VFXAsset> VFXAsset::Create(ID3D12Device* dev, GpuResourceManager
 	auto& cpuParam = asset->cpuParam;
 
 	// 生成した asset インスタンス経由で呼び出す
-	if (FAILED(asset->CreateGpuResource(dev, gpuResMgr)))
+	if (FAILED(asset->CreateGpuResource(gpuResMgr)))
 	{
 		return nullptr; // リソース作成失敗時は nullptr を返す
 	}
 	asset->info.base.type = AssetType::VFX;
 	asset->info.base.instType = InstType::VFX;
-	asset->info.base.name = "VFXAsset" + std::to_string(asset->info.Counter++);
+	asset->info.base.name = "VFXAsset" + std::to_string(VFXAsset::Info::Counter++);
 	asset->info.base.id = IDGenerator::Generate();
 	cpuParam.localAABB.min.x = cpuParam.minLocalAABB[0];
 	cpuParam.localAABB.min.y = cpuParam.minLocalAABB[1];
@@ -29,21 +29,12 @@ std::shared_ptr<VFXAsset> VFXAsset::Create(ID3D12Device* dev, GpuResourceManager
 	return asset;
 }
 
-HRESULT VFXAsset::CreateGpuResource(ID3D12Device* dev, GpuResourceManager& gpuResMgr)
+HRESULT VFXAsset::CreateGpuResource(GpuResourceManager& gpuResMgr)
 {
-	// ベースアセットパラメータ定数バッファ作成
+	gpuResource.paramCB = ConstantBuffer<GPUParam>::Create(gpuResMgr);
+	if (gpuResource.paramCB.resource == nullptr || gpuResource.paramCB.mapData == nullptr)
 	{
-		uint32_t bufferSize = (sizeof(VFXAsset::GPUParam) + 0xff) & ~0xff;
-
-		gpuResMgr.CreateConstantBuffer<VFXAsset::GPUParam>(
-			gpuResource.constBuff,
-			bufferSize,
-			&gpuResource.mapData,
-			L"VFX Asset ConstantBuffer"
-		);
-
-		gpuResource.cbvIndex = gpuResMgr.CreateCBV(gpuResource.constBuff, bufferSize);
-
+		Debugger::Log("Creation paramCB failed\n");
+		return E_FAIL;
 	}
-	return S_OK;
 }

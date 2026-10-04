@@ -1,11 +1,11 @@
 #pragma once
 
-namespace CommonRootParam {
+namespace RootParam {
 
 	// -------------------------------------------------------------
 	// 1. Root Parameter のスロット定義 (Root Signature のレイアウト)
 	// -------------------------------------------------------------
-	enum class RootParam {
+	enum class Slot : UINT{
 		CommonIndices = 0, // 全 Compute 共通の Root Constants (1~2 DWORD)
 		Count,
 	};
@@ -13,13 +13,11 @@ namespace CommonRootParam {
 	// -------------------------------------------------------------
 	// 2. Root Constants (Slot 0) で直送りする共通インデックス
 	// -------------------------------------------------------------
-	enum class CommonIndex {
-		SceneCBV = 0,           // シーン共通パラメータ
-		PassParamCBV,           // ★各パス専用パラメータ構造体への CBV インデックス
-		CurrentAssetCBV,
-		CurrentInstCBV,
-		AssetDynamicParamSRV,
-		InstDynamicParamSRV,
+	enum class CommonIndex : UINT{
+		GlobalIndicesCBV = 0,
+		PassIndicesCBV,
+		AssetIndicesCBV,
+		InstIndicesCBV,
 		Count,
 	};
 }

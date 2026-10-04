@@ -6,9 +6,10 @@ class Window;
 class Dx12Wrapper;
 class GpuResourceManager;
 class TextureManager;
-class VFXPipeline;
 class VFXAssetEditor;
 class VFXInstEditor;
+class VFXRenderer;
+class VFXUpdater;
 
 class VFXManager {
 private:
@@ -17,9 +18,10 @@ private:
 	GpuResourceManager* m_gpuResMgr = nullptr;
 	TextureManager* m_texMgr = nullptr;
 
-	std::unique_ptr<VFXPipeline> m_pipeline = nullptr;
 	std::unique_ptr<VFXAssetEditor> m_assetEditor = nullptr;
 	std::unique_ptr<VFXInstEditor> m_instEditor = nullptr;
+	std::unique_ptr<VFXRenderer> m_renderer = nullptr;
+	std::unique_ptr<VFXUpdater> m_updater = nullptr;
 
 	std::vector<std::shared_ptr<VFXAsset>> m_assets{};
 	std::vector<std::shared_ptr<VFXInstance>> m_insts{};
@@ -29,11 +31,13 @@ private:
 
 	Texture m_defaultAssetIcon{};
 
+
 	void OnAssetSelected(const uint32_t assetID);
 	void OpenAssetEditor(const uint32_t assetID);
 
 	void OnInstSelected(const uint32_t instID);
 	void OpenInstEditor(const uint32_t instID);
+
 public:
 	VFXManager();
 	~VFXManager();
@@ -46,6 +50,7 @@ public:
 	};
 
 	void Init(InitDesc& desc);
+	void Execute();
 	void ShutDown();
 
 	VFXAsset* GetAsset(const uint32_t assetID);

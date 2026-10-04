@@ -1,8 +1,8 @@
+#pragma once
 #include "GpuResourceStructs.h"
 
 class Window;
-class GpuResourceManager
-{
+class GpuResourceManager {
 	template <typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 

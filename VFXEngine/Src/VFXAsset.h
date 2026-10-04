@@ -1,9 +1,10 @@
 #pragma once
 #include "Geometry.h"
-#include "PipelineStructs.h"
+#include "GraphicsPipeline.h"
 #include "IDGenerator.h"
 #include "TextureStructs.h"
 #include "AssetStructs.h"
+#include "ConstantBuffer.h"
 
 class Dx12Wrapper;
 class GpuResourceManager;
@@ -23,7 +24,7 @@ public:
 
         // --- Rendering
         uint32_t textureId = 0;
-        BlendMode blend = BlendMode::Additive;
+        GraphicsPipeline::BlendMode blend = GraphicsPipeline::BlendMode::Additive;
 
         float minLocalAABB[3] = { -50.0f, -20.0f, -50.0f };
         float maxLocalAABB[3] = { 50.0f,  20.0f,  50.0f };
@@ -53,18 +54,18 @@ public:
     }gpuParam{};
 
     struct GPUResource {
-        Microsoft::WRL::ComPtr<ID3D12Resource> constBuff = nullptr;
-        GPUParam* mapData = nullptr;
-        uint32_t cbvIndex = 0;
-
+        ConstantBuffer<GPUParam> paramCB;
     }gpuResource{};
 
     void UploadConstBuff()
     {
-        *gpuResource.mapData = gpuParam;
+        *gpuResource.paramCB.mapData = gpuParam;
     }
+
+    const uint32_t GetCBVIndex() const { return gpuResource.paramCB.descriptorIndex; }
+
 
 public:
     static std::shared_ptr<VFXAsset> Create(ID3D12Device* dev, GpuResourceManager& gpuResMgr);
-    HRESULT CreateGpuResource(ID3D12Device* dev, GpuResourceManager& gpuResMgr);
+    HRESULT CreateGpuResource(GpuResourceManager& gpuResMgr);
 };

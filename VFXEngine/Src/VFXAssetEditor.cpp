@@ -265,7 +265,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			int currentBlend = static_cast<int>(asset.cpuParam.blend);
 			if (ImGui::Combo("##BlendMode", &currentBlend, blendNames, IM_ARRAYSIZE(blendNames)))
 			{
-				asset.cpuParam.blend = static_cast<BlendMode>(currentBlend);
+				asset.cpuParam.blend = static_cast<GraphicsPipeline::BlendMode>(currentBlend);
 			}
 
 			ImGui::EndTable();

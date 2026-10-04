@@ -2,7 +2,6 @@
 #include "Window.h"
 #include "Dx12Wrapper.h"
 #include "VFXManager.h"
-#include "VFXPipeline.h"
 #include "VFXStructs.h"
 #include "VFXAsset.h"
 #include "Debugger.h"
@@ -11,6 +10,8 @@
 #include "VFXAssetEditor.h"
 #include "VFXInstEditor.h"
 #include "InstUI.h"
+#include "VFXRenderer.h"
+#include "VFXUpdater.h"
 
 VFXManager::VFXManager() = default;
 VFXManager::~VFXManager() = default;
@@ -20,9 +21,13 @@ void VFXManager::Init(InitDesc& desc)
 	m_dx12 = &desc.dx12;
 	m_gpuResMgr = &desc.gpuResMgr;
     m_texMgr = &desc.texMgr;
-    //m_pipeline = std::make_unique<VFXPipeline>();
-    //m_pipeline->Init(m_dx12->GetDevice().Get());
-    
+
+	m_renderer = std::make_unique<VFXRenderer>();
+	m_renderer->Init({ .dx12 = *m_dx12, .gpuResMgr = *m_gpuResMgr });
+
+    m_updater = std::make_unique<VFXUpdater>();
+    m_updater->Init({ .dx12 = *m_dx12, .gpuResMgr = *m_gpuResMgr });
+
     m_assetEditor = std::make_unique<VFXAssetEditor>();
     m_instEditor = std::make_unique<VFXInstEditor>();
 
@@ -202,4 +207,14 @@ void VFXManager::ShutDown()
     m_defaultAssetIcon.buffer.Reset();
     m_assets.clear();
     m_insts.clear();
+}
+
+void VFXManager::Execute()
+{
+    if (m_renderer) {
+        m_renderer->Render({ .instances = m_insts, .assetsMap = m_assetsMap });
+    }
+    if (m_updater) {
+        m_updater->Update({ .instances = m_insts, .assetsMap = m_assetsMap });
+    }
 }

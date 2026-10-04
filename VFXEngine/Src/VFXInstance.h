@@ -3,11 +3,27 @@
 #include "IDGenerator.h"
 #include "Geometry.h"
 #include "InstanceStructs.h"
+#include "ConstantBuffer.h"
 
 class VFXAsset;
 class Dx12Wrapper;
 class GpuResourceManager;
+
 class VFXInstance {
+    struct Particle
+    {
+        float position[3] = { 0.0f, 0.0f, 0.0f };
+        float size = 1.0f;
+
+        float velocity[3] = { 1.0f, 1.0f, 1.0f };
+        float age = 9999.0f;
+
+        float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        uint32_t seed = 12345;
+        float custom[3] = { 0.0f, 0.0f, 0.0f };
+    };
+
 public:
     struct Info {
         inline static uint32_t Counter = 0;
@@ -40,11 +56,11 @@ public:
             float speed = 1.0f;
         } behavior;
 
-        struct Indices {
-            uint32_t srvIndex = UINT32_MAX;
-            uint32_t uavIndex = UINT32_MAX;
+        struct DescIndices {
+            uint32_t particleSRV = UINT32_MAX;
+            uint32_t particleUAV = UINT32_MAX;
             float padding[2];
-        } indices;
+        }descIndices;
 
     }gpuParam{};
 
@@ -53,12 +69,8 @@ public:
         D3D12_GPU_DESCRIPTOR_HANDLE particleSRVHandle{}; // プレビュー用
 
         Microsoft::WRL::ComPtr<ID3D12Resource> uploadBuffer = nullptr; // Upload用の一時的バッファ ExecuteCommandListが行われるまで保持
-        Microsoft::WRL::ComPtr<ID3D12Resource> constBuff = nullptr;
 
-        GPUParam* constBuffMapData = nullptr;
-
-
-        uint32_t cbvIndex = UINT32_MAX;
+        ConstantBuffer<GPUParam> paramCB;
 
     }gpuResource{};
 
@@ -67,9 +79,10 @@ public:
         gpuParam.transform.world =
             DirectX::XMMatrixTranspose(cpuParam.world);
 
-        *gpuResource.constBuffMapData = gpuParam;
+        *gpuResource.paramCB.mapData = gpuParam;
     }
 
+	const uint32_t GetCBVIndex() const { return gpuResource.paramCB.descriptorIndex; }
 public:
 	static std::shared_ptr<VFXInstance> Create(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr);
 	HRESULT CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr);

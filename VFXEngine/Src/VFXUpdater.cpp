@@ -1,0 +1,87 @@
+#include "pch.h"
+#include "VFXUpdater.h"
+#include "Dx12Wrapper.h"
+#include "GpuResourceManager.h"
+#include "Debugger.h"
+#include "Timer.h"
+#include "RootSignatureManager.h"
+#include "RootParamLayout.h"
+
+void VFXUpdater::Init(const InitDesc& desc)
+{
+	m_dx12 = &desc.dx12;
+	m_gpuResMgr = &desc.gpuResMgr;
+
+	CreateGrobalPassCB(desc.gpuResMgr);
+	CreatePipeline(desc.dx12.GetDevice().Get());
+}
+
+HRESULT VFXUpdater::CreateGrobalPassCB(GpuResourceManager& gpuResMgr)
+{
+	m_grobalPassCB = ConstantBuffer<GrobalPassIndices>::Create(gpuResMgr);
+
+	if(m_grobalPassCB.resource == nullptr || m_grobalPassCB.mapData == nullptr || m_grobalPassCB.descriptorIndex == UINT32_MAX)
+	{
+		Debugger::Log("[Error] Failed to create GrobalPass ConstantBuffer\n");
+		return E_FAIL;
+	}
+	return S_OK;
+}
+
+void VFXUpdater::CreatePipeline(ID3D12Device* dev)
+{
+	const auto& rootSig = RootSignatureManager::GetRootSignature();
+
+	// --- 共通パラメータの設定 ---
+	ComputePipeline::Desc baseDesc;
+	baseDesc.csPath = "Engine/Shader/VFXUpdateCS.hlsl";
+	baseDesc.csEntry = "CSMain";
+	baseDesc.csModel = "cs_6_6";
+	baseDesc.rootSignature = rootSig;
+	m_updatePipeline = ComputePipeline::Create(dev, baseDesc);
+}
+
+void VFXUpdater::Update(const UpdateDesc& desc)
+{
+    auto cmdList = m_dx12->GetCmdList().Get();
+
+    // パーティクル更新
+    m_updatePipeline.SetPipeline(cmdList);
+    for (auto& inst : desc.instances)
+    {
+        if (!inst->cpuParam.isActive) continue;
+        auto assetIt = desc.assetsMap.find(inst->info.assetID);
+        if (assetIt == desc.assetsMap.end())
+        {
+            Debugger::Log("[Error] VFXUpdater::Update() - Asset not found for instance ID: %u, Asset ID: %u\n", inst->info.base.id, inst->info.assetID);
+            continue;
+        }
+        auto& asset = assetIt->second;
+
+        asset->UploadConstBuff();
+        uint32_t assetIndicesCBVIndex = asset->GetCBVIndex();
+        cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &assetIndicesCBVIndex, (UINT)RootParam::CommonIndex::AssetIndicesCBV);
+
+        inst->UploadConstBuff();
+        uint32_t instIndicesCBVIndex = inst->GetCBVIndex();
+        cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CommonIndex::InstIndicesCBV);
+        cmdList->Dispatch(asset->gpuParam.numParticles / 64 + 1, 1, 1);
+    }
+
+    // 全インスタンスをUAVからSRVに状態遷移させる
+    std::vector<D3D12_RESOURCE_BARRIER> transitions;
+    for (auto& inst : desc.instances) {
+        auto& param = inst->cpuParam;
+        if (!param.isActive) continue;
+        auto& instGPU = inst->gpuResource;
+
+        transitions.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+            instGPU.particleBuffer.Get(),
+            D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+            D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
+        ));
+    }
+    if (!transitions.empty()) {
+        cmdList->ResourceBarrier((UINT)transitions.size(), transitions.data());
+    }
+}
