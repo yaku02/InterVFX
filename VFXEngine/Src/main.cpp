@@ -9,6 +9,7 @@
 #include "TextureManager.h"
 #include "RootSignatureManager.h"
 #include "GraphicsManager.h"
+#include "VFXManager.h"
 #include "Timer.h"
 
 #pragma comment(lib, "d3d12.lib")

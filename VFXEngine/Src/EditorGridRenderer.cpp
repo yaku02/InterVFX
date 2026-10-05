@@ -6,7 +6,7 @@
 
 void EditorGridRenderer::Init(const InitDesc& desc)
 {
-    m_dev = &desc.device;
+    m_dev = desc.device;
     m_gpuResMgr = &desc.gpuResMgr;
     CreatePipeline(m_dev.Get());
 }

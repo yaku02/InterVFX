@@ -19,9 +19,10 @@ private:
 
 	struct GlobalCBDesc {
 		struct Param{
-			DirectX::XMFLOAT4X4 viewProj; // 64バイト (16バイト x 4)
-			float globalDeltaTime;          // 4バイト
-			float padding[3];
+			DirectX::XMFLOAT4X4 viewProj;    // 64バイト (Matrix)
+			DirectX::XMFLOAT4X4 invViewProj; // 64バイト (★追加: レイ復元用)
+			DirectX::XMFLOAT3   cameraPos;   // 12バイト (★追加: グリッド視線計算用)
+			float               globalDeltaTime; // 4バイト (計16バイトのブロックに収まる)
 		}param{};
 		struct DescIndices {
 			float dummy[4];
@@ -33,8 +34,11 @@ private:
 	HRESULT CreateGlobalCB(GpuResourceManager& gpuResMgr);
 
 public:
-	VFXManager* GetVFXMgr() { return m_vfxMgr.get(); }
-	EditorGridPass* GetEditorGridPass() { return m_editorGridPass.get(); }
+	GraphicsManager();               // ★ 追加
+	~GraphicsManager();              // ★ 追加 (デストラクタの宣言)
+
+	VFXManager* GetVFXMgr();
+	EditorGridPass* GetEditorGridPass();
 
 	struct InitDesc {
 		Window& window;

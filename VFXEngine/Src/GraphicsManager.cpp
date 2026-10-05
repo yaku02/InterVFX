@@ -12,6 +12,9 @@
 #include "EditorCamera.h"
 #include "SceneUI.h"
 
+GraphicsManager::GraphicsManager() = default;
+GraphicsManager::~GraphicsManager() = default;
+
 void GraphicsManager::Init(const InitDesc& desc)
 {
 	m_window = &desc.window;
@@ -65,20 +68,47 @@ HRESULT GraphicsManager::CreateGlobalCB(GpuResourceManager& gpuResMgr)
 
 void GraphicsManager::Execute()
 {
-	ID3D12DescriptorHeap* heaps[] = { m_gpuResMgr->GetDescHeap(HeapType::Visible).heap.Get()};
+	ID3D12DescriptorHeap* heaps[] = { m_gpuResMgr->GetDescHeap(HeapType::Visible).heap.Get() };
 	m_dx12->GetCmdList()->SetDescriptorHeaps(1, heaps);
 
 	float dt = Timer::GetGlobalDeltaTime();
 	EditorCamera::Update(dt);
 
+	// 1. ŠeŽíƒpƒ‰ƒ[ƒ^‚ÌŽæ“¾
+	DirectX::XMMATRIX viewProj = EditorCamera::GetViewProjMatrix();
+
+	// yC³zs—ñŽ®‚ðŽó‚¯Žæ‚é•Ï”(det)‚ð—pˆÓ‚µ‚Ä‹ts—ñ‚ðŒvŽZ
+	DirectX::XMVECTOR det;
+	DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(&det, viewProj);
+
+	DirectX::XMFLOAT3 cameraPos = EditorCamera::GetPosition();
+
+	// 2. GlobalCBDesc ‚Ö‚ÌŠi”[ (“]’uˆ—‚Í‚±‚ê‚Åƒoƒbƒ`ƒŠOK‚Å‚·)
 	m_globalCBDesc.param.globalDeltaTime = dt;
-	m_globalCBDesc.param.viewProj = EditorCamera::GetViewProjFloat4x4();
+	DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.viewProj, DirectX::XMMatrixTranspose(viewProj));
+	DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.invViewProj, DirectX::XMMatrixTranspose(invViewProj));
+	m_globalCBDesc.param.cameraPos = cameraPos;
+
+	// 3. GPU (ConstantBuffer) ‚ÖƒAƒbƒvƒ[ƒh
 	m_globalCB.Upload(m_globalCBDesc);
 
+	{
+		EditorGridRenderer::RenderDesc renDesc{
+			.cmdList = m_dx12->GetCmdList().Get(),
+			.globalCBVIndex = m_globalCB.descriptorIndex
+		};
+		m_editorGridPass->Execute(EditorGridPass::PassExecuteDesc{ .renderDesc = renDesc });
+	}
+
 	m_vfxMgr->Execute(VFXManager::ExecuteDesc{ .grobalCBVIndex = m_globalCB.descriptorIndex });
+
 }
 
 void GraphicsManager::ShutDown()
 {
 	m_vfxMgr->ShutDown();
 }
+
+VFXManager* GraphicsManager::GetVFXMgr() { return m_vfxMgr.get(); }
+EditorGridPass* GraphicsManager::GetEditorGridPass() { return m_editorGridPass.get(); }
+

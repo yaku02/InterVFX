@@ -16,8 +16,9 @@ ConstantBuffer<CBVIndices> g_cbvIndices : register(b0);
 struct GlobalParam
 {
     float4x4 viewProj; // 64バイト
+    float4x4 invViewProj;
+    float3 cameraPos;
     float globalDeltaTime; // 4バイト
-    float3 padding; // 12バイト -> 計 80バイト
 };
 
 struct GlobalIndices

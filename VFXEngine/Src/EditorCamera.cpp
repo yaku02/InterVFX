@@ -107,7 +107,9 @@ void EditorCamera::UpdateViewMatrix()
     XMVECTOR targetOffset = XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
     XMVECTOR eye = XMLoadFloat3(&s_position);
     XMVECTOR target = eye + targetOffset;
-    XMVECTOR up = XMVector3TransformCoord(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotation);
+
+    // 【修正箇所】Up ベクトルは常にワールドの Y 上方向 (0, 1, 0) に固定
+    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
     XMMATRIX view = XMMatrixLookAtLH(eye, target, up);
     XMStoreFloat4x4(&s_viewMatrix, view);

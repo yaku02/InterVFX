@@ -15,4 +15,3 @@ void EditorGridPass::Execute(const PassExecuteDesc& desc)
 		m_renderer->Render({ desc.renderDesc });
 	}
 }
-
