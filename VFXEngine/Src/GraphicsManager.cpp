@@ -6,7 +6,7 @@
 #include "TextureManager.h"
 
 #include "VFXManager.h"
-
+#include "EditorGridPass.h"
 #include "Debugger.h"
 #include "Timer.h"
 #include "EditorCamera.h"
@@ -26,13 +26,22 @@ void GraphicsManager::Init(const InitDesc& desc)
 
 	{
 		m_vfxMgr = std::make_unique<VFXManager>();
-		VFXManager::InitDesc vfxDesc{
+		VFXManager::InitDesc initDesc{
 			.window = desc.window,
 			.dx12 = desc.dx12,
 			.gpuResMgr = desc.gpuResMgr,
 			.texMgr = desc.texMgr,
 		};
-		m_vfxMgr->Init(vfxDesc);
+		m_vfxMgr->Init(initDesc);
+	}
+
+	{
+		m_editorGridPass = std::make_unique<EditorGridPass>();
+		EditorGridPass::InitDesc initDesc{
+			.dev = desc.dx12.GetDevice().Get(),
+			.gpuResMgr = desc.gpuResMgr
+		};
+		m_editorGridPass->Init(initDesc);
 	}
 
 	SceneUI::RegisterRenderCallback(

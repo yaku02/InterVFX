@@ -193,6 +193,8 @@
     <ClCompile Include="Src\Debugger.cpp" />
     <ClCompile Include="Src\Dx12Wrapper.cpp" />
     <ClCompile Include="Src\EditorCamera.cpp" />
+    <ClCompile Include="Src\EditorGridPass.cpp" />
+    <ClCompile Include="Src\EditorGridRenderer.cpp" />
     <ClCompile Include="Src\FrameSyncManager.cpp" />
     <ClCompile Include="Src\Gbuffer.cpp" />
     <ClCompile Include="Src\Geometry.cpp" />
@@ -230,6 +232,8 @@
     <ClInclude Include="Src\Debugger.h" />
     <ClInclude Include="Src\Dx12Wrapper.h" />
     <ClInclude Include="Src\EditorCamera.h" />
+    <ClInclude Include="Src\EditorGridPass.h" />
+    <ClInclude Include="Src\EditorGridRenderer.h" />
     <ClInclude Include="Src\FrameSyncManager.h" />
     <ClInclude Include="Src\FrameSetting.h" />
     <ClInclude Include="Src\Gbuffer.h" />

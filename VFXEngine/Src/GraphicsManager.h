@@ -1,10 +1,13 @@
 #pragma once
-#include "VFXManager.h"
+#include "ConstantBuffer.h"
 
 class Window;
 class Dx12Wrapper;
 class GpuResourceManager;
-class TextureManager; 
+class TextureManager;
+
+class VFXManager;
+class EditorGridPass;
 class GraphicsManager {
 private:
 	Window* m_window = nullptr;
@@ -12,6 +15,7 @@ private:
 	GpuResourceManager* m_gpuResMgr = nullptr;
 	TextureManager* m_texMgr = nullptr;
 	std::unique_ptr<VFXManager> m_vfxMgr = nullptr;
+	std::unique_ptr<EditorGridPass> m_editorGridPass = nullptr;
 
 	struct GlobalCBDesc {
 		struct Param{
@@ -30,6 +34,7 @@ private:
 
 public:
 	VFXManager* GetVFXMgr() { return m_vfxMgr.get(); }
+	EditorGridPass* GetEditorGridPass() { return m_editorGridPass.get(); }
 
 	struct InitDesc {
 		Window& window;
