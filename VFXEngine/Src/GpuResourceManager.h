@@ -10,7 +10,7 @@ private:
 	const UINT MAX_DESC_COUNT = 4096; // ディスクリプタの最大数
 	UINT IncSize = 0;
 	UINT RtvIncSize = 0;
-
+	UINT DsvIncSize = 0;
 	ComPtr<ID3D12Device> m_dev = nullptr;
 	std::queue<uint32_t> freeDescIndices;
 
@@ -18,7 +18,8 @@ private:
 	DescHeapInfo m_nonVisibleHeap;
 	DescHeapInfo m_imguiHeap;
 	DescHeapInfo m_rtvHeap;
-	
+	DescHeapInfo m_dsvHeap;
+
 	void SetUpDescHeap(HWND hwnd);
 
 public:
@@ -32,6 +33,7 @@ public:
 		else if (type == HeapType::NonVisible) return m_nonVisibleHeap;
 		else if (type == HeapType::ImGui) return m_imguiHeap;
 		else if (type == HeapType::Rtv) return m_rtvHeap;
+		else if (type == HeapType::Dsv) return m_dsvHeap;
 		return m_visibleHeap;
 	}
 	

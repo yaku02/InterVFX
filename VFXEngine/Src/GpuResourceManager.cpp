@@ -59,6 +59,26 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 		m_rtvHeap.gpuHandle = { 0 }; // 無効化または設定しない
 	}
 
+	
+	// DsvHeap作成 (Depth Stencil View 用)
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
+		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV; // ← DSV 専用の型を指定
+		descHeapDesc.NumDescriptors = MAX_DESC_COUNT;
+		descHeapDesc.NodeMask = 0;
+		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Shader Visible 不要
+
+		auto result = m_dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&m_dsvHeap.heap));
+		if (FAILED(result)) { return; }
+
+		// DSV 用の正しいインクリメントサイズを取得
+		DsvIncSize = m_dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+		// ヒープの先頭 CPU ハンドルを取得
+		m_dsvHeap.cpuHandle = m_dsvHeap.heap->GetCPUDescriptorHandleForHeapStart();
+		m_dsvHeap.gpuHandle = { 0 }; // DSV では GPU ハンドルは使用しない
+	}
+
 	// ImGui用ヒープ作成
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC dhDesc = {};

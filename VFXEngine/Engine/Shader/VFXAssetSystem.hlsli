@@ -1,3 +1,6 @@
+#pragma once
+// VFXAssetSystem.hlsli
+
 #include "InSystem.hlsli"
 
 struct VFXAssetParam
@@ -14,9 +17,27 @@ struct VFXAssetParam
     uint numParticle;
 };
 
+struct VFXAssetIndices
+{
+    float4 dummy;
+};
+
+struct VFXAssetCB
+{
+    VFXAssetParam param;
+    VFXAssetIndices indices;
+};
+
+// --- アセット全体の CBV を取得する関数 ---
+VFXAssetCB GetVFXAssetCB()
+{
+    ConstantBuffer<VFXAssetCB> cb = ResourceDescriptorHeap[g_cbvIndices.assetCBVIndex];
+    return cb;
+}
+
+// --- パラメータのみ必要な場合の取得関数 ---
 VFXAssetParam GetVFXAssetParam()
 {
-    // ConstantBuffer<VFXAssetParam> としてヒープから読み出す
-    ConstantBuffer<VFXAssetParam> vfxAssetParamCB = ResourceDescriptorHeap[g_descIndices.globalIndicesCBVIndex];
-    return vfxAssetParamCB;
+    VFXAssetCB cb = GetVFXAssetCB();
+    return cb.param;
 }

@@ -62,11 +62,12 @@ void VFXRenderer::Render(const RenderDesc& desc)
     if (!desc.instances || !desc.assetsMap) return;
 
     auto cmdList = m_dx12->GetCmdList().Get();
-    cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CommonIndex::GlobalIndicesCBV);
-    cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CommonIndex::PassIndicesCBV);
 
     // パーティクル描画
     m_additivePipeline.SetPipeline(cmdList);
+    cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CBVIndices::GlobalCBVIndex);
+    cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CBVIndices::PassCBVIndex);
+
     cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
     // 2. ポインタをデリファレンス（*desc.instances）してループ
@@ -85,11 +86,11 @@ void VFXRenderer::Render(const RenderDesc& desc)
 
         asset->UploadConstBuff();
         uint32_t assetIndicesCBVIndex = asset->GetCBVIndex();
-        cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &assetIndicesCBVIndex, (UINT)RootParam::CommonIndex::AssetIndicesCBV);
+        cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &assetIndicesCBVIndex, (UINT)RootParam::CBVIndices::AssetCBVIndex);
 
         inst->UploadConstBuff();
         uint32_t instIndicesCBVIndex = inst->GetCBVIndex();
-        cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CommonIndex::InstIndicesCBV);
+        cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CBVIndices::InstCBVIndex);
 
         cmdList->DrawInstanced(4, asset->cbDesc.param.numParticles, 0, 0);
     }

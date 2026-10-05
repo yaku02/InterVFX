@@ -37,8 +37,8 @@ void VFXUpdater::Update(const UpdateDesc& desc)
 
     // パーティクル更新
     m_updatePipeline.SetPipeline(cmdList);
-    cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CommonIndex::GlobalIndicesCBV);
-    cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CommonIndex::PassIndicesCBV);
+    cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CBVIndices::GlobalCBVIndex);
+    cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CBVIndices::PassCBVIndex);
 
     // 2. ポインタをデリファレンス（*desc.instances）してループ
     for (auto& inst : *desc.instances)
@@ -56,11 +56,11 @@ void VFXUpdater::Update(const UpdateDesc& desc)
 
         asset->UploadConstBuff();
         uint32_t assetIndicesCBVIndex = asset->GetCBVIndex();
-        cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &assetIndicesCBVIndex, (UINT)RootParam::CommonIndex::AssetIndicesCBV);
+        cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &assetIndicesCBVIndex, (UINT)RootParam::CBVIndices::AssetCBVIndex);
 
         inst->UploadConstBuff();
         uint32_t instIndicesCBVIndex = inst->GetCBVIndex();
-        cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CommonIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CommonIndex::InstIndicesCBV);
+        cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CBVIndices::InstCBVIndex);
 
         // 3. Dispatchスレッドグループ数の安全な計算（64の倍数時のオーバーフロー防止）
         uint32_t threadGroupX = (asset->cbDesc.param.numParticles + 63) / 64;

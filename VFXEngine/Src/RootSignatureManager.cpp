@@ -7,7 +7,7 @@ HRESULT RootSignatureManager::CreateCommonRootSignature(ID3D12Device* dev)
 {
 	CD3DX12_ROOT_PARAMETER rootParam{};
 	rootParam.InitAsConstants(
-		static_cast<UINT>(RootParam::CommonIndex::Count),
+		static_cast<UINT>(RootParam::CBVIndices::Count),
 		0, // register(b0)
 		0, // space0
 		D3D12_SHADER_VISIBILITY_ALL

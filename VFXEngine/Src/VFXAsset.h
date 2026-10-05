@@ -54,6 +54,7 @@ public:
         }param;
         
         struct DescIndices {
+            float dummy[4];
         }descIndices;
 
     }cbDesc{};

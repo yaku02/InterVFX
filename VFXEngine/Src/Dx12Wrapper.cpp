@@ -209,3 +209,21 @@ void Dx12Wrapper::ExecuteInitCommands()
 	ID3D12CommandList* ppCmdLists[] = { _cmdList.Get() };
 	_cmdQueue->ExecuteCommandLists(1, ppCmdLists);
 }
+
+void Dx12Wrapper::FlushCommandQueue()
+{
+	if (!_cmdQueue || !_dev) return;
+
+	ComPtr<ID3D12Fence> tempFence;
+	_dev->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&tempFence));
+
+	HANDLE event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	_cmdQueue->Signal(tempFence.Get(), 1);
+
+	if (tempFence->GetCompletedValue() < 1) {
+		tempFence->SetEventOnCompletion(1, event);
+		WaitForSingleObject(event, INFINITE);
+	}
+
+	CloseHandle(event);
+}

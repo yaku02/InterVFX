@@ -1,24 +1,36 @@
+#pragma once
+
+// VFXPassSystem.hlsli
+
 #include "InSystem.hlsli"
 
-struct VFXPassCBDesc
+struct VFXPassParam
 {
-    struct Param
-    {
-        float vfxPassNoise;
-        float3 padding;
-    }param;
-    struct Indices
-    {
-    }indices;
+    float vfxPassNoise;
+    float3 padding;
 };
 
-ConstantBuffer<PassDescIndices> GetPassIndices()
+struct VFXPassIndices
 {
-    return ResourceDescriptorHeap[g_descIndices.passIndicesCBVIndex];
+    float4 dummy;
+};
+
+struct VFXPassCB
+{
+    VFXPassParam param;
+    VFXPassIndices indices;
+};
+
+// --- パス全体の CBV を取得する関数 ---
+VFXPassCB GetVFXPassCB()
+{
+    ConstantBuffer<VFXPassCB> cb = ResourceDescriptorHeap[g_cbvIndices.passCBVIndex];
+    return cb;
 }
 
-ConstantBuffer<PassParam> GetPassParam()
+// --- パラメータのみ必要な場合の取得関数 ---
+VFXPassParam GetVFXPassParam()
 {
-    uint cbvIndex = GetPassIndices().paramCBVIndex;
-    return ResourceDescriptorHeap[cbvIndex];
+    VFXPassCB cb = GetVFXPassCB();
+    return cb.param;
 }

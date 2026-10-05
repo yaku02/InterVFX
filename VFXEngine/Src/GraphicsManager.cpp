@@ -56,6 +56,9 @@ HRESULT GraphicsManager::CreateGlobalCB(GpuResourceManager& gpuResMgr)
 
 void GraphicsManager::Execute()
 {
+	ID3D12DescriptorHeap* heaps[] = { m_gpuResMgr->GetDescHeap(HeapType::Visible).heap.Get()};
+	m_dx12->GetCmdList()->SetDescriptorHeaps(1, heaps);
+
 	float dt = Timer::GetGlobalDeltaTime();
 	EditorCamera::Update(dt);
 

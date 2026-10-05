@@ -5,6 +5,7 @@ enum class HeapType {
 	NonVisible,
 	ImGui,
 	Rtv,
+	Dsv,
 };
 
 struct DescHeapInfo {

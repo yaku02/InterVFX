@@ -1,3 +1,6 @@
+#pragma once
+// VFXInstSystem.hlsli
+
 #include "InSystem.hlsli"
 
 struct Particle
@@ -8,11 +11,10 @@ struct Particle
     float3 velocity;
     float age;
 
-    float3 color;
+    float4 color;
 
     uint seed;
     float3 custom;
-    float padding; // ★ C++側と16バイト境界を揃えるため追加
 };
 
 struct VFXInstParam
@@ -38,7 +40,7 @@ struct VFXInstCB
 // --- インスタンス全体の CBV を取得する関数 ---
 VFXInstCB GetVFXInstCB()
 {
-    ConstantBuffer<VFXInstCB> cb = ResourceDescriptorHeap[g_descIndices.instIndicesCBVIndex];
+    ConstantBuffer<VFXInstCB> cb = ResourceDescriptorHeap[g_cbvIndices.instCBVIndex];
     return cb;
 }
 
@@ -51,15 +53,17 @@ VFXInstParam GetVFXInstParam()
 
 // --- 読み取り専用 Particle (SRV / StructuredBuffer) の取得 ---
 // ※ 戻り値は Particle 1つではなく「バッファ全体」を返すようにします
-StructuredBuffer<Particle> GetParticleSRV(uint srvIndex)
+StructuredBuffer<Particle> GetParticleST()
 {
-    StructuredBuffer<Particle> buffer = ResourceDescriptorHeap[srvIndex];
+    VFXInstCB cb = GetVFXInstCB();
+    StructuredBuffer<Particle> buffer = ResourceDescriptorHeap[cb.indices.particleSRV];
     return buffer;
 }
 
 // --- 読み書き用 Particle (UAV / RWStructuredBuffer) の取得 ---
-RWStructuredBuffer<Particle> GetParticleUAV(uint uavIndex)
+RWStructuredBuffer<Particle> GetParticleRW()
 {
-    RWStructuredBuffer<Particle> buffer = ResourceDescriptorHeap[uavIndex];
+    VFXInstCB cb = GetVFXInstCB();
+    RWStructuredBuffer<Particle> buffer = ResourceDescriptorHeap[cb.indices.particleUAV];
     return buffer;
 }

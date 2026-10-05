@@ -20,6 +20,7 @@ private:
 			float padding[3];
 		}param{};
 		struct DescIndices {
+			float dummy[4];
 		}descIndices{};
 	}m_globalCBDesc{};
 

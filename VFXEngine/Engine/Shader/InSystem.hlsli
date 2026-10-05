@@ -1,13 +1,16 @@
+#pragma once
+// InSystem.hlsli
+
 // --- ルート定数などから渡されるインデックスバッファ (register(b0)) ---
-struct DescIndices
+struct CBVIndices
 {
-    uint globalIndicesCBVIndex;
-    uint passIndicesCBVIndex;
-    uint assetIndicesCBVIndex;
-    uint instIndicesCBVIndex;
+    uint globalCBVIndex;
+    uint passCBVIndex;
+    uint assetCBVIndex;
+    uint instCBVIndex;
 };
 
-ConstantBuffer<DescIndices> g_descIndices : register(b0);
+ConstantBuffer<CBVIndices> g_cbvIndices : register(b0);
 
 // --- GlobalCB のパラメータ（C++側の GlobalCBDesc::Param とサイズを合わせる） ---
 struct GlobalParam
@@ -17,10 +20,28 @@ struct GlobalParam
     float3 padding; // 12バイト -> 計 80バイト
 };
 
-// --- バインドレスヒープから GlobalParam 構造体を取得するヘルパー関数 ---
-GlobalParam GetGlobalParam()
+struct GlobalIndices
 {
-    // ConstantBuffer<GlobalParam> としてヒープから読み出す
-    ConstantBuffer<GlobalParam> globalParamCB = ResourceDescriptorHeap[g_descIndices.globalIndicesCBVIndex];
-    return globalParamCB;
+    float4 dummy;
+};
+
+struct GlobalCB
+{
+    GlobalParam param;
+    GlobalIndices indices;
+};
+
+GlobalCB GetGlobalCB()
+{
+    ConstantBuffer<GlobalCB> cb = ResourceDescriptorHeap[g_cbvIndices.globalCBVIndex];
+    return cb;
 }
+
+// --- パラメータのみ必要な場合の取得関数 ---
+GlobalParam GetVFXGlobalParam()
+{
+    GlobalCB cb = GetGlobalCB();
+    return cb.param;
+}
+
+SamplerState PointSampler : register(s0);

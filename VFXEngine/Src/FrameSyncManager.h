@@ -4,7 +4,7 @@
 class BackBufferManager;
 class Dx12Wrapper;
 
-class Engine {
+class FrameSyncManager {
 	template <typename T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 private:
@@ -18,7 +18,7 @@ private:
 	HANDLE event;
 
 public:
-	~Engine();
+	~FrameSyncManager();
 	void Init(BackBufferManager& backBufferMgr, Dx12Wrapper& dx12Wrapper);
 	HRESULT CreateFence();
 	void PresentAndSignal();

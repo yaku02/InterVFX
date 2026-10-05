@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "Engine.h"
+#include "FrameSyncManager.h"
 #include "BackBufferManager.h"
 #include "Dx12Wrapper.h"
 
-Engine::~Engine() {
+FrameSyncManager::~FrameSyncManager() {
     // 破棄前にGPUの処理完了を保証する
     if (m_dx12 && m_fence) {
         WaitForGpu();
@@ -11,7 +11,7 @@ Engine::~Engine() {
     if (event) CloseHandle(event);
 }
 
-void Engine::Init(BackBufferManager& backBufferMgr, Dx12Wrapper& dx12Wrapper)
+void FrameSyncManager::Init(BackBufferManager& backBufferMgr, Dx12Wrapper& dx12Wrapper)
 {
     m_backBufferMgr = &backBufferMgr;
     m_dx12 = &dx12Wrapper;
@@ -19,7 +19,7 @@ void Engine::Init(BackBufferManager& backBufferMgr, Dx12Wrapper& dx12Wrapper)
     CreateFence();
 }
 
-HRESULT Engine::CreateFence()
+HRESULT FrameSyncManager::CreateFence()
 {
     HRESULT result = m_dx12->GetDevice()->CreateFence(
         m_currentFenceVal, // 初期値 0
@@ -40,7 +40,7 @@ HRESULT Engine::CreateFence()
     return S_OK; // <--- 修正: 成功時の戻り値
 }
 
-void Engine::PrepareFrame() {
+void FrameSyncManager::PrepareFrame() {
     // Present() によって既に更新された「次の描画用」インデックスを取得
     UINT bbIdx = m_backBufferMgr->GetCurrentBackBufferIndex();
 
@@ -51,7 +51,7 @@ void Engine::PrepareFrame() {
     }
 }
 
-void Engine::PresentAndSignal() {
+void FrameSyncManager::PresentAndSignal() {
     UINT bbIdx = m_backBufferMgr->GetCurrentBackBufferIndex();
     const auto& swapChain = m_backBufferMgr->GetSwapChain();
     const auto& cmdQueue = m_dx12->GetCmdQueue();
@@ -64,7 +64,7 @@ void Engine::PresentAndSignal() {
     cmdQueue->Signal(m_fence.Get(), m_fenceValues[bbIdx]);
 }
 
-void Engine::WaitForGpu()
+void FrameSyncManager::WaitForGpu()
 {
     if (!m_dx12 || !m_dx12->GetCmdQueue() || !m_fence) return;
 

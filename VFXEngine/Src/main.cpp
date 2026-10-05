@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "Window.h"
 #include "Dx12Wrapper.h"
-#include "Engine.h"
+#include "FrameSyncManager.h"
 #include "BackBufferManager.h"
 #include "GpuResourceManager.h"
 #include "UIManager.h"
@@ -33,8 +33,8 @@ int main()
 		BackBufferManager backBufferMgr;
 		backBufferMgr.Init(window, dx12Wrapper, gpuResMgr);
 
-		Engine engine;
-		engine.Init(backBufferMgr, dx12Wrapper);
+		FrameSyncManager frameSyncMgr;
+		frameSyncMgr.Init(backBufferMgr, dx12Wrapper);
 
 		TextureManager texMgr;
 		{
@@ -78,7 +78,7 @@ int main()
 		mainTimer.Init();
 		
 		dx12Wrapper.ExecuteInitCommands();
-		engine.WaitForGpu();
+		frameSyncMgr.WaitForGpu();
 		Debugger::Log("Initialize succeeded\n");
 		
 		MSG msg = {};
@@ -101,7 +101,7 @@ int main()
 
 			mainTimer.Update();
 
-			engine.PrepareFrame();
+			frameSyncMgr.PrepareFrame();
 			dx12Wrapper.ResetCommands(backBufferMgr.GetCurrentBackBufferIndex());
 			backBufferMgr.PrepareForRender(dx12Wrapper.GetCmdList().Get());
 
@@ -123,11 +123,11 @@ int main()
 
 			backBufferMgr.PrepareForPresent(dx12Wrapper.GetCmdList().Get());
 			dx12Wrapper.ExecuteCommand();
-			engine.PresentAndSignal();
+			frameSyncMgr.PresentAndSignal();
 
 		}
 
-		engine.WaitForGpu();
+		frameSyncMgr.WaitForGpu();
 		uiMgr.ShutDown();
 		window.ShutDown();
 		graphicsMgr.ShutDown();

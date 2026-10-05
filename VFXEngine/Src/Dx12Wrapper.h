@@ -37,6 +37,8 @@ public :
 	void ResetCommands(UINT backBufferIdx);
 	void ExecuteCommand();
 
+	void FlushCommandQueue();
+
 	const ComPtr<ID3D12Device>& GetDevice() const { return _dev; }
 	const ComPtr<ID3D12GraphicsCommandList>& GetCmdList() const { return _cmdList; }
 	const ComPtr<ID3D12CommandQueue>& GetCmdQueue() const { return _cmdQueue; }
