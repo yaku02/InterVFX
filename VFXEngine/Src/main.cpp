@@ -62,6 +62,7 @@ int main()
 			graphicsMgr.Init(desc);
 		}
 
+
 		UIManager uiMgr;
 		{
 			UIManager::InitDesc initDesc{

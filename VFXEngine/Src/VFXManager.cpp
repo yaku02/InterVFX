@@ -96,12 +96,16 @@ VFXInstance* VFXManager::GetInst(const uint32_t instID)
 HRESULT VFXManager::CreateAndRegisterAsset()
 {
     auto asset = VFXAsset::Create(m_dx12->GetDevice().Get(), *m_gpuResMgr);
-    if (!asset) return E_FAIL;
-    asset->info.base.icon = m_defaultAssetIcon;
-    AssetUI::Add(asset->info.base);
 
+    if (!asset)
+    {
+        Debugger::Log("Create failed");
+        return E_FAIL;
+    }
+    asset->info.base.icon = m_defaultAssetIcon;
+
+    AssetUI::Add(asset->info.base);
     m_assets.push_back(asset);
-    Debugger::Log("Created VFX asset: %s\n", asset->info.base.name.c_str());
     m_assetsMap[asset->info.base.id] = asset;
 
     return S_OK;
@@ -129,6 +133,9 @@ bool VFXManager::DeleteAsset(const uint32_t id)
         Debugger::Log("Invalid id\n");
         return false;
     };
+
+    m_dx12->FlushCommandQueue();
+
     m_assetsMap.erase(it);
 
     m_assets.erase(
@@ -185,6 +192,9 @@ bool VFXManager::DeleteInst(const uint32_t id)
         Debugger::Log("Invalid id\n");
         return false;
     };
+
+    m_dx12->FlushCommandQueue();
+
     m_instsMap.erase(it);
 
     m_insts.erase(

@@ -31,8 +31,8 @@ public:
 	void Init(const InitDesc& desc);
 
 	struct PassExecuteDesc {
-		VFXRenderer::RenderDesc renderDesc;
-		VFXUpdater::UpdateDesc updateDesc;
+		VFXRenderer::RenderDesc renderDesc{};
+		VFXUpdater::UpdateDesc updateDesc{};
 	};
 
 	void Execute(const PassExecuteDesc& desc);

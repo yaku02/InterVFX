@@ -3,7 +3,7 @@
 #include "Dx12Wrapper.h"
 #include "GpuResourceManager.h"
 #include "IDGenerator.h"
-
+#include "Debugger.h"
 std::shared_ptr<VFXAsset> VFXAsset::Create(ID3D12Device* dev, GpuResourceManager& gpuResMgr)
 {
 	auto asset = std::make_shared<VFXAsset>();
@@ -37,4 +37,6 @@ HRESULT VFXAsset::CreateGpuResource(GpuResourceManager& gpuResMgr)
 		Debugger::Log("Creation VFX asset cb failed\n");
 		return E_FAIL;
 	}
+
+	return S_OK;
 }

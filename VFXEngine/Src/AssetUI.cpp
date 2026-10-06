@@ -14,6 +14,7 @@ void AssetUI::Add(const AssetBaseInfo& info)
 
 void AssetUI::RegisterCreationCallback(AssetType type, CreationCallback callback)
 {
+    Debugger::Log("RegisterCreationCallback");
 	m_creationCallbacks[type] = callback;
 }
 
@@ -29,139 +30,128 @@ void AssetUI::RegisterSelectCallback(AssetType type, SelectCallback callback)
 
 void AssetUI::ShowUI()
 {
-	ImGui::Begin("Asset");
+    ImGui::Begin("Asset");
 
-	// レイアウト用のサイズパラメータ（画像は枠サイズいっぱいに表示）
-	const float frameSize = 64.0f;     // アイコン枠のサイズ
-	const float iconSize = frameSize; // 画像のサイズ（枠内いっぱいに拡大）
-	const float padding = 16.0f;     // アイコン同士の間隔
-	const float cellSize = frameSize + padding;
+    // ★ ウィンドウの右クリックメニューは Table 描画より前で行う
+    BeginWindowPopup();
 
-	const float panelWidth = ImGui::GetContentRegionAvail().x;
-	int columnCount = static_cast<int>(panelWidth / cellSize);
-	if (columnCount < 1) columnCount = 1; // 最低1列確保
+    const float frameSize = 64.0f;
+    const float iconSize = frameSize;
+    const float padding = 16.0f;
+    const float cellSize = frameSize + padding;
 
-	if (ImGui::BeginTable("AssetGridTable", columnCount))
-	{
-		for (size_t i = 0; i < m_assets.size(); ++i)
-		{
-			const auto& asset = m_assets[i];
+    const float panelWidth = ImGui::GetContentRegionAvail().x;
+    int columnCount = static_cast<int>(panelWidth / cellSize);
+    if (columnCount < 1) columnCount = 1;
 
-			ImGui::TableNextColumn(); // 次のセルに移動
+    if (ImGui::BeginTable("AssetGridTable", columnCount))
+    {
+        for (size_t i = 0; i < m_assets.size(); ++i)
+        {
+            const auto& asset = m_assets[i];
 
-			ImGui::PushID(static_cast<int>(asset.id));
-			ImGui::PushID(static_cast<int>(i));
+            ImGui::TableNextColumn();
 
-			ImGui::BeginGroup();
+            ImGui::PushID(static_cast<int>(asset.id));
+            ImGui::PushID(static_cast<int>(i));
 
-			ImVec2 startPos = ImGui::GetCursorPos();
-			ImVec2 frameSizeVec(frameSize, frameSize);
+            ImGui::BeginGroup();
 
-			// 1. 選択・ヒット判定用の Selectable を配置
-			const bool isSelected = (m_selectedAsset.id == asset.id);
-			if (ImGui::Selectable("##Selectable", isSelected, 0, frameSizeVec))
-			{
-				m_selectedAsset = asset;
-				auto it = m_selectCallbacks.find(asset.type);
-				if (it != m_selectCallbacks.end() && it->second)
-				{
-					it->second(asset.id);
-				}
-			}
+            ImVec2 startPos = ImGui::GetCursorPos();
+            ImVec2 frameSizeVec(frameSize, frameSize);
 
-			BeginAssetPopup(asset);
+            const bool isSelected = (m_selectedAsset.id == asset.id);
+            if (ImGui::Selectable("##Selectable", isSelected, 0, frameSizeVec))
+            {
+                m_selectedAsset = asset;
+                auto it = m_selectCallbacks.find(asset.type);
+                if (it != m_selectCallbacks.end() && it->second)
+                {
+                    it->second(asset.id);
+                }
+            }
 
-			// ドラッグ＆ドロップソースの設定
-			if (ImGui::BeginDragDropSource())
-			{
-				// ★ asset 自体（AssetBaseInfo 構造体）をデータとして送信する
-				ImGui::SetDragDropPayload("ASSET_ITEM", &asset, sizeof(AssetBaseInfo));
+            BeginAssetPopup(asset);
 
-				// ドラッグ中にカーソルに追従するプレビュー表示
-				if (asset.icon.imguiSrvHandle.ptr != 0)
-				{
-					ImTextureID userTextureID = (ImTextureID)asset.icon.imguiSrvHandle.ptr;
-					ImGui::Image(userTextureID, ImVec2(32.0f, 32.0f));
-					ImGui::SameLine();
-				}
-				ImGui::TextUnformatted(asset.name.c_str());
+            if (ImGui::BeginDragDropSource())
+            {
+                ImGui::SetDragDropPayload("ASSET_ITEM", &asset, sizeof(AssetBaseInfo));
 
-				ImGui::EndDragDropSource();
-			}
+                if (asset.icon.imguiSrvHandle.ptr != 0)
+                {
+                    ImTextureID userTextureID = (ImTextureID)asset.icon.imguiSrvHandle.ptr;
+                    ImGui::Image(userTextureID, ImVec2(32.0f, 32.0f));
+                    ImGui::SameLine();
+                }
+                ImGui::TextUnformatted(asset.name.c_str());
 
-			// 2. 枠線の描画（選択状態に応じて色を変更）
-			ImVec2 pMin = ImGui::GetItemRectMin();
-			ImVec2 pMax = ImGui::GetItemRectMax();
-			ImU32 borderColor = isSelected
-				? IM_COL32(255, 204, 0, 255)  // 選択時：黄色の枠線
-				: IM_COL32(150, 150, 150, 255); // 通常時：グレーの枠線
+                ImGui::EndDragDropSource();
+            }
 
-			ImGui::GetWindowDrawList()->AddRect(pMin, pMax, borderColor, 4.0f);
+            ImVec2 pMin = ImGui::GetItemRectMin();
+            ImVec2 pMax = ImGui::GetItemRectMax();
+            ImU32 borderColor = isSelected
+                ? IM_COL32(255, 204, 0, 255)
+                : IM_COL32(150, 150, 150, 255);
 
-			// 3. 画像を Selectable の上に被せて目一杯表示
-			if (asset.icon.imguiSrvHandle.ptr != 0)
-			{
-				ImTextureID userTextureID = (ImTextureID)asset.icon.imguiSrvHandle.ptr;
+            ImGui::GetWindowDrawList()->AddRect(pMin, pMax, borderColor, 4.0f);
 
-				// CursorPos を直前の Selectable の開始位置に戻す
-				float offsetX = (frameSize - iconSize) * 0.5f;
-				float offsetY = (frameSize - iconSize) * 0.5f;
-				ImGui::SetCursorPos(ImVec2(startPos.x + offsetX, startPos.y + offsetY));
+            if (asset.icon.imguiSrvHandle.ptr != 0)
+            {
+                ImTextureID userTextureID = (ImTextureID)asset.icon.imguiSrvHandle.ptr;
+                float offsetX = (frameSize - iconSize) * 0.5f;
+                float offsetY = (frameSize - iconSize) * 0.5f;
+                ImGui::SetCursorPos(ImVec2(startPos.x + offsetX, startPos.y + offsetY));
+                ImGui::Image(userTextureID, ImVec2(iconSize, iconSize));
+            }
 
-				// 画像の描画（クリックやホバーの判定を邪魔しないよう配置）
-				ImGui::Image(userTextureID, ImVec2(iconSize, iconSize));
-			}
+            ImGui::SetCursorPos(ImVec2(startPos.x, startPos.y + frameSize + ImGui::GetStyle().ItemSpacing.y));
+            ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + frameSize);
+            ImGui::TextUnformatted(asset.name.c_str());
+            ImGui::PopTextWrapPos();
 
-			// 4. アセット名のテキストを枠線の下に配置
-			ImGui::SetCursorPos(ImVec2(startPos.x, startPos.y + frameSize + ImGui::GetStyle().ItemSpacing.y));
+            ImGui::EndGroup();
 
-			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + frameSize);
-			ImGui::TextUnformatted(asset.name.c_str());
-			ImGui::PopTextWrapPos();
+            ImGui::PopID();
+            ImGui::PopID();
+        }
 
-			ImGui::EndGroup(); // グループ終了
+        ImGui::EndTable();
+    }
 
-			ImGui::PopID(); // i の Pop
-			ImGui::PopID(); // asset.id の Pop
-		}
+    ExecuteDeletion();
 
-		ImGui::EndTable();
-	}
-
-	BeginWindowPopup();
-	ExecuteDeletion();
-
-	ImGui::End();
+    ImGui::End();
 }
 
 void AssetUI::BeginWindowPopup()
 {
-	// アセットの上ではなく、ウィンドウの背景を右クリックした場合に開く
-	// 第2引数を true (デフォルト) にしておくと、既存のコンテキストメニューが開いている時は無視してくれます
-	if (ImGui::BeginPopupContextWindow("AssetWindowContextMenu", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
+	// ★ ImGuiPopupFlags_NoOpenOverItems を外し、BeginPopupContextWindow だけにする
+	if (ImGui::BeginPopupContextWindow("AssetWindowContextMenu", ImGuiPopupFlags_MouseButtonRight))
 	{
 		ImGui::TextDisabled("Asset Management");
 		ImGui::Separator();
 
 		if (ImGui::BeginMenu("Create"))
 		{
-			if (ImGui::MenuItem("VFX"))
-			{
-				// 例: VFX作成コールバックの呼び出し、または作成モーダルを開くフラグを立てる
-				auto it = m_creationCallbacks.find(AssetType::VFX);
-				if (it != m_creationCallbacks.end() && it->second)
-				{
-					it->second(); // VFX作成処理の実行
-				}
-			}
+            if (ImGui::MenuItem("VFX"))
+            {
+                Debugger::Log("Menu Click");
 
-			// 将来的に別のアセットタイプ（Material, Sound等）が増えた場合に追加可能
-			/*
-			if (ImGui::MenuItem("Sound"))
-			{
-				...
-			}
-			*/
+                auto it = m_creationCallbacks.find(AssetType::VFX);
+
+                Debugger::Log("callback count = %d", (int)m_creationCallbacks.size());
+
+                if (it == m_creationCallbacks.end())
+                {
+                    Debugger::Log("NOT FOUND");
+                }
+                else
+                {
+                    Debugger::Log("FOUND");
+                    it->second();
+                }
+            }
 
 			ImGui::EndMenu();
 		}
@@ -172,7 +162,9 @@ void AssetUI::BeginWindowPopup()
 
 void AssetUI::BeginAssetPopup(const AssetBaseInfo& asset)
 {
-	if (ImGui::BeginPopupContextItem("AssetContextMenu"))
+	std::string popupId = "AssetContextMenu##" + std::to_string(asset.id);
+
+	if (ImGui::BeginPopupContextItem(popupId.c_str()))
 	{
 		m_selectedAsset = asset;
 

@@ -29,6 +29,7 @@ private:
 
 	Texture m_defaultAssetIcon{};
 
+	bool m_pendingCreateAsset = false;
 
 	void OnAssetSelected(const uint32_t assetID);
 	void OpenAssetEditor(const uint32_t assetID);

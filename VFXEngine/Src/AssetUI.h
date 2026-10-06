@@ -18,9 +18,7 @@ private:
 	AssetBaseInfo m_deleteTarget = {};
 
 public:
-	~AssetUI() {
-		m_assets.clear();
-	}
+	~AssetUI() = default;
 
 	struct InitDesc {
 	};
