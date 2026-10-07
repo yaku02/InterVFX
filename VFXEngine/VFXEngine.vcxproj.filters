@@ -150,9 +150,6 @@
     <ClCompile Include="Src\Gbuffer.cpp">
       <Filter>Engine\Rendering\Gbuffer</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Engine.cpp">
-      <Filter>Engine\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Src\UIManager.cpp">
       <Filter>Engine\UI</Filter>
     </ClCompile>
@@ -219,6 +216,12 @@
     <ClCompile Include="Src\EditorCamera.cpp">
       <Filter>Engine\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Src\EditorGridPass.cpp" />
+    <ClCompile Include="Src\EditorGridRenderer.cpp" />
+    <ClCompile Include="Src\FrameSyncManager.cpp" />
+    <ClCompile Include="Src\VFXPreview.cpp">
+      <Filter>Engine\Graphics\VFX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\pch.h">
@@ -250,9 +253,6 @@
     </ClInclude>
     <ClInclude Include="Src\BackBufferSetting.h">
       <Filter>Engine\Rendering\BackBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Engine.h">
-      <Filter>Engine\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Src\FrameSetting.h">
       <Filter>Engine\Frame</Filter>
@@ -356,6 +356,12 @@
     <ClInclude Include="Src\EditorCamera.h">
       <Filter>Engine\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="Src\EditorGridPass.h" />
+    <ClInclude Include="Src\EditorGridRenderer.h" />
+    <ClInclude Include="Src\FrameSyncManager.h" />
+    <ClInclude Include="Src\VFXPreview.h">
+      <Filter>Engine\Graphics\VFX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -385,5 +391,7 @@
     <FxCompile Include="Engine\Shader\VFXUpdateCS.hlsl">
       <Filter>Engine\Graphics\VFX\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Engine\Shader\EditorGridPS.hlsl" />
+    <FxCompile Include="Engine\Shader\EditorGridVS.hlsl" />
   </ItemGroup>
 </Project>

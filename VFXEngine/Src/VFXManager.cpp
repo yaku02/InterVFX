@@ -113,9 +113,12 @@ HRESULT VFXManager::CreateAndRegisterAsset()
 
 HRESULT VFXManager::CreateAndRegisterInstance(const uint32_t assetID)
 {
+    ID3D12Device* dev = m_dx12->GetDevice().Get();
+    ID3D12GraphicsCommandList* cmdList = m_dx12->GetCmdList().Get();
+
     VFXAsset* asset = GetAsset(assetID);
 
-    auto inst = VFXInstance::Create(*asset, *m_dx12, *m_gpuResMgr);
+    auto inst = VFXInstance::Create(*asset, dev, cmdList, *m_gpuResMgr);
     if (!inst) return E_FAIL;
     InstUI::Add(inst->info.base);
 

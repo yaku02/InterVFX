@@ -4,26 +4,12 @@
 #include "Geometry.h"
 #include "InstanceStructs.h"
 #include "ConstantBuffer.h"
+#include "VFXStructs.h"
 
 class VFXAsset;
-class Dx12Wrapper;
 class GpuResourceManager;
 
 class VFXInstance {
-    struct Particle
-    {
-        float position[3] = { 0.0f, 0.0f, 0.0f };
-        float size = 1.0f;
-
-        float velocity[3] = { 1.0f, 1.0f, 1.0f };
-        float age = 9999.0f;
-
-        float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-        uint32_t seed = 12345;
-        float custom[3] = { 0.0f, 0.0f, 0.0f };
-    };
-
 public:
     struct Info {
         inline static uint32_t Counter = 0;
@@ -79,6 +65,6 @@ public:
 
 	const uint32_t GetCBVIndex() const { return gpuResource.cb.descriptorIndex; }
 public:
-	static std::shared_ptr<VFXInstance> Create(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr);
-	HRESULT CreateGpuResource(VFXAsset& asset, Dx12Wrapper& dx12, GpuResourceManager& gpuResMgr);
+	static std::shared_ptr<VFXInstance> Create(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+	HRESULT CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
 };

@@ -222,6 +222,7 @@
     <ClCompile Include="Src\VFXInstEditor.cpp" />
     <ClCompile Include="Src\VFXManager.cpp" />
     <ClCompile Include="Src\VFXPass.cpp" />
+    <ClCompile Include="Src\VFXPreview.cpp" />
     <ClCompile Include="Src\VFXRenderer.cpp" />
     <ClCompile Include="Src\VFXUpdater.cpp" />
     <ClCompile Include="Src\Window.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="Src\VFXInstEditor.h" />
     <ClInclude Include="Src\VFXManager.h" />
     <ClInclude Include="Src\VFXPass.h" />
+    <ClInclude Include="Src\VFXPreview.h" />
     <ClInclude Include="Src\VFXRenderer.h" />
     <ClInclude Include="Src\VFXUpdater.h" />
     <ClInclude Include="Src\VFXStructs.h" />

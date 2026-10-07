@@ -1,6 +1,5 @@
 #pragma once
 #include "Geometry.h"
-#include "IDGenerator.h"
 
 struct VFXRenderContext {
     uint32_t sceneCBVIndex;

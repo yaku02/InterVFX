@@ -1,6 +1,5 @@
 #pragma once
-#include "VFXAsset.h"
-#include "VFXInstance.h"
+#include "TextureStructs.h"
 
 class Window;
 class Dx12Wrapper;
@@ -9,7 +8,8 @@ class TextureManager;
 class VFXAssetEditor;
 class VFXInstEditor;
 class VFXPass;
-
+class VFXAsset;
+class VFXInstance;
 class VFXManager {
 private:
 	Window* m_window = nullptr;

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "VFXAsset.h"
-#include "Dx12Wrapper.h"
 #include "GpuResourceManager.h"
-#include "IDGenerator.h"
 #include "Debugger.h"
 std::shared_ptr<VFXAsset> VFXAsset::Create(ID3D12Device* dev, GpuResourceManager& gpuResMgr)
 {

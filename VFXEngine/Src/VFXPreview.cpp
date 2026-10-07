@@ -1,31 +1,10 @@
 #include "pch.h"
-#include "VFXInstance.h"
+#include "VFXPreview.h"
+#include "VFXStructs.h"
 #include "VFXAsset.h"
-#include "GpuResourceManager.h"
 #include "Debugger.h"
-#include "ConstantBuffer.h"
 
-std::shared_ptr<VFXInstance> VFXInstance::Create(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
-{
-	auto inst = std::make_shared<VFXInstance>();
-	if (FAILED(inst->CreateGpuResource(asset, dev, cmdList, gpuResMgr))) return nullptr;
-	auto& baseInfo = inst->info.base;
-
-	baseInfo.name = "VFX" + std::to_string(inst->info.Counter++);
-	baseInfo.id = IDGenerator::Generate();
-	baseInfo.type = InstType::VFX;
-
-	inst->info.assetID = asset.info.base.id;
-	inst->info.assetName = asset.info.base.name;
-
-	inst->cpuParam.isActive = true;
-	inst->cpuParam.world = Geometry::CreateWorldMatrix(inst->cpuParam.scale, inst->cpuParam.rotation, inst->cpuParam.position);
-	inst->cpuParam.worldAABB = asset.cpuParam.localAABB.GetTransformed(inst->cpuParam.world);
-
-	return inst;
-}
-
-HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
+HRESULT VFXPreview::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
 {
 	const auto numParticles = asset.cbDesc.param.numParticles;
 	// パーティクルバッファ作成
@@ -48,10 +27,10 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D1
 			IID_PPV_ARGS(&gpuResource.particleBuffer));
 
 		if (FAILED(result)) {
-			OutputDebugStringA("Creation particleBuffer failed\n");
+			OutputDebugStringA("Creation Preview particleBuffer failed\n");
 			return result;
 		}
-		gpuResource.particleBuffer->SetName(L"particleBuffer");
+		gpuResource.particleBuffer->SetName(L"Preview particleBuffer");
 
 		// UPLOADバッファの作成
 		heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -104,7 +83,7 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D1
 		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
 		D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU =
-			gpuResMgr.AllocateDescriptor(&gpuResource.particleSRVHandle, &cbDesc.descIndices.particleSRV);
+			gpuResMgr.AllocateDescriptor(nullptr, &cbDesc.descIndices.particleSRV);
 		dev->CreateShaderResourceView(gpuResource.particleBuffer.Get(), &srvDesc, srvHandleCPU);
 
 		// UAVの作成
@@ -127,9 +106,9 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D1
 	// 定数バッファ作成
 	{
 		gpuResource.cb = ConstantBuffer<CBDesc>::Create(gpuResMgr);
-		if(gpuResource.cb.resource == nullptr || gpuResource.cb.mapData == nullptr)
+		if (gpuResource.cb.resource == nullptr || gpuResource.cb.mapData == nullptr)
 		{
-			Debugger::Log("Creation VFX Instance CB failed\n");
+			Debugger::Log("Creation VFX Preview CB failed\n");
 			return E_FAIL;
 		}
 	}

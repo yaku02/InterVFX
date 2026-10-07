@@ -12,13 +12,13 @@ private:
 
 	struct PassCBDesc {
 		struct Param {
-			float vfxPassNoise; // テスト用
+			float vfxPassNoise = 1.0f;
 			float padding[3];
-		}param;
+		}param{};
 		struct DescIndices {
 			float dummy[4];
-		}descIndices;
-	}m_passCBDesc;
+		}descIndices{};
+	}m_passCBDesc{};
 
 	ConstantBuffer<PassCBDesc> m_passCB;
 	HRESULT CreatePassCB(GpuResourceManager& gpuResMgr);

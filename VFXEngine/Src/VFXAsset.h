@@ -2,7 +2,6 @@
 #include "Geometry.h"
 #include "GraphicsPipeline.h"
 #include "IDGenerator.h"
-#include "TextureStructs.h"
 #include "AssetStructs.h"
 #include "ConstantBuffer.h"
 
