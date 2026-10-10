@@ -1,8 +1,10 @@
 #pragma once
 #include "ConstantBuffer.h"
 #include "ComputePipeline.h"
-#include "VFXAsset.h"
-#include "VFXInstance.h"
+
+class VFXAsset;
+class VFXInstance;
+class VFXPreview;
 
 struct VFXPassIndices {
 	uint32_t globalPassCBVIndex;
@@ -27,6 +29,7 @@ public:
 		std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>>* assetsMap = nullptr;
 		uint32_t globalCBVIndex = UINT32_MAX;
 		uint32_t passCBVIndex = UINT32_MAX;
+		VFXPreview* preview = nullptr;
 	};
 
 private:

@@ -11,6 +11,7 @@
 #include "VFXInstEditor.h"
 #include "InstUI.h"
 #include "VFXPass.h"
+#include "VFXPreview.h"
 
 VFXManager::VFXManager() = default;
 VFXManager::~VFXManager() = default;
@@ -161,12 +162,33 @@ void VFXManager::OpenAssetEditor(const uint32_t assetID)
 
 void VFXManager::OnAssetSelected(const uint32_t assetID)
 {
-    VFXAsset* asset = GetAsset(assetID);
-    if (!asset) return;
+    // m_assetsMap から shared_ptr を直接探す
+    auto it = m_assetsMap.find(assetID);
+    if (it == m_assetsMap.end()) {
+        Debugger::Log("VFX asset not found: %u\n", assetID);
+        return;
+    }
 
-    // VFXManager が仲介して各コンポーネントへ渡す
+    std::shared_ptr<VFXAsset> asset = it->second; // shared_ptr を取得
+
+    // エディタへは生ポインタを渡す (.get())
     if (m_assetEditor) {
-        m_assetEditor->SetTarget(asset);
+        m_assetEditor->SetTarget(asset.get());
+    }
+
+    ID3D12Device* dev = m_dx12->GetDevice().Get();
+    ID3D12GraphicsCommandList* cmdList = m_dx12->GetCmdList().Get();
+
+    // 既存プレビューの GPU リソース開放を安全に行うため Flush
+    if (m_preview) {
+        m_dx12->FlushCommandQueue();
+    }
+
+    // shared_ptr<VFXAsset> を渡してプレビューを生成
+    m_preview = std::make_unique<VFXPreview>(asset, dev, cmdList, *m_gpuResMgr);
+    if (!m_preview->IsValid()) {
+        Debugger::Log("[Error] Failed to create VFXPreview\n");
+        m_preview.reset(); // 初期化失敗時は破棄
     }
 }
 
@@ -222,19 +244,34 @@ void VFXManager::Execute(const ExecuteDesc& desc)
 {
     if (!m_pass) return;
 
-    // PassExecuteDesc 自体は通常の値保持なので {} 初期化が使える
     VFXPass::PassExecuteDesc passDesc{};
-
-    // --- Update 用の設定 (アドレスを渡してポインタ化) ---
-    passDesc.updateDesc.instances = &m_insts;
-    passDesc.updateDesc.assetsMap = &m_assetsMap;
     passDesc.updateDesc.globalCBVIndex = desc.grobalCBVIndex;
-
-    // --- Render 用の設定 (アドレスを渡してポインタ化) ---
-    passDesc.renderDesc.instances = &m_insts;
-    passDesc.renderDesc.assetsMap = &m_assetsMap;
     passDesc.renderDesc.globalCBVIndex = desc.grobalCBVIndex;
 
-    // VFXPass の実行
+    if (desc.mode == ExecuteDesc::Mode::Scene)
+    {
+        // --- シーン描画モード ---
+        passDesc.updateDesc.instances = &m_insts;
+        passDesc.updateDesc.assetsMap = &m_assetsMap;
+        passDesc.updateDesc.preview = nullptr;
+
+        passDesc.renderDesc.instances = &m_insts;
+        passDesc.renderDesc.assetsMap = &m_assetsMap;
+        passDesc.renderDesc.preview = nullptr;
+    }
+    else if (desc.mode == ExecuteDesc::Mode::PreviewOnly)
+    {
+        // --- プレビュー描画モード ---
+        // シーン上のインスタンスは描画せず、m_preview のみ渡す
+        passDesc.updateDesc.instances = nullptr;
+        passDesc.updateDesc.assetsMap = nullptr;
+        passDesc.updateDesc.preview = m_preview.get();
+
+        passDesc.renderDesc.instances = nullptr;
+        passDesc.renderDesc.assetsMap = nullptr;
+        passDesc.renderDesc.preview = m_preview.get();
+    }
+
+    // VFXPass (Updater -> Renderer) の実行
     m_pass->Execute(passDesc);
 }

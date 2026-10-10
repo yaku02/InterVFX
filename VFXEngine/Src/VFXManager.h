@@ -10,6 +10,8 @@ class VFXInstEditor;
 class VFXPass;
 class VFXAsset;
 class VFXInstance;
+class VFXPreview;
+
 class VFXManager {
 private:
 	Window* m_window = nullptr;
@@ -26,6 +28,8 @@ private:
 
 	std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>> m_assetsMap{};
 	std::unordered_map<uint32_t, std::shared_ptr<VFXInstance>> m_instsMap{};
+
+	std::unique_ptr<VFXPreview> m_preview = nullptr;
 
 	Texture m_defaultAssetIcon{};
 
@@ -50,6 +54,11 @@ public:
 
 	struct ExecuteDesc {
 		uint32_t grobalCBVIndex;
+		
+		enum class Mode {
+			Scene,
+			PreviewOnly,
+		} mode = Mode::Scene;
 	};
 
 	void Init(InitDesc& desc);

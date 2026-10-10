@@ -43,7 +43,7 @@ public:
 		Dx12Wrapper& dx12;
 		GpuResourceManager& gpuResMgr;
 	};
-	void Setup(InitDesc& initDesc);
+	void Init(InitDesc& initDesc);
 	void ShowUI();
 	void Render();
 

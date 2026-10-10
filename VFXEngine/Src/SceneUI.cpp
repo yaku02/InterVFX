@@ -87,7 +87,7 @@ void SceneUI::ShowUI()
 	ImGui::End();
 }
 
-void SceneUI::Setup(InitDesc& initDesc)
+void SceneUI::Init(InitDesc& initDesc)
 {
 	m_window = &initDesc.window;
 	m_dx12 = &initDesc.dx12;

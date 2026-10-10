@@ -26,13 +26,13 @@ void UIManager::Init(const InitDesc& initDesc)
 
 	{
 		m_sceneUI = std::make_unique<SceneUI>();
-		SceneUI::InitDesc sceneInit{
+		SceneUI::InitDesc desc{
 			.window = initDesc.window,
 			.dx12 = initDesc.dx12,
 			.gpuResMgr = initDesc.gpuResMgr
 		};
 
-		m_sceneUI->Setup(sceneInit);
+		m_sceneUI->Init(desc);
 	}
 	{
 		m_assetUI = std::make_unique<AssetUI>();
@@ -43,9 +43,9 @@ void UIManager::Init(const InitDesc& initDesc)
 	{
 		m_previewUI = std::make_unique<PreviewUI>();
 		PreviewUI::InitDesc desc{
-			.window = m_window,
-			.dx12 = m_dx12,
-			.gpuResMgr = m_gpuResMgr
+			.window = initDesc.window,
+			.dx12 = initDesc.dx12,
+			.gpuResMgr = initDesc.gpuResMgr
 		};
 		m_previewUI->Init(desc);
 	}
@@ -63,7 +63,7 @@ void UIManager::ShowUIs()
 
 			// --- 左列: Preview (スクロールさせず固定表示) ---
 			ImGui::TableNextColumn();
-			m_previewUI->ShowUI();
+			m_previewUI->DrawInParentUI();
 
 			// --- 右列: Asset Editor (内部でのみ縦スクロールを許可) ---
 			ImGui::TableNextColumn();

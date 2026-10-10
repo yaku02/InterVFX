@@ -5,6 +5,7 @@ class Dx12Wrapper;
 class GpuResourceManager;
 class VFXInstance;
 class VFXAsset;
+class VFXPreview;
 class VFXRenderer {
 public:
 	struct InitDesc {
@@ -17,6 +18,7 @@ public:
 		std::unordered_map<uint32_t, std::shared_ptr<VFXAsset>>* assetsMap = nullptr;
 		uint32_t globalCBVIndex = UINT32_MAX;
 		uint32_t passCBVIndex = UINT32_MAX;
+		VFXPreview* preview = nullptr;
 	};
 
 private:

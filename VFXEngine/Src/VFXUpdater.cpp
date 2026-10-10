@@ -6,6 +6,9 @@
 #include "Timer.h"
 #include "RootSignatureManager.h"
 #include "RootParamLayout.h"
+#include "VFXAsset.h"
+#include "VFXInstance.h"
+#include "VFXPreview.h"
 
 void VFXUpdater::Init(const InitDesc& desc)
 {
