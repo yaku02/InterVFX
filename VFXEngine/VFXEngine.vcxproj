@@ -255,6 +255,7 @@
     <ClInclude Include="Src\pch.h" />
     <ClInclude Include="Src\PreviewUI.h" />
     <ClInclude Include="Src\RenderingManager.h" />
+    <ClInclude Include="Src\RenderStructs.h" />
     <ClInclude Include="Src\RootParamLayout.h" />
     <ClInclude Include="Src\RootSignatureManager.h" />
     <ClInclude Include="Src\SceneUI.h" />

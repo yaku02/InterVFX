@@ -208,3 +208,10 @@ void AssetUI::ExecuteDeletion()
 	}
 	m_deleteTarget = {};
 }
+
+void AssetUI::ShutDown()
+{
+    m_assets.clear();
+    m_selectedAsset = {};
+    m_deleteTarget = {};
+}

@@ -24,6 +24,8 @@ public:
 	};
 
 	void Init(const InitDesc& desc);
+	void ShutDown();
+
 	void ShowUI();
 	static void Add(const AssetBaseInfo& info);
 	static void RegisterCreationCallback(AssetType type, CreationCallback callback);
@@ -33,4 +35,6 @@ public:
 	void BeginWindowPopup();
 	void BeginAssetPopup(const AssetBaseInfo& asset);
 	void ExecuteDeletion();
+
+
 };

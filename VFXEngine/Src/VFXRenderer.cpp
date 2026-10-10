@@ -6,6 +6,7 @@
 #include "VFXInstance.h"
 #include "VFXAsset.h"
 #include "RootParamLayout.h"
+#include "VFXPreview.h"
 
 void VFXRenderer::Init(const InitDesc& desc)
 {
@@ -58,31 +59,24 @@ void VFXRenderer::CreatePipeline(ID3D12Device* dev)
 
 void VFXRenderer::Render(const RenderDesc& desc)
 {
-    // 1. 安全対策: ポインタが nullptr の場合は何もせず抜ける
-    if (!desc.instances || !desc.assetsMap) return;
+    // 1. 安全対策: 通常インスタンス群またはプレビューのどちらかは存在する必要がある
+    bool hasInstances = (desc.instances != nullptr && desc.assetsMap != nullptr);
+    bool hasPreview = (desc.preview != nullptr && desc.preview->IsValid());
+
+    if (!hasInstances && !hasPreview) return;
 
     auto cmdList = m_dx12->GetCmdList().Get();
 
-    // パーティクル描画
+    // パーティクル描画用パイプラインと定数の共通セット
     m_additivePipeline.SetPipeline(cmdList);
     cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CBVIndices::GlobalCBVIndex);
     cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CBVIndices::PassCBVIndex);
 
     cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-    // 2. ポインタをデリファレンス（*desc.instances）してループ
-    for (auto& inst : *desc.instances)
-    {
-        if (!inst || !inst->cpuParam.isActive) continue;
-
-        // assetsMap ポインタ経由で find 呼び出し
-        auto assetIt = desc.assetsMap->find(inst->info.assetID);
-        if (assetIt == desc.assetsMap->end())
-        {
-            Debugger::Log("[Error] VFXRenderer::Render() - Asset not found for instance ID: %u, Asset ID: %u\n", inst->info.base.id, inst->info.assetID);
-            continue;
-        }
-        auto& asset = assetIt->second;
+    // 単一要素を描画するヘルパー（既存のルートパラメータ指定をそのまま使用）
+    auto DrawSingleInstance = [&](VFXInstance* inst, VFXAsset* asset) {
+        if (!inst || !asset) return;
 
         asset->UploadConstBuff();
         uint32_t assetIndicesCBVIndex = asset->GetCBVIndex();
@@ -93,18 +87,59 @@ void VFXRenderer::Render(const RenderDesc& desc)
         cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CBVIndices::InstCBVIndex);
 
         cmdList->DrawInstanced(4, asset->cbDesc.param.numParticles, 0, 0);
+        };
+
+    // --- A. 通常インスタンス群の描画 ---
+    if (hasInstances)
+    {
+        for (auto& inst : *desc.instances)
+        {
+            if (!inst || !inst->cpuParam.isActive) continue;
+
+            auto assetIt = desc.assetsMap->find(inst->info.assetID);
+            if (assetIt == desc.assetsMap->end())
+            {
+                Debugger::Log("[Error] VFXRenderer::Render() - Asset not found for instance ID: %u, Asset ID: %u\n", inst->info.base.id, inst->info.assetID);
+                continue;
+            }
+
+            DrawSingleInstance(inst.get(), assetIt->second.get());
+        }
     }
 
-    // 全インスタンスをSRVからUAVに状態遷移させる（次フレームのUpdateCSに備える）
-    std::vector<D3D12_RESOURCE_BARRIER> transitions;
-    for (auto& inst : *desc.instances) {
-        if (!inst || !inst->cpuParam.isActive) continue;
-        auto& instGPU = inst->gpuResource;
+    // --- B. プレビュー用インスタンスの描画 ---
+    if (hasPreview)
+    {
+        DrawSingleInstance(desc.preview->GetInstance(), desc.preview->GetAsset().get());
+    }
 
-        // 3. particleBuffer の存在チェックを追加
-        if (instGPU.particleBuffer) {
+    // --- C. リソースバリア（SRV -> UAV）の適用（次フレームのUpdateCSに備える） ---
+    std::vector<D3D12_RESOURCE_BARRIER> transitions;
+
+    // 通常インスタンスのバリア追加
+    if (hasInstances)
+    {
+        for (auto& inst : *desc.instances) {
+            if (!inst || !inst->cpuParam.isActive) continue;
+            auto& instGPU = inst->gpuResource;
+
+            if (instGPU.particleBuffer) {
+                transitions.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
+                    instGPU.particleBuffer.Get(),
+                    D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
+                    D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+                ));
+            }
+        }
+    }
+
+    // プレビュー用インスタンスのバリア追加
+    if (hasPreview)
+    {
+        VFXInstance* prevInst = desc.preview->GetInstance();
+        if (prevInst && prevInst->gpuResource.particleBuffer) {
             transitions.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                instGPU.particleBuffer.Get(),
+                prevInst->gpuResource.particleBuffer.Get(),
                 D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,
                 D3D12_RESOURCE_STATE_UNORDERED_ACCESS
             ));

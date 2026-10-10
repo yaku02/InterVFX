@@ -1,5 +1,6 @@
 #pragma once
 #include "TextureStructs.h"
+#include "RenderStructs.h"
 
 class Window;
 class Dx12Wrapper;
@@ -30,6 +31,7 @@ private:
 	std::unordered_map<uint32_t, std::shared_ptr<VFXInstance>> m_instsMap{};
 
 	std::unique_ptr<VFXPreview> m_preview = nullptr;
+	std::shared_ptr<VFXAsset> m_pendingPreviewAsset = nullptr;
 
 	Texture m_defaultAssetIcon{};
 
@@ -54,11 +56,7 @@ public:
 
 	struct ExecuteDesc {
 		uint32_t grobalCBVIndex;
-		
-		enum class Mode {
-			Scene,
-			PreviewOnly,
-		} mode = Mode::Scene;
+		RenderMode mode = RenderMode::Scene;
 	};
 
 	void Init(InitDesc& desc);

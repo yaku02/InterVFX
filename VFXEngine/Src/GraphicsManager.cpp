@@ -11,6 +11,7 @@
 #include "Timer.h"
 #include "EditorCamera.h"
 #include "SceneUI.h"
+#include "PreviewUI.h"
 
 GraphicsManager::GraphicsManager() = default;
 GraphicsManager::~GraphicsManager() = default;
@@ -49,7 +50,13 @@ void GraphicsManager::Init(const InitDesc& desc)
 
 	SceneUI::RegisterRenderCallback(
 		[this]() -> void {
-			return this->Execute();
+			return this->Execute(RenderMode::Scene);
+		}
+	);
+
+	PreviewUI::RegisterRenderCallback(
+		[this]() -> void {
+			return this->Execute(RenderMode::PreviewOnly);
 		}
 	);
 }
@@ -66,7 +73,7 @@ HRESULT GraphicsManager::CreateGlobalCB(GpuResourceManager& gpuResMgr)
 	return S_OK;
 }
 
-void GraphicsManager::Execute()
+void GraphicsManager::Execute(RenderMode mode)
 {
 	ID3D12DescriptorHeap* heaps[] = { m_gpuResMgr->GetDescHeap(HeapType::Visible).heap.Get() };
 	m_dx12->GetCmdList()->SetDescriptorHeaps(1, heaps);
@@ -97,10 +104,10 @@ void GraphicsManager::Execute()
 			.cmdList = m_dx12->GetCmdList().Get(),
 			.globalCBVIndex = m_globalCB.descriptorIndex
 		};
-		m_editorGridPass->Execute(EditorGridPass::PassExecuteDesc{ .renderDesc = renDesc });
+		m_editorGridPass->Execute(EditorGridPass::PassExecuteDesc{ .renderDesc = renDesc,});
 	}
 
-	m_vfxMgr->Execute(VFXManager::ExecuteDesc{ .grobalCBVIndex = m_globalCB.descriptorIndex });
+	m_vfxMgr->Execute(VFXManager::ExecuteDesc{ .grobalCBVIndex = m_globalCB.descriptorIndex, .mode = mode });
 
 }
 

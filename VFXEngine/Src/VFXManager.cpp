@@ -176,20 +176,8 @@ void VFXManager::OnAssetSelected(const uint32_t assetID)
         m_assetEditor->SetTarget(asset.get());
     }
 
-    ID3D12Device* dev = m_dx12->GetDevice().Get();
-    ID3D12GraphicsCommandList* cmdList = m_dx12->GetCmdList().Get();
-
-    // 既存プレビューの GPU リソース開放を安全に行うため Flush
-    if (m_preview) {
-        m_dx12->FlushCommandQueue();
-    }
-
-    // shared_ptr<VFXAsset> を渡してプレビューを生成
-    m_preview = std::make_unique<VFXPreview>(asset, dev, cmdList, *m_gpuResMgr);
-    if (!m_preview->IsValid()) {
-        Debugger::Log("[Error] Failed to create VFXPreview\n");
-        m_preview.reset(); // 初期化失敗時は破棄
-    }
+    // プレビューを作る準備をする
+    m_pendingPreviewAsset = asset;
 }
 
 void VFXManager::OpenInstEditor(const uint32_t instID)
@@ -242,13 +230,37 @@ void VFXManager::ShutDown()
 
 void VFXManager::Execute(const ExecuteDesc& desc)
 {
+    if (m_pendingPreviewAsset)
+    {
+        // ★ 1. 古いプレビューを破棄する前に、GPU がこれまでのコマンドを処理し終えるのを完全に待つ
+        if (m_dx12 && m_preview)
+        {
+            m_dx12->FlushCommandQueue();
+        }
+
+        // ★ 2. 安全に古いプレビューを破棄
+        m_preview.reset();
+
+        ID3D12Device* dev = m_dx12->GetDevice().Get();
+        ID3D12GraphicsCommandList* cmdList = m_dx12->GetCmdList().Get();
+
+        // 新しいプレビューを生成
+        m_preview = std::make_unique<VFXPreview>(m_pendingPreviewAsset, dev, cmdList, *m_gpuResMgr);
+        if (!m_preview->IsValid()) {
+            Debugger::Log("[Error] Failed to create VFXPreview\n");
+            m_preview.reset();
+        }
+
+        m_pendingPreviewAsset = nullptr; // 予約クリア
+    }
+
     if (!m_pass) return;
 
     VFXPass::PassExecuteDesc passDesc{};
     passDesc.updateDesc.globalCBVIndex = desc.grobalCBVIndex;
     passDesc.renderDesc.globalCBVIndex = desc.grobalCBVIndex;
 
-    if (desc.mode == ExecuteDesc::Mode::Scene)
+    if (desc.mode == RenderMode::Scene)
     {
         // --- シーン描画モード ---
         passDesc.updateDesc.instances = &m_insts;
@@ -259,7 +271,7 @@ void VFXManager::Execute(const ExecuteDesc& desc)
         passDesc.renderDesc.assetsMap = &m_assetsMap;
         passDesc.renderDesc.preview = nullptr;
     }
-    else if (desc.mode == ExecuteDesc::Mode::PreviewOnly)
+    else if (desc.mode == RenderMode::PreviewOnly)
     {
         // --- プレビュー描画モード ---
         // シーン上のインスタンスは描画せず、m_preview のみ渡す

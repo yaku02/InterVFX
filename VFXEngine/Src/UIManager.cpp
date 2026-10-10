@@ -131,8 +131,8 @@ void UIManager::ExecuteRendering()
 void UIManager::ShutDown()
 {
 	m_sceneUI.reset();
-	m_assetUI.reset();
+	m_assetUI->ShutDown();
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-}
+}  

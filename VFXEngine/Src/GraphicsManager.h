@@ -1,5 +1,6 @@
 #pragma once
 #include "ConstantBuffer.h"
+#include "RenderStructs.h"
 
 class Window;
 class Dx12Wrapper;
@@ -34,8 +35,8 @@ private:
 	HRESULT CreateGlobalCB(GpuResourceManager& gpuResMgr);
 
 public:
-	GraphicsManager();               // ★ 追加
-	~GraphicsManager();              // ★ 追加 (デストラクタの宣言)
+	GraphicsManager();             
+	~GraphicsManager();             
 
 	VFXManager* GetVFXMgr();
 	EditorGridPass* GetEditorGridPass();
@@ -48,7 +49,7 @@ public:
 	};
 	void Init(const InitDesc& desc);
 	
-	void Execute();
+	void Execute(RenderMode mode);
 
 	void ShutDown();
 };
