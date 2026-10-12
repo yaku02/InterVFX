@@ -12,6 +12,7 @@
 #include "EditorCamera.h"
 #include "SceneUI.h"
 #include "PreviewUI.h"
+#include "PreviewCamera.h"
 
 GraphicsManager::GraphicsManager() = default;
 GraphicsManager::~GraphicsManager() = default;
@@ -79,19 +80,14 @@ void GraphicsManager::Execute(RenderMode mode)
 	m_dx12->GetCmdList()->SetDescriptorHeaps(1, heaps);
 
 	float dt = Timer::GetGlobalDeltaTime();
+	m_globalCBDesc.param.globalDeltaTime = dt;
+
 	EditorCamera::Update(dt);
-
-	// 1. 各種パラメータの取得
 	DirectX::XMMATRIX viewProj = EditorCamera::GetViewProjMatrix();
-
-	// 【修正】行列式を受け取る変数(det)を用意して逆行列を計算
 	DirectX::XMVECTOR det;
 	DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(&det, viewProj);
 
 	DirectX::XMFLOAT3 cameraPos = EditorCamera::GetPosition();
-
-	// 2. GlobalCBDesc への格納 (転置処理はこれでバッチリOKです)
-	m_globalCBDesc.param.globalDeltaTime = dt;
 	DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.viewProj, DirectX::XMMatrixTranspose(viewProj));
 	DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.invViewProj, DirectX::XMMatrixTranspose(invViewProj));
 	m_globalCBDesc.param.cameraPos = cameraPos;

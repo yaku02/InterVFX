@@ -209,6 +209,7 @@
     <ClCompile Include="Src\InstUI.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\pch.cpp" />
+    <ClCompile Include="Src\PreviewCamera.cpp" />
     <ClCompile Include="Src\PreviewUI.cpp" />
     <ClCompile Include="Src\RenderingManager.cpp" />
     <ClCompile Include="Src\RootSignatureManager.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="Src\InstUI.h" />
     <ClInclude Include="Src\LogStream.h" />
     <ClInclude Include="Src\pch.h" />
+    <ClInclude Include="Src\PreviewCamera.h" />
     <ClInclude Include="Src\PreviewUI.h" />
     <ClInclude Include="Src\RenderingManager.h" />
     <ClInclude Include="Src\RenderStructs.h" />
