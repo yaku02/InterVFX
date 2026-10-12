@@ -1,26 +1,5 @@
 ﻿#include "VFXSystem.hlsli"
 
-
-// 簡易ハッシュ関数（0.0 〜 1.0 のランダム値を生成）
-float Hash1D(uint seed)
-{
-    seed = (seed ^ 61u) ^ (seed >> 16u);
-    seed *= 9u;
-    seed = seed ^ (seed >> 4u);
-    seed *= 0x27d4eb2du;
-    seed = seed ^ (seed >> 15u);
-    return float(seed) / 4294967295.0f;
-}
-
-float3 Hash3D(uint3 seed)
-{
-    return float3(
-        Hash1D(seed.x),
-        Hash1D(seed.y + 1999u),
-        Hash1D(seed.z + 9999u)
-    );
-}
-
 [numthreads(64, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {

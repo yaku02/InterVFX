@@ -103,6 +103,9 @@
     <Filter Include="Engine\Graphics\VFX\Shaders\Header">
       <UniqueIdentifier>{807133f4-60ce-40ca-81db-72f6571aa9a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Graphics\VFX\Stage">
+      <UniqueIdentifier>{e6facffa-a71d-43af-88c1-fa63eb5f0886}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\pch.cpp">
@@ -201,12 +204,6 @@
     <ClCompile Include="Src\GraphicsPipeline.cpp">
       <Filter>Engine\Pipeline\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Src\VFXUpdater.cpp">
-      <Filter>Engine\Graphics\VFX</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\VFXRenderer.cpp">
-      <Filter>Engine\Graphics\VFX</Filter>
-    </ClCompile>
     <ClCompile Include="Src\VFXPass.cpp">
       <Filter>Engine\Graphics\VFX</Filter>
     </ClCompile>
@@ -221,6 +218,19 @@
     <ClCompile Include="Src\FrameSyncManager.cpp" />
     <ClCompile Include="Src\VFXPreview.cpp">
       <Filter>Engine\Graphics\VFX</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PreviewCamera.cpp" />
+    <ClCompile Include="Src\VFXUpdateStage.cpp">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXRespawnStage.cpp">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXRendereStage.cpp">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\VFXCopyArgsStage.cpp">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -335,17 +345,11 @@
     <ClInclude Include="Src\GraphicsPipeline.h">
       <Filter>Engine\Pipeline\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Src\VFXUpdater.h">
-      <Filter>Engine\Graphics\VFX</Filter>
-    </ClInclude>
     <ClInclude Include="Src\ConstantBuffer.h">
       <Filter>Engine\GpuResource</Filter>
     </ClInclude>
     <ClInclude Include="Src\Timer.h">
       <Filter>Engine\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\VFXRenderer.h">
-      <Filter>Engine\Graphics\VFX</Filter>
     </ClInclude>
     <ClInclude Include="Src\VFXPass.h">
       <Filter>Engine\Graphics\VFX</Filter>
@@ -361,6 +365,20 @@
     <ClInclude Include="Src\FrameSyncManager.h" />
     <ClInclude Include="Src\VFXPreview.h">
       <Filter>Engine\Graphics\VFX</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\PreviewCamera.h" />
+    <ClInclude Include="Src\RenderStructs.h" />
+    <ClInclude Include="Src\VFXUpdateStage.h">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXRespawnStage.h">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXRenderStage.h">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\VFXCopyArgsStage.h">
+      <Filter>Engine\Graphics\VFX\Stage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -393,5 +411,11 @@
     </FxCompile>
     <FxCompile Include="Engine\Shader\EditorGridPS.hlsl" />
     <FxCompile Include="Engine\Shader\EditorGridVS.hlsl" />
+    <FxCompile Include="Engine\Shader\VFXRespawnCS.hlsl">
+      <Filter>Engine\Graphics\VFX\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Engine\Shader\VFXCopyArgsCS.hlsl">
+      <Filter>Engine\Graphics\VFX\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
