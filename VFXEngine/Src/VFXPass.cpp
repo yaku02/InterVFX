@@ -5,11 +5,17 @@
 void VFXPass::Init(const InitDesc& desc)
 {
 	CreatePassCB(desc.gpuResMgr);
-	m_renderer = std::make_unique<VFXRenderer>();
-	m_renderer->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
+	m_renderStage = std::make_unique<VFXRenderStage>();
+	m_renderStage->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
 
-	m_updater = std::make_unique<VFXUpdater>();
-	m_updater->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
+	m_updateStage = std::make_unique<VFXUpdateStage>();
+	m_updateStage->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
+
+	m_respawnStage = std::make_unique<VFXRespawnStage>();
+	m_respawnStage->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
+
+	m_copyArgsStage = std::make_unique<VFXCopyArgsStage>();
+	m_copyArgsStage->Init({ .dx12 = desc.dx12, .gpuResMgr = desc.gpuResMgr });
 }
 
 HRESULT VFXPass::CreatePassCB(GpuResourceManager& gpuResMgr)
@@ -35,11 +41,17 @@ void VFXPass::Execute(const PassExecuteDesc& desc)
 	auto renderDesc = desc.renderDesc;
 	renderDesc.passCBVIndex = m_passCB.descriptorIndex;
 
-	if (m_updater) {
-		m_updater->Update({ desc.updateDesc });
+	if (m_respawnStage) {
+		m_respawnStage->Respawn({ desc.respawnDesc });
 	}
-	if (m_renderer) {
-		m_renderer->Render({ desc.renderDesc });
+	if (m_updateStage) {
+		m_updateStage->Update({ desc.updateDesc });
+	}
+	if (m_copyArgsStage) {
+		m_copyArgsStage->CopyArgs({ desc.copyArgsDesc });
+	}
+	if (m_renderStage) {
+		m_renderStage->Render({ desc.renderDesc });
 	}
 }
 

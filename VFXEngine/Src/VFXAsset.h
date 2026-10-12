@@ -50,6 +50,9 @@ public:
             float noiseStrength = 0.2f;
 
             uint32_t numParticles = 10000;
+
+            uint32_t emitCount = 10;
+            float padding[3];
         }param;
         
         struct DescIndices {

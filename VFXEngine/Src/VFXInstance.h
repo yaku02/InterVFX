@@ -42,7 +42,12 @@ public:
         struct DescIndices {
             uint32_t particleSRV = UINT32_MAX;
             uint32_t particleUAV = UINT32_MAX;
-            float padding[2];
+            uint32_t deadListSRV = UINT32_MAX;
+            uint32_t deadListUAV = UINT32_MAX;
+            uint32_t activeListSRV = UINT32_MAX;
+            uint32_t activeListUAV = UINT32_MAX; // UpdateCSで Append する場合
+            uint32_t activeCounterUAV = UINT32_MAX;
+            uint32_t indirectArgsUAV = UINT32_MAX; // 引数バッファをGPUで書き換える場合（またはSRVとして描画時に読む）
         }descIndices{};
     }cbDesc{};
 
@@ -50,9 +55,20 @@ public:
         ConstantBuffer<CBDesc> cb;
 
         Microsoft::WRL::ComPtr<ID3D12Resource> particleBuffer = nullptr;
-        D3D12_GPU_DESCRIPTOR_HANDLE particleSRVHandle{}; // プレビュー用
-
         Microsoft::WRL::ComPtr<ID3D12Resource> uploadBuffer = nullptr; // Upload用の一時的バッファ ExecuteCommandListが行われるまで保持
+
+        Microsoft::WRL::ComPtr<ID3D12Resource> deadListBuffer = nullptr;
+        Microsoft::WRL::ComPtr<ID3D12Resource> deadUploadBuffer = nullptr;
+        Microsoft::WRL::ComPtr<ID3D12Resource> deadCounterBuffer = nullptr;
+        Microsoft::WRL::ComPtr<ID3D12Resource> counterUploadBuffer = nullptr;
+        
+        Microsoft::WRL::ComPtr<ID3D12Resource> activeListBuffer = nullptr;    // 生存インデックス用
+        Microsoft::WRL::ComPtr<ID3D12Resource> activeListUploadBuffer = nullptr;
+        Microsoft::WRL::ComPtr<ID3D12Resource> activeCounterBuffer = nullptr; // 生存数カウンター用
+        Microsoft::WRL::ComPtr<ID3D12Resource> activeCountUploadBuffer = nullptr;
+
+        Microsoft::WRL::ComPtr<ID3D12Resource> indirectArgsBuffer = nullptr;  // DrawInstancedIndirect用引数
+        Microsoft::WRL::ComPtr<ID3D12Resource> argsUploadBuffer = nullptr;
 
     }gpuResource{};
 
@@ -66,5 +82,11 @@ public:
 	const uint32_t GetCBVIndex() const { return gpuResource.cb.descriptorIndex; }
 public:
 	static std::shared_ptr<VFXInstance> Create(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+
+private:
 	HRESULT CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+    HRESULT CreateParticleBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+    HRESULT CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+    HRESULT CreateActiveListBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+    HRESULT CreateIndirectArgsBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
 };

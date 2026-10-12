@@ -98,6 +98,18 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 				isChanged = true;
 			}
 
+			// Emit Count
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted("Emit Count");
+			ImGui::TableNextColumn();
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			int emitCount = static_cast<int>(asset.cbDesc.param.emitCount);
+			if (ImGui::DragInt("##EmitCount", &emitCount, 1, 1, maxParticles))
+			{
+				asset.cbDesc.param.emitCount = static_cast<uint32_t>(emitCount);
+				isChanged = true;
+			}
+
 			// Life Time
 			ImGui::TableNextColumn();
 			ImGui::TextUnformatted("Life Time");

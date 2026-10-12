@@ -1,14 +1,18 @@
 #pragma once
 #include "ConstantBuffer.h"
-#include "VFXRenderer.h"
-#include "VFXUpdater.h"
+#include "VFXRenderStage.h"
+#include "VFXUpdateStage.h"
+#include "VFXRespawnStage.h"
+#include "VFXCopyArgsStage.h"
 
 class Dx12Wrapper;
 class GpuResourceManager;
 class VFXPass {
 private:
-	std::unique_ptr<VFXRenderer> m_renderer = nullptr;
-	std::unique_ptr<VFXUpdater> m_updater = nullptr;
+	std::unique_ptr<VFXRenderStage> m_renderStage = nullptr;
+	std::unique_ptr<VFXUpdateStage> m_updateStage = nullptr;
+	std::unique_ptr<VFXRespawnStage> m_respawnStage = nullptr;
+	std::unique_ptr<VFXCopyArgsStage> m_copyArgsStage = nullptr;
 
 	struct PassCBDesc {
 		struct Param {
@@ -31,8 +35,10 @@ public:
 	void Init(const InitDesc& desc);
 
 	struct PassExecuteDesc {
-		VFXRenderer::RenderDesc renderDesc{};
-		VFXUpdater::UpdateDesc updateDesc{};
+		VFXRenderStage::RenderDesc renderDesc{};
+		VFXUpdateStage::UpdateDesc updateDesc{};
+		VFXRespawnStage::RespawnDesc respawnDesc{};
+		VFXCopyArgsStage::ExeDesc copyArgsDesc{};
 	};
 
 	void Execute(const PassExecuteDesc& desc);

@@ -46,8 +46,8 @@ void VFXManager::Init(InitDesc& desc)
 
     AssetUI::RegisterDeleteCallback(
         AssetType::VFX,
-        [this](uint32_t id) -> bool {
-            return this->DeleteAsset(id);
+        [this](uint32_t id) -> void {
+            return this->OnDeleteAssetSelected(id);
         }
     );
 
@@ -67,8 +67,8 @@ void VFXManager::Init(InitDesc& desc)
 
     InstUI::RegisterDeleteCallback(
         InstType::VFX,
-        [this](uint32_t id) ->bool {
-            return this->DeleteInst(id);
+        [this](uint32_t id) ->void {
+            return this->OnDeleteInstSelected(id);
         }
     );
 
@@ -130,26 +130,80 @@ HRESULT VFXManager::CreateAndRegisterInstance(const uint32_t assetID)
     return S_OK;
 }
 
-bool VFXManager::DeleteAsset(const uint32_t id)
+void VFXManager::OnDeleteAssetSelected(const uint32_t id)
 {
     auto it = m_assetsMap.find(id);
-    if (it == m_assetsMap.end()) {
-        Debugger::Log("Invalid id\n");
-        return false;
-    };
+    if (it == m_assetsMap.end()) return;
+    m_pendingDeleteAsset = it->second;
+}
+
+bool VFXManager::DeleteAsset(std::shared_ptr<VFXAsset> target)
+{
+    // 1. targetが有効かチェック
+    if (!target) return false;
 
     m_dx12->FlushCommandQueue();
 
-    m_assetsMap.erase(it);
+    uint32_t assetID = target->info.base.id;
 
+    // --- A. このアセットから生成されたインスタンスを全て特定して削除する ---
+    // 1. m_instsMap から該当インスタンスのエントリを削除し、プレビューやエディタの選択も解除
+    for (auto it = m_instsMap.begin(); it != m_instsMap.end(); )
+    {
+        if (it->second && it->second->info.assetID == assetID)
+        {
+            // エディタやプレビューのターゲットになっていれば解除
+            if (m_instEditor)
+            {
+                m_instEditor->SetTarget(nullptr);
+            }
+            it = m_instsMap.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    // 2. m_insts (vector) から該当インスタンスを一括削除
+    m_insts.erase(
+        std::remove_if(m_insts.begin(), m_insts.end(), [assetID](const auto& inst) {
+            return inst && inst->info.assetID == assetID;
+            }),
+        m_insts.end()
+    );
+
+    // 3. もし現在プレビューで表示しているインスタンスが、この削除アセットのものだったらプレビューも破棄
+    if (m_preview && m_preview->GetAsset() == target) {
+        m_preview = nullptr;
+    }
+
+    // --- B. アセット自体の削除処理 ---
+    // 1. unordered_map (m_assetsMap) から削除
+    m_assetsMap.erase(assetID);
+
+    // 2. std::vector (m_assets) から削除
     m_assets.erase(
-        std::remove_if(m_assets.begin(), m_assets.end(), [&id](const auto& asset) {
-            return asset->info.base.id == id;
+        std::remove_if(m_assets.begin(), m_assets.end(), [assetID](const auto& asset) {
+            return asset && asset->info.base.id == assetID;
             }),
         m_assets.end()
     );
 
-    m_assetEditor->SetTarget(nullptr);
+    // 3. エディタのターゲット解除
+    if (m_assetEditor)
+    {
+        m_assetEditor->SetTarget(nullptr);
+    }
+
+    // 4. プレビュー用アセットの予約クリア
+    if (m_pendingPreviewAsset == target)
+    {
+        m_pendingPreviewAsset = nullptr;
+    }
+
+    Debugger::Log("Delete VFX Asset and its instances: %s\n", target->info.base.name.c_str());
+
     return true;
 }
 
@@ -198,26 +252,42 @@ void VFXManager::OnInstSelected(const uint32_t instID)
     }
 }
 
-bool VFXManager::DeleteInst(const uint32_t id)
+void VFXManager::OnDeleteInstSelected(const uint32_t id)
 {
     auto it = m_instsMap.find(id);
-    if (it == m_instsMap.end()) {
-        Debugger::Log("Invalid id\n");
-        return false;
-    };
+    if (it == m_instsMap.end()) return;
+    m_pendingDeleteInst = it->second;
+}
+
+bool VFXManager::DeleteInst(std::shared_ptr<VFXInstance> target)
+{
+    // 1. targetが有効かチェック
+    if (!target) return false;
 
     m_dx12->FlushCommandQueue();
 
-    m_instsMap.erase(it);
+    uint32_t instID = target->info.base.id;
+
+    m_instsMap.erase(instID);
 
     m_insts.erase(
-        std::remove_if(m_insts.begin(), m_insts.end(), [&id](const auto& inst) {
-            return inst->info.base.id == id;
+        std::remove_if(m_insts.begin(), m_insts.end(), [instID](const auto& inst) {
+            return inst && inst->info.base.id == instID;
             }),
         m_insts.end()
     );
 
-    m_instEditor->SetTarget(nullptr);
+    if (m_instEditor)
+    {
+        m_instEditor->SetTarget(nullptr);
+    }
+
+    if (m_preview && m_preview->GetInstance()->info.base.id == target->info.base.id) {
+        m_preview = nullptr;
+    }
+
+    Debugger::Log("Delete VFX Instance: %s", target->info.assetName.c_str());
+
     return true;
 }
 
@@ -254,6 +324,16 @@ void VFXManager::Execute(const ExecuteDesc& desc)
         m_pendingPreviewAsset = nullptr; // 予約クリア
     }
 
+    if (m_pendingDeleteAsset) {
+        DeleteAsset(m_pendingDeleteAsset);
+        m_pendingDeleteAsset = nullptr;
+    }
+
+    if (m_pendingDeleteInst) {
+        DeleteInst(m_pendingDeleteInst);
+        m_pendingDeleteInst = nullptr;
+    }
+
     if (!m_pass) return;
 
     VFXPass::PassExecuteDesc passDesc{};
@@ -270,6 +350,15 @@ void VFXManager::Execute(const ExecuteDesc& desc)
         passDesc.renderDesc.instances = &m_insts;
         passDesc.renderDesc.assetsMap = &m_assetsMap;
         passDesc.renderDesc.preview = nullptr;
+
+        passDesc.respawnDesc.instances = &m_insts;
+        passDesc.respawnDesc.assetsMap = &m_assetsMap;
+        passDesc.respawnDesc.preview = nullptr;
+
+        passDesc.copyArgsDesc.instances = &m_insts;
+        passDesc.copyArgsDesc.assetsMap = &m_assetsMap;
+        passDesc.copyArgsDesc.preview = nullptr;
+
     }
     else if (desc.mode == RenderMode::PreviewOnly)
     {
@@ -282,6 +371,14 @@ void VFXManager::Execute(const ExecuteDesc& desc)
         passDesc.renderDesc.instances = nullptr;
         passDesc.renderDesc.assetsMap = nullptr;
         passDesc.renderDesc.preview = m_preview.get();
+
+        passDesc.respawnDesc.instances = nullptr;
+        passDesc.respawnDesc.assetsMap = nullptr;
+        passDesc.respawnDesc.preview = m_preview.get();;
+
+        passDesc.copyArgsDesc.instances = nullptr;
+        passDesc.copyArgsDesc.assetsMap = nullptr;
+        passDesc.copyArgsDesc.preview = m_preview.get();;
     }
 
     // VFXPass (Updater -> Renderer) の実行

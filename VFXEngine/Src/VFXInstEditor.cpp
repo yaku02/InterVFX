@@ -151,7 +151,7 @@ void VFXInstEditor::Open(VFXInstance& inst)
 	// パラメータが変更された場合、World行列を再計算して定数バッファを更新
 	if (isChanged)
 	{
-		// 1. World 行列の更新 (Scale * Rotation * Translation)
+		// 1. World 行列の更新 (Scale * Rotation * Translation
 		using namespace DirectX;
 		XMMATRIX scaleMat = XMMatrixScaling(inst.cpuParam.scale.x, inst.cpuParam.scale.y, inst.cpuParam.scale.z);
 		XMMATRIX rotMat = XMMatrixRotationRollPitchYaw(XMConvertToRadians(inst.cpuParam.rotation.x),

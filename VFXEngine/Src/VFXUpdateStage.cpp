@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "VFXUpdater.h"
+#include "VFXUpdateStage.h"
 #include "Dx12Wrapper.h"
 #include "GpuResourceManager.h"
 #include "Debugger.h"
@@ -10,28 +10,30 @@
 #include "VFXInstance.h"
 #include "VFXPreview.h"
 
-void VFXUpdater::Init(const InitDesc& desc)
+void VFXUpdateStage::Init(const InitDesc& desc)
 {
 	m_dx12 = &desc.dx12;
 	m_gpuResMgr = &desc.gpuResMgr;
 
 	CreatePipeline(desc.dx12.GetDevice().Get());
+
 }
 
-void VFXUpdater::CreatePipeline(ID3D12Device* dev)
+void VFXUpdateStage::CreatePipeline(ID3D12Device* dev)
 {
 	const auto& rootSig = RootSignatureManager::GetRootSignature();
-
-	// --- 共通パラメータの設定 ---
-	ComputePipeline::Desc baseDesc;
-	baseDesc.csPath = "Engine/Shader/VFXUpdateCS.hlsl";
-	baseDesc.csEntry = "CSMain";
-	baseDesc.csModel = "cs_6_6";
-	baseDesc.rootSignature = rootSig;
-	m_updatePipeline = ComputePipeline::Create(dev, baseDesc);
+    
+    {
+        ComputePipeline::Desc desc;
+        desc.csPath = "Engine/Shader/VFXUpdateCS.hlsl";
+        desc.csEntry = "CSMain";
+        desc.csModel = "cs_6_6";
+        desc.rootSignature = rootSig;
+        m_updatePipeline = ComputePipeline::Create(dev, desc);
+    }
 }
 
-void VFXUpdater::Update(const UpdateDesc& desc)
+void VFXUpdateStage::Update(const UpdateDesc& desc)
 {
     // 1. 安全対策: 通常インスタンス群またはプレビューのどちらかは存在する必要がある
     bool hasInstances = (desc.instances != nullptr && desc.assetsMap != nullptr);
@@ -72,7 +74,7 @@ void VFXUpdater::Update(const UpdateDesc& desc)
             auto assetIt = desc.assetsMap->find(inst->info.assetID);
             if (assetIt == desc.assetsMap->end())
             {
-                Debugger::Log("[Error] VFXUpdater::Update() - Asset not found for instance ID: %u, Asset ID: %u\n", inst->info.base.id, inst->info.assetID);
+                Debugger::Log("[Error] VFXUpdateStage::Update() - Asset not found for instance ID: %u, Asset ID: %u\n", inst->info.base.id, inst->info.assetID);
                 continue;
             }
 
@@ -97,11 +99,7 @@ void VFXUpdater::Update(const UpdateDesc& desc)
             auto& instGPU = inst->gpuResource;
 
             if (instGPU.particleBuffer) {
-                transitions.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                    instGPU.particleBuffer.Get(),
-                    D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-                    D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
-                ));
+                transitions.push_back(m_gpuResMgr->Transition(instGPU.particleBuffer.Get(), ResState::UnorderedAccess, ResState::NonPixelShaderResource));
             }
         }
     }
@@ -110,12 +108,9 @@ void VFXUpdater::Update(const UpdateDesc& desc)
     if (hasPreview)
     {
         VFXInstance* prevInst = desc.preview->GetInstance();
-        if (prevInst && prevInst->gpuResource.particleBuffer) {
-            transitions.push_back(CD3DX12_RESOURCE_BARRIER::Transition(
-                prevInst->gpuResource.particleBuffer.Get(),
-                D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-                D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE
-            ));
+        auto& instGPU = prevInst->gpuResource;
+        if (prevInst && instGPU.particleBuffer) {
+            transitions.push_back(m_gpuResMgr->Transition(instGPU.particleBuffer.Get(), ResState::UnorderedAccess, ResState::NonPixelShaderResource));
         }
     }
 

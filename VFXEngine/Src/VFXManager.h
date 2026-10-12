@@ -33,15 +33,20 @@ private:
 	std::unique_ptr<VFXPreview> m_preview = nullptr;
 	std::shared_ptr<VFXAsset> m_pendingPreviewAsset = nullptr;
 
+	std::shared_ptr<VFXInstance> m_pendingDeleteInst = nullptr;
+	std::shared_ptr<VFXAsset> m_pendingDeleteAsset = nullptr;
+
 	Texture m_defaultAssetIcon{};
 
 	bool m_pendingCreateAsset = false;
 
 	void OnAssetSelected(const uint32_t assetID);
 	void OpenAssetEditor(const uint32_t assetID);
+	void OnDeleteAssetSelected(const uint32_t assetID);
 
 	void OnInstSelected(const uint32_t instID);
 	void OpenInstEditor(const uint32_t instID);
+	void OnDeleteInstSelected(const uint32_t assetID);
 
 public:
 	VFXManager();
@@ -77,6 +82,6 @@ public:
 	HRESULT CreateAndRegisterAsset();
 	HRESULT CreateAndRegisterInstance(const uint32_t assetID);
 
-	bool DeleteAsset(const uint32_t assetID);
-	bool DeleteInst(const uint32_t instID);
+	bool DeleteAsset(std::shared_ptr<VFXAsset> target);
+	bool DeleteInst(std::shared_ptr<VFXInstance> target);
 };

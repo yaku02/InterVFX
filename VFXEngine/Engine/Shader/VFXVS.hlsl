@@ -18,15 +18,10 @@ VSOutput VSMain(uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID)
     VFXInstParam instParam = GetVFXInstParam();
     StructuredBuffer<Particle> particles = GetParticleST();
 
-    // instanceID をそのままパーティクルインデックスとして使用
-    uint particleIdx = instanceID;
+// --- ★ ActiveList から今描画すべき「本当のパーティクルインデックス」を取得する ---
+    StructuredBuffer<uint> activeList = GetActiveListST();
+    uint particleIdx = activeList[instanceID];
     uint cornerIdx = vertexID;
-
-    if (particleIdx >= assetParam.numParticle)
-    {
-        output.pos = float4(0, 0, 0, 0);
-        return output;
-    }
 
     Particle p = particles[particleIdx];
 

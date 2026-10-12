@@ -188,7 +188,7 @@ void AssetUI::ExecuteDeletion()
 	auto it = m_deleteCallbacks.find(m_deleteTarget.type);
 	if (it != m_deleteCallbacks.end() && it->second)
 	{
-		it->second(m_deleteTarget.id); // VFXManager::DeleteAsset(id) などが実行される
+		it->second(m_deleteTarget.id);
 	}
 
 	// 2. m_assets から削除対象の要素を除去する

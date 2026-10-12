@@ -203,7 +203,7 @@ uint32_t GpuResourceManager::CreateUAV(Microsoft::WRL::ComPtr<ID3D12Resource>& t
 	uavDesc.Buffer.CounterOffsetInBytes = 0;
 	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
 
-	uint32_t outIndex = INT32_MAX;
+	uint32_t outIndex = UINT32_MAX;
 	D3D12_CPU_DESCRIPTOR_HANDLE uavHandleCPU =
 		AllocateDescriptor(nullptr, &outIndex);
 
@@ -216,6 +216,43 @@ uint32_t GpuResourceManager::CreateUAV(Microsoft::WRL::ComPtr<ID3D12Resource>& t
 
 	m_dev->CreateUnorderedAccessView(
 		target.Get(), nullptr, &uavDesc, uavHandleCPU);
+
+	return outIndex;
+}
+
+
+uint32_t GpuResourceManager::CreateAppendUAV(
+	Microsoft::WRL::ComPtr<ID3D12Resource>& target,
+	Microsoft::WRL::ComPtr<ID3D12Resource>& counterResource,
+	uint32_t numElements,
+	uint32_t strideSize)
+{
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.NumElements = numElements;
+	uavDesc.Buffer.StructureByteStride = strideSize;
+	uavDesc.Buffer.CounterOffsetInBytes = 0;
+	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+
+	uint32_t outIndex = UINT32_MAX;
+	D3D12_CPU_DESCRIPTOR_HANDLE uavHandleCPU =
+		AllocateDescriptor(nullptr, &outIndex);
+
+	if (outIndex == UINT32_MAX)
+	{
+		std::wstring name = GetDebugName(target.Get());
+		Debugger::Log("Append UAV allocation failed : %ls\n", name.c_str());
+		return UINT32_MAX;
+	}
+
+	// ★ 第2引数（pCounterResource）にカウンター用リソースを渡す
+	m_dev->CreateUnorderedAccessView(
+		target.Get(),
+		counterResource.Get(), // ← ここにカウンターバッファを指定
+		&uavDesc,
+		uavHandleCPU);
 
 	return outIndex;
 }
@@ -243,6 +280,54 @@ uint32_t GpuResourceManager::CreateCBV(Microsoft::WRL::ComPtr<ID3D12Resource>& t
 	m_dev->CreateConstantBufferView(&cbvDesc, cbvHandleCPU);
 
 	return outIndex;
+}
+
+
+D3D12_CPU_DESCRIPTOR_HANDLE GpuResourceManager::GetCPUDescriptorHandle(uint32_t index, HeapType heapType)
+{
+	auto& targetDescHeap = GetDescHeap(heapType);
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = targetDescHeap.cpuHandle;
+	handle.ptr += (UINT64)(index * IncSize);
+	return handle;
+}
+
+// --- インデックスから GPU ハンドルを取得 ---
+D3D12_GPU_DESCRIPTOR_HANDLE GpuResourceManager::GetGPUDescriptorHandle(uint32_t index, HeapType heapType)
+{
+	auto& targetDescHeap = GetDescHeap(heapType);
+	D3D12_GPU_DESCRIPTOR_HANDLE handle = targetDescHeap.gpuHandle;
+	handle.ptr += (UINT64)(index * IncSize);
+	return handle;
+}
+
+void GpuResourceManager::Transition(
+	ID3D12GraphicsCommandList* cmdList,
+	ID3D12Resource* resource,
+	ResState before,
+	ResState after
+)
+{
+	if (!resource) return;
+
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		resource,
+		GetD3D12State(before),
+		GetD3D12State(after)
+	);
+	cmdList->ResourceBarrier(1, &barrier);
+}
+
+CD3DX12_RESOURCE_BARRIER GpuResourceManager::Transition(
+	ID3D12Resource* resource,
+	ResState before,
+	ResState after
+)
+{
+	return CD3DX12_RESOURCE_BARRIER::Transition(
+		resource,
+		GetD3D12State(before),
+		GetD3D12State(after)
+	);
 }
 
 void GpuResourceManager::Init(ID3D12Device* dev, Window& window) {

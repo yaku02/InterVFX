@@ -15,6 +15,8 @@ struct VFXAssetParam
     float lifeTime;
     float noiseStrength;
     uint numParticle;
+    uint emitCount;
+    float3 padding;
 };
 
 struct VFXAssetIndices

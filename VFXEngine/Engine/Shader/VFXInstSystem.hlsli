@@ -28,7 +28,12 @@ struct VFXInstIndices
 {
     uint particleSRV;
     uint particleUAV;
-    float2 padding;
+    uint deadListSRV;
+    uint deadListUAV;
+    uint activeListSRV;
+    uint activeListUAV;
+    uint activeCounterUAV;
+    uint indirectArgsUAV;
 };
 
 struct VFXInstCB
@@ -65,5 +70,51 @@ RWStructuredBuffer<Particle> GetParticleRW()
 {
     VFXInstCB cb = GetVFXInstCB();
     RWStructuredBuffer<Particle> buffer = ResourceDescriptorHeap[cb.indices.particleUAV];
+    return buffer;
+}
+
+ConsumeStructuredBuffer<uint> GetDeadListConsume()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    ConsumeStructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.deadListUAV];
+    return buffer;
+}
+
+AppendStructuredBuffer<uint> GetDeadListAppend()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    AppendStructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.deadListUAV];
+    return buffer;
+}
+
+// --- 読み取り専用 ActiveList (SRV / StructuredBuffer) の取得 ---
+StructuredBuffer<uint> GetActiveListST()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    StructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.activeListSRV];
+    return buffer;
+}
+
+// --- 追加用 ActiveList (AppendStructuredBuffer) の取得 ---
+AppendStructuredBuffer<uint> GetActiveListAppend()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    AppendStructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.activeListUAV];
+    return buffer;
+}
+
+RWStructuredBuffer<uint> GetActiveCounterRW()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    RWStructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.activeCounterUAV];
+    return buffer;
+}
+
+// --- 読み書き用 / 更新用 IndirectArgs (UAV / RWStructuredBuffer または型付きバッファ) の取得 ---
+// ※ DrawArguments 構造体または uint4 配列として扱えるように RWStructuredBuffer<uint4> や専用構造体で受け取ります
+RWStructuredBuffer<uint4> GetIndirectArgsRW()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    RWStructuredBuffer<uint4> buffer = ResourceDescriptorHeap[cb.indices.indirectArgsUAV];
     return buffer;
 }

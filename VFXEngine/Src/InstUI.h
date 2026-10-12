@@ -3,7 +3,7 @@
 
 class InstUI {
 	using SelectCallback = std::function<void(uint32_t instID)>;
-	using DeleteCallback = std::function<HRESULT(uint32_t id)>;
+	using DeleteCallback = std::function<void(uint32_t id)>;
 	using DnDCreateCallback = std::function<HRESULT(uint32_t assetID)>;
 
 private:

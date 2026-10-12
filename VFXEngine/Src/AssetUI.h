@@ -4,7 +4,7 @@
 class VFXManager;
 class AssetUI {
 	using CreationCallback = std::function<HRESULT()>;
-	using DeleteCallback = std::function<HRESULT(uint32_t id)>;
+	using DeleteCallback = std::function<void(uint32_t id)>;
 	using OpenEditorCallback = std::function<void(uint32_t id)>;
 	using SelectCallback = std::function<void(uint32_t assetID)>; 
 
