@@ -44,10 +44,14 @@ public:
             uint32_t particleUAV = UINT32_MAX;
             uint32_t deadListSRV = UINT32_MAX;
             uint32_t deadListUAV = UINT32_MAX;
+
+            uint32_t deadCounterUAV = UINT32_MAX;
             uint32_t activeListSRV = UINT32_MAX;
             uint32_t activeListUAV = UINT32_MAX; // UpdateCSで Append する場合
             uint32_t activeCounterUAV = UINT32_MAX;
+
             uint32_t indirectArgsUAV = UINT32_MAX; // 引数バッファをGPUで書き換える場合（またはSRVとして描画時に読む）
+            float padding[3];
         }descIndices{};
     }cbDesc{};
 
@@ -82,11 +86,11 @@ public:
 	const uint32_t GetCBVIndex() const { return gpuResource.cb.descriptorIndex; }
 public:
 	static std::shared_ptr<VFXInstance> Create(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+    HRESULT CreateDeadListBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, uint32_t numElements);
 
 private:
-	HRESULT CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
-    HRESULT CreateParticleBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
-    HRESULT CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
-    HRESULT CreateActiveListBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
-    HRESULT CreateIndirectArgsBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
+	HRESULT CreateGpuResource(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, VFXAsset& asset);
+    HRESULT CreateParticleBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, uint32_t numElements);
+    HRESULT CreateActiveListBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, uint32_t numElements);
+    HRESULT CreateIndirectArgsBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr);
 };

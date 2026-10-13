@@ -30,10 +30,14 @@ struct VFXInstIndices
     uint particleUAV;
     uint deadListSRV;
     uint deadListUAV;
+    
+    uint deadCounterUAV;
     uint activeListSRV;
     uint activeListUAV;
     uint activeCounterUAV;
+    
     uint indirectArgsUAV;
+    float3 padding;
 };
 
 struct VFXInstCB
@@ -84,6 +88,13 @@ AppendStructuredBuffer<uint> GetDeadListAppend()
 {
     VFXInstCB cb = GetVFXInstCB();
     AppendStructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.deadListUAV];
+    return buffer;
+}
+
+RWStructuredBuffer<uint> GetDeadCounterRW()
+{
+    VFXInstCB cb = GetVFXInstCB();
+    RWStructuredBuffer<uint> buffer = ResourceDescriptorHeap[cb.indices.deadCounterUAV];
     return buffer;
 }
 

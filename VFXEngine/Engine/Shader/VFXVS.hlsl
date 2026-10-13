@@ -24,7 +24,7 @@ VSOutput VSMain(uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID)
     uint cornerIdx = vertexID;
 
     Particle p = particles[particleIdx];
-
+    
     // --- 3. ビルボード用オフセットテーブル（TriangleStrip / 4頂点用） ---
     // 0: 左下 (-1, -1), 1: 右下 (1, -1), 2: 左上 (-1, 1), 3: 右上 (1, 1)
     float2 offsets[4] =

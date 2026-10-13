@@ -72,6 +72,11 @@ void VFXManager::Init(InitDesc& desc)
         }
     );
 
+    VFXAssetEditor::RegisterChangeMaxParticleCallback(
+        [this](uint32_t id, uint32_t afterMaxParticles) -> void {
+            return this->OnMaxParticleChanged(id, afterMaxParticles);
+        }
+    );
 }
 
 VFXAsset* VFXManager::GetAsset(const uint32_t assetID)
@@ -291,6 +296,33 @@ bool VFXManager::DeleteInst(std::shared_ptr<VFXInstance> target)
     return true;
 }
 
+bool VFXManager::InitDeadListAndCounter()
+{
+    m_dx12->FlushCommandQueue();
+
+    ID3D12Device* dev = m_dx12->GetDevice().Get();
+    ID3D12GraphicsCommandList* cmdList = m_dx12->GetCmdList().Get();
+
+    for (auto& inst : m_insts) {
+        if (inst && inst->info.assetID == m_pendingChangeMaxParticlesAssetID) {
+            // デッドリスト（およびカウンター）バッファの再構築・初期化を呼び出す
+            inst->CreateDeadListBuffer(dev, cmdList, *m_gpuResMgr, m_pendingAfterMaxParticles);
+        }
+    }
+
+    if (m_preview) {
+        if (m_preview->GetInstance()->info.assetID == m_pendingChangeMaxParticlesAssetID) {
+            m_preview->GetInstance()->CreateDeadListBuffer(dev, cmdList, *m_gpuResMgr, m_pendingAfterMaxParticles);
+        }
+    }
+
+    m_pendingChangeMaxParticlesAssetID = UINT32_MAX;
+    m_pendingAfterMaxParticles = UINT32_MAX;
+
+    Debugger::Log("Init DeadList and Counter\n");
+    return true;
+}
+
 void VFXManager::ShutDown()
 {
     m_defaultAssetIcon.buffer.Reset();
@@ -332,6 +364,11 @@ void VFXManager::Execute(const ExecuteDesc& desc)
     if (m_pendingDeleteInst) {
         DeleteInst(m_pendingDeleteInst);
         m_pendingDeleteInst = nullptr;
+    }
+
+    
+    if (m_pendingChangeMaxParticlesAssetID != UINT32_MAX && m_pendingAfterMaxParticles != UINT32_MAX) {
+        InitDeadListAndCounter();
     }
 
     if (!m_pass) return;

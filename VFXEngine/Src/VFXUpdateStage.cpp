@@ -60,7 +60,7 @@ void VFXUpdateStage::Update(const UpdateDesc& desc)
         uint32_t instIndicesCBVIndex = inst->GetCBVIndex();
         cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &instIndicesCBVIndex, (UINT)RootParam::CBVIndices::InstCBVIndex);
 
-        uint32_t threadGroupX = (asset->cbDesc.param.numParticles + 63) / 64;
+        uint32_t threadGroupX = (asset->cbDesc.param.maxParticles + 63) / 64;
         cmdList->Dispatch(threadGroupX, 1, 1);
         };
 

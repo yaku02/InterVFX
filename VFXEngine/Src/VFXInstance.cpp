@@ -8,7 +8,7 @@
 std::shared_ptr<VFXInstance> VFXInstance::Create(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
 {
 	auto inst = std::make_shared<VFXInstance>();
-	if (FAILED(inst->CreateGpuResource(asset, dev, cmdList, gpuResMgr))) return nullptr;
+	if (FAILED(inst->CreateGpuResource(dev, cmdList, gpuResMgr, asset))) return nullptr;
 	auto& baseInfo = inst->info.base;
 
 	baseInfo.name = "VFX" + std::to_string(VFXInstance::Info::Counter++);
@@ -25,12 +25,14 @@ std::shared_ptr<VFXInstance> VFXInstance::Create(VFXAsset& asset, ID3D12Device* 
 	return inst;
 }
 
-HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
+HRESULT VFXInstance::CreateGpuResource(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, VFXAsset& asset)
 {
-	CreateParticleBuffer(asset, dev, cmdList, gpuResMgr);
-	CreateDeadListBuffer(asset, dev, cmdList, gpuResMgr);
-	CreateActiveListBuffer(asset, dev, cmdList, gpuResMgr);
-	CreateIndirectArgsBuffer(asset, dev, cmdList, gpuResMgr);
+	uint32_t numElements = asset.cbDesc.param.maxParticles;
+
+	CreateParticleBuffer(dev, cmdList, gpuResMgr, numElements);
+	CreateDeadListBuffer(dev, cmdList, gpuResMgr, numElements);
+	CreateActiveListBuffer(dev, cmdList, gpuResMgr, numElements);
+	CreateIndirectArgsBuffer(dev, cmdList, gpuResMgr);
 
 	// 定数バッファ作成
 	{
@@ -44,16 +46,14 @@ HRESULT VFXInstance::CreateGpuResource(VFXAsset& asset, ID3D12Device* dev, ID3D1
 	return S_OK;
 }
 
-HRESULT VFXInstance::CreateParticleBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
+HRESULT VFXInstance::CreateParticleBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, uint32_t numElements)
 {
-	const auto numParticles = asset.cbDesc.param.numParticles;
-
 	D3D12_HEAP_PROPERTIES heapProp =
 		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
 	auto resDesc =
 		CD3DX12_RESOURCE_DESC::Buffer(
-			sizeof(Particle) * numParticles,
+			sizeof(Particle) * numElements,
 			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
 		);
 
@@ -73,7 +73,7 @@ HRESULT VFXInstance::CreateParticleBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 	// UPLOADバッファの作成
 	heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(Particle) * numParticles);
+	resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(Particle) * numElements);
 
 	dev->CreateCommittedResource(
 		&heapProp,
@@ -85,13 +85,13 @@ HRESULT VFXInstance::CreateParticleBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 	std::vector<Particle> particles;
 
-	particles.resize(numParticles);
+	particles.resize(numElements);
 
-	for (uint32_t i = 0; i < numParticles; i++)
+	for (uint32_t i = 0; i < numElements; i++)
 	{
 		particles[i] = {};
 
-		particles[i].age = asset.cbDesc.param.lifeTime + 1.0f;
+		particles[i].age = 10000.0f;
 
 		particles[i].seed =
 			rand() * 747796405u + 2891336453u;
@@ -99,38 +99,33 @@ HRESULT VFXInstance::CreateParticleBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 	void* ptr = nullptr;
 	gpuResource.uploadBuffer->Map(0, nullptr, &ptr);
-	memcpy(ptr, particles.data(), sizeof(Particle) * numParticles);
+	memcpy(ptr, particles.data(), sizeof(Particle) * numElements);
 	gpuResource.uploadBuffer->Unmap(0, nullptr);
 
 	auto barrier1 = gpuResMgr.Transition(gpuResource.particleBuffer.Get(), ResState::Common, ResState::CopyDest);
 	cmdList->ResourceBarrier(1, &barrier1);
 
-	cmdList->CopyBufferRegion(gpuResource.particleBuffer.Get(), 0, gpuResource.uploadBuffer.Get(), 0, sizeof(Particle) * numParticles);
+	cmdList->CopyBufferRegion(gpuResource.particleBuffer.Get(), 0, gpuResource.uploadBuffer.Get(), 0, sizeof(Particle) * numElements);
 
 	// --- 修正箇所: CopyDest -> UnorderedAccess のバリアを発行 ---
 	auto barrier2 = gpuResMgr.Transition(gpuResource.particleBuffer.Get(), ResState::CopyDest, ResState::UnorderedAccess);
 	cmdList->ResourceBarrier(1, &barrier2);
 
 	// SRV,UAVの作成
-	cbDesc.descIndices.particleSRV = gpuResMgr.CreateSRV(gpuResource.particleBuffer, numParticles, sizeof(Particle));
-	cbDesc.descIndices.particleUAV = gpuResMgr.CreateUAV(gpuResource.particleBuffer, numParticles, sizeof(Particle));
+	cbDesc.descIndices.particleSRV = gpuResMgr.CreateSRV(gpuResource.particleBuffer, numElements, sizeof(Particle));
+	cbDesc.descIndices.particleUAV = gpuResMgr.CreateUAV(gpuResource.particleBuffer, numElements, sizeof(Particle));
 
 	return S_OK;
 }
 
-HRESULT VFXInstance::CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
+HRESULT VFXInstance::CreateDeadListBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, uint32_t numElements)
 {
-	const auto numParticles = asset.cbDesc.param.numParticles;
-
 	D3D12_HEAP_PROPERTIES heapProp =
 		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-	// 要素数は純粋に numParticles 分だけでOK（カウンター領域は別にするため）
-	uint32_t totalElements = numParticles;
-
 	auto resDesc =
 		CD3DX12_RESOURCE_DESC::Buffer(
-			sizeof(uint32_t) * totalElements,
+			sizeof(uint32_t) * numElements,
 			D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
 		);
 
@@ -164,18 +159,14 @@ HRESULT VFXInstance::CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 
 	// --- 1. デッドリスト本体の初期化用配列（0, 1, 2, ..., numParticles-1） ---
-	std::vector<uint32_t> initialDeadIndices(totalElements);
-	for (uint32_t i = 0; i < numParticles; ++i) {
+	std::vector<uint32_t> initialDeadIndices(numElements);
+	for (uint32_t i = 0; i < numElements; ++i) {
 		initialDeadIndices[i] = i;
 	}
 
-	// --- 2. カウンター用の初期値（最初から全数が空き状態なので numParticles を入れる） ---
-	uint32_t initialCounter = numParticles;
-
-
 	// アップロード用バッファを使って GPU へ転送（本体用 ＋ カウンター用）
 	heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	auto uploadResDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(uint32_t) * totalElements);
+	auto uploadResDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(uint32_t) * numElements);
 
 	dev->CreateCommittedResource(
 		&heapProp,
@@ -187,7 +178,7 @@ HRESULT VFXInstance::CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 	void* ptr = nullptr; // ★ タイポを修正
 	gpuResource.deadUploadBuffer->Map(0, nullptr, &ptr);
-	memcpy(ptr, initialDeadIndices.data(), sizeof(uint32_t) * totalElements);
+	memcpy(ptr, initialDeadIndices.data(), sizeof(uint32_t) * numElements);
 	gpuResource.deadUploadBuffer->Unmap(0, nullptr);
 
 	// カウンター用のアップロードバッファ
@@ -202,7 +193,7 @@ HRESULT VFXInstance::CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 	void* counterPtr = nullptr; // ★ タイポを修正
 	gpuResource.counterUploadBuffer->Map(0, nullptr, &counterPtr);
-	memcpy(counterPtr, &initialCounter, sizeof(uint32_t));
+	memcpy(counterPtr, &numElements, sizeof(uint32_t));
 	gpuResource.counterUploadBuffer->Unmap(0, nullptr);
 
 
@@ -214,7 +205,7 @@ HRESULT VFXInstance::CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 	cmdList->ResourceBarrier(2, barriers);
 
 	// コピー実行
-	cmdList->CopyBufferRegion(gpuResource.deadListBuffer.Get(), 0, gpuResource.deadUploadBuffer.Get(), 0, sizeof(uint32_t) * totalElements);
+	cmdList->CopyBufferRegion(gpuResource.deadListBuffer.Get(), 0, gpuResource.deadUploadBuffer.Get(), 0, sizeof(uint32_t) * numElements);
 	cmdList->CopyBufferRegion(gpuResource.deadCounterBuffer.Get(), 0, gpuResource.counterUploadBuffer.Get(), 0, sizeof(uint32_t));
 
 	// --- リソースバリア（COPY_DEST -> UNORDERED_ACCESS） ---
@@ -226,30 +217,23 @@ HRESULT VFXInstance::CreateDeadListBuffer(VFXAsset& asset, ID3D12Device* dev, ID
 
 
 	// --- SRV, UAV の作成 ---
-	cbDesc.descIndices.deadListSRV = gpuResMgr.CreateSRV(gpuResource.deadListBuffer, totalElements, sizeof(uint32_t));
+	cbDesc.descIndices.deadListSRV = gpuResMgr.CreateSRV(gpuResource.deadListBuffer, numElements, sizeof(uint32_t));
 
-	cbDesc.descIndices.deadListUAV = gpuResMgr.CreateAppendUAV(
-		gpuResource.deadListBuffer,
-		gpuResource.deadCounterBuffer,
-		totalElements,
-		sizeof(uint32_t)
-	);
+	cbDesc.descIndices.deadListUAV = gpuResMgr.CreateAppendUAV(gpuResource.deadListBuffer, gpuResource.deadCounterBuffer, numElements, sizeof(uint32_t));
+
+	cbDesc.descIndices.deadCounterUAV = gpuResMgr.CreateUAV(gpuResource.deadCounterBuffer, 1, sizeof(uint32_t));
 
 	return S_OK;
 }
 
-HRESULT VFXInstance::CreateActiveListBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
+HRESULT VFXInstance::CreateActiveListBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr, uint32_t numElements)
 {
-	const auto numParticles = asset.cbDesc.param.numParticles;
-
 	D3D12_HEAP_PROPERTIES heapProp =
 		CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-	uint32_t totalElements = numParticles;
-
 	// 1. ActiveList 用バッファ（生存しているパーティクルのインデックスを格納）
 	auto activeResDesc = CD3DX12_RESOURCE_DESC::Buffer(
-		sizeof(uint32_t) * totalElements,
+		sizeof(uint32_t) * numElements,
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
 	);
 
@@ -316,12 +300,12 @@ HRESULT VFXInstance::CreateActiveListBuffer(VFXAsset& asset, ID3D12Device* dev, 
 	cbDesc.descIndices.activeListUAV = gpuResMgr.CreateAppendUAV(
 		gpuResource.activeListBuffer,
 		gpuResource.activeCounterBuffer,
-		totalElements,
+		numElements,
 		sizeof(uint32_t)
 	);
 	cbDesc.descIndices.activeListSRV = gpuResMgr.CreateSRV(
 		gpuResource.activeListBuffer,
-		totalElements,
+		numElements,
 		sizeof(uint32_t)
 	);
 	cbDesc.descIndices.activeCounterUAV = gpuResMgr.CreateUAV(
@@ -333,7 +317,7 @@ HRESULT VFXInstance::CreateActiveListBuffer(VFXAsset& asset, ID3D12Device* dev, 
 	return S_OK;
 }
 
-HRESULT VFXInstance::CreateIndirectArgsBuffer(VFXAsset& asset, ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
+HRESULT VFXInstance::CreateIndirectArgsBuffer(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, GpuResourceManager& gpuResMgr)
 {
 	struct DrawArguments {
 		uint32_t vertexCountPerInstance; // 4 (四角形なら4)

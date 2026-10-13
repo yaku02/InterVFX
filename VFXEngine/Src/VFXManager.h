@@ -39,6 +39,8 @@ private:
 	Texture m_defaultAssetIcon{};
 
 	bool m_pendingCreateAsset = false;
+	uint32_t m_pendingChangeMaxParticlesAssetID = UINT32_MAX;
+	uint32_t m_pendingAfterMaxParticles = UINT32_MAX;
 
 	void OnAssetSelected(const uint32_t assetID);
 	void OpenAssetEditor(const uint32_t assetID);
@@ -47,6 +49,13 @@ private:
 	void OnInstSelected(const uint32_t instID);
 	void OpenInstEditor(const uint32_t instID);
 	void OnDeleteInstSelected(const uint32_t assetID);
+
+	void OnMaxParticleChanged(const uint32_t assetID, const uint32_t afterMaxParticles) {
+		m_pendingChangeMaxParticlesAssetID = assetID;
+		m_pendingAfterMaxParticles = afterMaxParticles;
+	}
+
+	bool InitDeadListAndCounter();
 
 public:
 	VFXManager();

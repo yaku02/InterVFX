@@ -4,6 +4,10 @@
 #include "IDGenerator.h"
 #include "UIManager.h"
 
+void VFXAssetEditor::RegisterChangeMaxParticleCallback(ChangeMaxParticleCallback callback) {
+	m_changeMaxParticleCallback = callback;
+}
+
 void VFXAssetEditor::SetTarget(VFXAsset* asset)
 {
 	m_targetAsset = asset;
@@ -79,24 +83,7 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 	{
 		if (Begin2ColTable("SpawnTable"))
 		{
-			// Spawn Rate
-			ImGui::TableNextColumn();
-			ImGui::TextUnformatted("Spawn Rate");
-			ImGui::TableNextColumn();
-			ImGui::SetNextItemWidth(-FLT_MIN);
-			ImGui::DragFloat("##SpawnRate", &asset.cpuParam.spawnRate, 1.0f, 0.0f, 10000.0f, "%.1f / s");
-
-			// Max Particles
-			ImGui::TableNextColumn();
-			ImGui::TextUnformatted("Max Particles");
-			ImGui::TableNextColumn();
-			ImGui::SetNextItemWidth(-FLT_MIN);
-			int maxParticles = static_cast<int>(asset.cbDesc.param.numParticles);
-			if (ImGui::DragInt("##MaxParticles", &maxParticles, 100, 1, 1000000))
-			{
-				asset.cbDesc.param.numParticles = static_cast<uint32_t>(maxParticles);
-				isChanged = true;
-			}
+			int maxParticles = static_cast<int>(asset.cbDesc.param.maxParticles);
 
 			// Emit Count
 			ImGui::TableNextColumn();
@@ -104,11 +91,24 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 			ImGui::TableNextColumn();
 			ImGui::SetNextItemWidth(-FLT_MIN);
 			int emitCount = static_cast<int>(asset.cbDesc.param.emitCount);
-			if (ImGui::DragInt("##EmitCount", &emitCount, 1, 1, maxParticles))
+			if (ImGui::DragInt("##EmitCount", &emitCount, 1, 1, maxParticles, "%d / s"))
 			{
 				asset.cbDesc.param.emitCount = static_cast<uint32_t>(emitCount);
 				isChanged = true;
 			}
+
+			// Max Particles
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted("Max Particles");
+			ImGui::TableNextColumn();
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			if (ImGui::DragInt("##MaxParticles", &maxParticles, 100, 1, 100000))
+			{
+				asset.cbDesc.param.maxParticles = static_cast<uint32_t>(maxParticles);
+
+				if(m_changeMaxParticleCallback) m_changeMaxParticleCallback(asset.info.base.id, asset.cbDesc.param.maxParticles);
+			}
+
 
 			// Life Time
 			ImGui::TableNextColumn();

@@ -40,13 +40,20 @@ struct EmitContext
 // ① 前処理（Init）：スレッド判定、デッドリストのポップ、基本データの初期化
 bool BeginEmit(uint3 id, out EmitContext ctx, out Particle p, ConsumeStructuredBuffer<uint> deadList)
 {
+        // デッドリストの残り数（空き数）が 0 なら、これ以上スポーンさせない
+    RWStructuredBuffer<uint> deadCounter = GetDeadCounterRW();
+    if (deadCounter[0] == 0)
+    {
+        return false;
+    }
+    
     ctx.idx = id.x;
     ctx.assetParam = GetVFXAssetParam();
     
     // 発生数を超えたスレッドは終了
     if (ctx.idx >= ctx.assetParam.emitCount)
         return false;
-
+    
     ctx.globalParam = GetVFXGlobalParam();
     ctx.instParam = GetVFXInstParam();
     ctx.passParam = GetVFXPassParam();
