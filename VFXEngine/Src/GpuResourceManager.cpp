@@ -97,8 +97,23 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 		ImGuiIO& io = ImGui::GetIO();
 		unsigned char* pixels;
 		int width, height;
+
+		ImFont* font = io.Fonts->AddFontFromFileTTF(
+			"Engine/Font/ZenKakuGothicNew-Medium.ttf",
+			16.0f,
+			nullptr,
+			io.Fonts->GetGlyphRangesJapanese()
+		);
+
+		// フォントが正しく読み込めているか確認
+		IM_ASSERT(font != nullptr);
+
+		// 追加したフォントをデフォルトフォントとして明示的に指定する
+		io.FontDefault = font;
+
 		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 		// ↑ これを呼ぶと内部で TexIsBuilt = true になる
+
 
 		// 3. その後で Init
 		ImGui_ImplWin32_Init(hwnd);
