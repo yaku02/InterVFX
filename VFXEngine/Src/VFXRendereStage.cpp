@@ -20,8 +20,8 @@ void VFXRenderStage::CreatePipeline(ID3D12Device* dev)
 {
     const auto& rootSig = RootSignatureManager::GetRootSignature();
 
-    // VS‚ÆPS‚ğì¬
-            // --- ‹¤’Êƒpƒ‰ƒ[ƒ^‚Ìİ’è ---
+    // VSã¨PSã‚’ä½œæˆ
+            // --- å…±é€šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¨­å®š ---
     GraphicsPipeline::Desc baseDesc;
     baseDesc.vsPath = "Engine/Shader/VFXVS.hlsl";
     baseDesc.psPath = "Engine/Shader/VFXPS.hlsl";
@@ -31,18 +31,18 @@ void VFXRenderStage::CreatePipeline(ID3D12Device* dev)
     baseDesc.psModel = "ps_6_6";
     baseDesc.rootSignature = rootSig;
 
-    // ƒlƒCƒeƒBƒu\‘¢‘Ìid3dDescj‘¤‚Ì‹¤’Ê•`‰æƒXƒe[ƒg‚ğİ’è
+    // ãƒã‚¤ãƒ†ã‚£ãƒ–æ§‹é€ ä½“ï¼ˆd3dDescï¼‰å´ã®å…±é€šæç”»ã‚¹ãƒ†ãƒ¼ãƒˆã‚’è¨­å®š
     baseDesc.d3dDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
     baseDesc.d3dDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     baseDesc.d3dDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-    // VFX—p‹¤’ÊƒXƒe[ƒg: [“xƒeƒXƒg‚Ís‚¤‚ª‘‚«‚İ‚Ís‚í‚È‚¢iZ-Write OFFj
+    // VFXç”¨å…±é€šã‚¹ãƒ†ãƒ¼ãƒˆ: æ·±åº¦ãƒ†ã‚¹ãƒˆã¯è¡Œã†ãŒæ›¸ãè¾¼ã¿ã¯è¡Œã‚ãªã„ï¼ˆZ-Write OFFï¼‰
     baseDesc.d3dDesc.DepthStencilState.DepthEnable = TRUE;
     baseDesc.d3dDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-    baseDesc.d3dDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; // ƒJƒŠƒ“ƒO‚È‚µi—¼–Ê•`‰æj
+    baseDesc.d3dDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; // ã‚«ãƒªãƒ³ã‚°ãªã—ï¼ˆä¸¡é¢æç”»ï¼‰
 
     // --------------------------------------------------
-    // 1. ‰ÁZ‡¬ (Additive) PSO
+    // 1. åŠ ç®—åˆæˆ (Additive) PSO
     // --------------------------------------------------
     GraphicsPipeline::Desc additiveDesc = baseDesc;
     additiveDesc.blendMode = GraphicsPipeline::BlendMode::Additive;
@@ -50,7 +50,7 @@ void VFXRenderStage::CreatePipeline(ID3D12Device* dev)
     m_additivePipeline = GraphicsPipeline::Create(dev, additiveDesc);
 
     // --------------------------------------------------
-    // 2. ƒAƒ‹ƒtƒ@”¼“§–¾ (Alpha) PSO
+    // 2. ã‚¢ãƒ«ãƒ•ã‚¡åŠé€æ˜ (Alpha) PSO
     // --------------------------------------------------
     GraphicsPipeline::Desc alphaDesc = baseDesc;
     alphaDesc.blendMode = GraphicsPipeline::BlendMode::Alpha;
@@ -64,7 +64,7 @@ void VFXRenderStage::CreateCommandSignature(ID3D12Device* dev)
     argDesc.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW;
 
     D3D12_COMMAND_SIGNATURE_DESC sigDesc = {};
-    sigDesc.ByteStride = sizeof(D3D12_DRAW_ARGUMENTS); // 16ƒoƒCƒg
+    sigDesc.ByteStride = sizeof(D3D12_DRAW_ARGUMENTS); // 16ãƒã‚¤ãƒˆ
     sigDesc.NumArgumentDescs = 1;
     sigDesc.pArgumentDescs = &argDesc;
 
@@ -73,7 +73,7 @@ void VFXRenderStage::CreateCommandSignature(ID3D12Device* dev)
 
 void VFXRenderStage::Render(const RenderDesc& desc)
 {
-    // 1. ˆÀ‘S‘Îô: ’ÊíƒCƒ“ƒXƒ^ƒ“ƒXŒQ‚Ü‚½‚ÍƒvƒŒƒrƒ…[‚Ì‚Ç‚¿‚ç‚©‚Í‘¶İ‚·‚é•K—v‚ª‚ ‚é
+    // 1. å®‰å…¨å¯¾ç­–: é€šå¸¸ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç¾¤ã¾ãŸã¯ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã®ã©ã¡ã‚‰ã‹ã¯å­˜åœ¨ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
     bool hasInstances = (desc.instances != nullptr && desc.assetsMap != nullptr);
     bool hasPreview = (desc.preview != nullptr && desc.preview->IsValid());
 
@@ -81,14 +81,14 @@ void VFXRenderStage::Render(const RenderDesc& desc)
 
     auto cmdList = m_dx12->GetCmdList().Get();
 
-    // ƒp[ƒeƒBƒNƒ‹•`‰æ—pƒpƒCƒvƒ‰ƒCƒ“‚Æ’è”‚Ì‹¤’ÊƒZƒbƒg
+    // ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æç”»ç”¨ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã¨å®šæ•°ã®å…±é€šã‚»ãƒƒãƒˆ
     m_additivePipeline.SetPipeline(cmdList);
     cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CBVIndices::GlobalCBVIndex);
     cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CBVIndices::PassCBVIndex);
 
     cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-    // ’Pˆê—v‘f‚ğ•`‰æ‚·‚éƒwƒ‹ƒp[iŠù‘¶‚Ìƒ‹[ƒgƒpƒ‰ƒ[ƒ^w’è‚ğ‚»‚Ì‚Ü‚Üg—pj
+    // å˜ä¸€è¦ç´ ã‚’æç”»ã™ã‚‹ãƒ˜ãƒ«ãƒ‘ãƒ¼ï¼ˆæ—¢å­˜ã®ãƒ«ãƒ¼ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æŒ‡å®šã‚’ãã®ã¾ã¾ä½¿ç”¨ï¼‰
     auto DrawSingleInstance = [&](VFXInstance* inst, VFXAsset* asset) {
         if (!inst || !asset) return;
 
@@ -101,16 +101,16 @@ void VFXRenderStage::Render(const RenderDesc& desc)
         cmdList->SetGraphicsRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &instCBVIndex, (UINT)RootParam::CBVIndices::InstCBVIndex);
 
         cmdList->ExecuteIndirect(
-            m_drawCommandSignature.Get(),                // 1. ƒRƒ}ƒ“ƒhƒVƒOƒlƒ`ƒƒ
-            1,                                           // 2. Å‘åƒRƒ}ƒ“ƒh”
-            inst->gpuResource.indirectArgsBuffer.Get(),  // 3. ˆø”ƒoƒbƒtƒ@
-            0,                                           // 4. ˆø”ƒoƒbƒtƒ@‚ÌƒIƒtƒZƒbƒg
-            nullptr,                                     // 5. ƒJƒEƒ“ƒgƒoƒbƒtƒ@ (¡‰ñ‚Íg—p‚µ‚È‚¢‚½‚ß nullptr)
-            0                                            // 6. ƒJƒEƒ“ƒgƒoƒbƒtƒ@‚ÌƒIƒtƒZƒbƒg
+            m_drawCommandSignature.Get(),                // 1. ã‚³ãƒãƒ³ãƒ‰ã‚·ã‚°ãƒãƒãƒ£
+            1,                                           // 2. æœ€å¤§ã‚³ãƒãƒ³ãƒ‰æ•°
+            inst->gpuResource.indirectArgsBuffer.Get(),  // 3. å¼•æ•°ãƒãƒƒãƒ•ã‚¡
+            0,                                           // 4. å¼•æ•°ãƒãƒƒãƒ•ã‚¡ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+            nullptr,                                     // 5. ã‚«ã‚¦ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ (ä»Šå›ã¯ä½¿ç”¨ã—ãªã„ãŸã‚ nullptr)
+            0                                            // 6. ã‚«ã‚¦ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
         );
         };
 
-    // --- A. ’ÊíƒCƒ“ƒXƒ^ƒ“ƒXŒQ‚Ì•`‰æ ---
+    // --- A. é€šå¸¸ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç¾¤ã®æç”» ---
     if (hasInstances)
     {
         for (auto& inst : *desc.instances)
@@ -128,16 +128,16 @@ void VFXRenderStage::Render(const RenderDesc& desc)
         }
     }
 
-    // --- B. ƒvƒŒƒrƒ…[—pƒCƒ“ƒXƒ^ƒ“ƒX‚Ì•`‰æ ---
+    // --- B. ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®æç”» ---
     if (hasPreview)
     {
         DrawSingleInstance(desc.preview->GetInstance(), desc.preview->GetAsset().get());
     }
 
-    // --- C. ƒŠƒ\[ƒXƒoƒŠƒAiSRV -> UAVj‚Ì“K—piŸƒtƒŒ[ƒ€‚ÌUpdateCS‚É”õ‚¦‚éj ---
+    // --- C. ãƒªã‚½ãƒ¼ã‚¹ãƒãƒªã‚¢ï¼ˆSRV -> UAVï¼‰ã®é©ç”¨ï¼ˆæ¬¡ãƒ•ãƒ¬ãƒ¼ãƒ ã®UpdateCSã«å‚™ãˆã‚‹ï¼‰ ---
     std::vector<D3D12_RESOURCE_BARRIER> transitions;
 
-    // ’ÊíƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒoƒŠƒA’Ç‰Á
+    // é€šå¸¸ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒªã‚¢è¿½åŠ 
     if (hasInstances)
     {
         for (auto& inst : *desc.instances) {
@@ -157,7 +157,7 @@ void VFXRenderStage::Render(const RenderDesc& desc)
         }
     }
 
-    // ƒvƒŒƒrƒ…[—pƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒoƒŠƒA’Ç‰Á
+    // ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒªã‚¢è¿½åŠ 
     if (hasPreview)
     {
         VFXInstance* prevInst = desc.preview->GetInstance();

@@ -18,7 +18,7 @@ void Dx12Wrapper::Init(Window& window)
 	m_window = &window;
 
 #ifdef _DEBUG
-	// ƒfƒoƒbƒOƒŒƒCƒ„[‚ğƒIƒ“
+	// ãƒ‡ãƒãƒƒã‚°ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã‚ªãƒ³
 	debugger.EnableDebugLayer();
 
 #endif
@@ -38,7 +38,7 @@ void Dx12Wrapper::Init(Window& window)
 	CreateCmdQueue();
 	CreateDepth(m_window->GetWindowWidth(), m_window->GetWindowHeight());
 
-	// ©‚±‚±‚É’Ç‰ÁI
+	// â†ã“ã“ã«è¿½åŠ ï¼
 	ComPtr<ID3D12InfoQueue> infoQueue;
 	if (SUCCEEDED(_dev->QueryInterface(IID_PPV_ARGS(&infoQueue))))
 	{
@@ -52,7 +52,7 @@ void Dx12Wrapper::Init(Window& window)
 
 void Dx12Wrapper::InitAdapters()
 {
-	// ‚±‚±‚É“Á’è‚Ì–¼‘O‚ğ‚ÂƒAƒ_ƒvƒ^[ƒIƒuƒWƒFƒNƒg‚ª“ü‚é
+	// ã“ã“ã«ç‰¹å®šã®åå‰ã‚’æŒã¤ã‚¢ãƒ€ãƒ—ã‚¿ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒå…¥ã‚‹
 	for (int i = 0;
 		_dxgiFactory->EnumAdapters(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND;
 		++i)
@@ -67,7 +67,7 @@ void Dx12Wrapper::InitAdapters()
 
 		std::wstring strDesc = adesc.Description;
 
-		// ’T‚µ‚½‚¢ƒAƒ_ƒvƒ^[‚Ì–¼‘O‚ğŠm”F
+		// æ¢ã—ãŸã„ã‚¢ãƒ€ãƒ—ã‚¿ãƒ¼ã®åå‰ã‚’ç¢ºèª
 		if (strDesc.find(L"NVIDIA") != std::string::npos)
 		{
 			tmpAdapter = adpt;
@@ -78,7 +78,7 @@ void Dx12Wrapper::InitAdapters()
 
 void Dx12Wrapper::CreateDevice()
 {
-	// ƒfƒoƒCƒXì¬
+	// ãƒ‡ãƒã‚¤ã‚¹ä½œæˆ
 	HRESULT hr = D3D12CreateDevice(tmpAdapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&_dev));
 
 	if (FAILED(hr)) {
@@ -90,7 +90,7 @@ void Dx12Wrapper::CreateDevice()
 void Dx12Wrapper::CreateCmdAllocator()
 {
 	for (int i = 0; i < FrameSetting::Count; ++i) {
-		// ƒRƒ}ƒ“ƒhƒAƒƒP[ƒ^[‚Ìì¬
+		// ã‚³ãƒãƒ³ãƒ‰ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ãƒ¼ã®ä½œæˆ
 		auto result = _dev->CreateCommandAllocator(
 			D3D12_COMMAND_LIST_TYPE_DIRECT,
 			IID_PPV_ARGS(&_cmdAllocators[i])
@@ -116,23 +116,23 @@ void Dx12Wrapper::CreateCmdList()
 
 void Dx12Wrapper::CreateCmdQueue()
 {
-	// ƒRƒ}ƒ“ƒhƒLƒ…[ì¬
+	// ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ä½œæˆ
 
 	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
 
-	// ƒ^ƒCƒ€ƒAƒEƒg‚È‚µ
+	// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãªã—
 	cmdQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-	// ƒAƒ_ƒvƒ^[‚ğ1‚Â‚µ‚©g‚í‚È‚¢‚Í0‚Å‚æ‚¢
+	// ã‚¢ãƒ€ãƒ—ã‚¿ãƒ¼ã‚’1ã¤ã—ã‹ä½¿ã‚ãªã„æ™‚ã¯0ã§ã‚ˆã„
 	cmdQueueDesc.NodeMask = 0;
 
-	// ƒvƒ‰ƒCƒIƒŠƒeƒB‚Í“Á‚Éw’è‚È‚µ
+	// ãƒ—ãƒ©ã‚¤ã‚ªãƒªãƒ†ã‚£ã¯ç‰¹ã«æŒ‡å®šãªã—
 	cmdQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
 
-	// ƒRƒ}ƒ“ƒhƒŠƒXƒg‚Æ‡‚í‚¹‚é
+	// ã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆã¨åˆã‚ã›ã‚‹
 	cmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-	// ƒLƒ…[ì¬
+	// ã‚­ãƒ¥ãƒ¼ä½œæˆ
 	auto result = _dev->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&_cmdQueue));
 	if (result != S_OK) {
 		OutputDebugStringA("cmdQueue is failed\n");
@@ -142,23 +142,23 @@ void Dx12Wrapper::CreateCmdQueue()
 
 void Dx12Wrapper::CreateDepth(int window_width, int window_height)
 {
-	// 1. [“xƒoƒbƒtƒ@ƒŠƒ\[ƒX‚Ìì¬
+	// 1. æ·±åº¦ãƒãƒƒãƒ•ã‚¡ãƒªã‚½ãƒ¼ã‚¹ã®ä½œæˆ
 	D3D12_RESOURCE_DESC depthResDesc = {};
 	depthResDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	depthResDesc.Width = window_width;
 	depthResDesc.Height = window_height;
 	depthResDesc.DepthOrArraySize = 1;
 	depthResDesc.MipLevels = 1;
-	depthResDesc.Format = DXGI_FORMAT_D32_FLOAT; // [“x—pƒtƒH[ƒ}ƒbƒg
+	depthResDesc.Format = DXGI_FORMAT_D32_FLOAT; // æ·±åº¦ç”¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	depthResDesc.SampleDesc.Count = 1;
 	depthResDesc.SampleDesc.Quality = 0;
 	depthResDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	depthResDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // d—vI
+	depthResDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // é‡è¦ï¼
 
-	// [“x‚ÌƒNƒŠƒA’lİ’è
+	// æ·±åº¦ã®ã‚¯ãƒªã‚¢å€¤è¨­å®š
 	D3D12_CLEAR_VALUE depthClearValue = {};
 	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-	depthClearValue.DepthStencil.Depth = 1.0f; // Å‘å’l(ˆê”Ô‰œ)‚ÅƒNƒŠƒA
+	depthClearValue.DepthStencil.Depth = 1.0f; // æœ€å¤§å€¤(ä¸€ç•ªå¥¥)ã§ã‚¯ãƒªã‚¢
 	depthClearValue.DepthStencil.Stencil = 0;
 
 	D3D12_HEAP_PROPERTIES depthHeapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -167,19 +167,19 @@ void Dx12Wrapper::CreateDepth(int window_width, int window_height)
 		&depthHeapProp,
 		D3D12_HEAP_FLAG_NONE,
 		&depthResDesc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE, // ‘‚«‚İ‰Â”\‚Èó‘Ô‚Åì¬
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, // æ›¸ãè¾¼ã¿å¯èƒ½ãªçŠ¶æ…‹ã§ä½œæˆ
 		&depthClearValue,
 		IID_PPV_ARGS(&depthBuffer));
 
-	// 2. DSV—pƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ìì¬
+	// 2. DSVç”¨ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®ä½œæˆ
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
 	dsvHeapDesc.NumDescriptors = 1;
-	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV; // [“xƒXƒeƒ“ƒVƒ‹ƒrƒ…[—p
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV; // æ·±åº¦ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ãƒ“ãƒ¥ãƒ¼ç”¨
 	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
 	_dev->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap));
 
-	// 3. ƒrƒ…[(DSV)‚Ìì¬
+	// 3. ãƒ“ãƒ¥ãƒ¼(DSV)ã®ä½œæˆ
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
 	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
@@ -189,7 +189,7 @@ void Dx12Wrapper::CreateDepth(int window_width, int window_height)
 }
 
 void Dx12Wrapper::ExecuteCommand() {
-	// ƒRƒ}ƒ“ƒhÀs
+	// ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œ
 	_cmdList->Close();
 	ID3D12CommandList* lists[] = { _cmdList.Get() };
 	_cmdQueue->ExecuteCommandLists(1, lists);
@@ -202,10 +202,10 @@ void Dx12Wrapper::ResetCommands(UINT backBufferIdx) {
 
 void Dx12Wrapper::ExecuteInitCommands()
 {
-	// 1. ‰Šú‰»—pƒRƒ}ƒ“ƒh‚Ì‹L˜^‚ğI—¹
+	// 1. åˆæœŸåŒ–ç”¨ã‚³ãƒãƒ³ãƒ‰ã®è¨˜éŒ²ã‚’çµ‚äº†
 	_cmdList->Close();
 
-	// 2. ƒRƒ}ƒ“ƒhƒLƒ…[‚ÅÀs
+	// 2. ã‚³ãƒãƒ³ãƒ‰ã‚­ãƒ¥ãƒ¼ã§å®Ÿè¡Œ
 	ID3D12CommandList* ppCmdLists[] = { _cmdList.Get() };
 	_cmdQueue->ExecuteCommandLists(1, ppCmdLists);
 }

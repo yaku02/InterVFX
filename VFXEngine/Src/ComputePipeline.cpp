@@ -9,13 +9,13 @@ ComputePipeline ComputePipeline::Create(ID3D12Device* dev, const Desc& desc)
     ComputePipeline result;
     ShaderCompiler compiler;
 
-    // 1. ƒx[ƒX‚Æ‚µ‚Ä d3dDesc ‚ðƒRƒs[iƒfƒtƒHƒ‹ƒg’l‚âŒÂ•ÊƒJƒXƒ^ƒ€Ý’è‚ðŒp³j
+    // 1. ãƒ™ãƒ¼ã‚¹ã¨ã—ã¦ d3dDesc ã‚’ã‚³ãƒ”ãƒ¼ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚„å€‹åˆ¥ã‚«ã‚¹ã‚¿ãƒ è¨­å®šã‚’ç¶™æ‰¿ï¼‰
     D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = desc.d3dDesc;
 
-    // 2. ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ‚ÌƒZƒbƒg
+    // 2. ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã®ã‚»ãƒƒãƒˆ
     psoDesc.pRootSignature = desc.rootSignature.Get();
 
-    // 3. CSƒVƒF[ƒ_[ƒRƒ“ƒpƒCƒ‹ & ƒoƒCƒgƒR[ƒhƒZƒbƒg
+    // 3. CSã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ³ãƒ‘ã‚¤ãƒ« & ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã‚»ãƒƒãƒˆ
     auto csBlob = compiler.CompileShader(desc.csPath, desc.csEntry, desc.csModel);
     if (csBlob) {
         psoDesc.CS = { csBlob->GetBufferPointer(), csBlob->GetBufferSize() };
@@ -25,7 +25,7 @@ ComputePipeline ComputePipeline::Create(ID3D12Device* dev, const Desc& desc)
         return result;
     }
 
-    // 4. PSO‚Ì¶¬
+    // 4. PSOã®ç”Ÿæˆ
     result.rootSignature = desc.rootSignature;
     HRESULT hr = dev->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&result.pipelineState));
 
@@ -34,7 +34,7 @@ ComputePipeline ComputePipeline::Create(ID3D12Device* dev, const Desc& desc)
         return result;
     }
 
-    // ƒfƒoƒbƒO—p‚Ì–¼‘OÝ’è
+    // ãƒ‡ãƒãƒƒã‚°ç”¨ã®åå‰è¨­å®š
     std::string psoName = desc.csPath + " [" + desc.csEntry + "]";
     result.pipelineState->SetName(StringConverter::ToLPCWSTR(psoName).c_str());
 

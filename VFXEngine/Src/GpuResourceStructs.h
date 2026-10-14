@@ -82,7 +82,7 @@ struct HeapPropInfo {
 		case 0:  return Type::None;
 		case 1:  return Type::Upload;
 		case 2:  return Type::Default;
-		default: return Type::None; // �͈͊O�� None �Ƃ��Ĉ���
+		default: return Type::None; // 範囲外は None として扱う
 		}
 	}
 };
@@ -96,17 +96,17 @@ enum class ShaderVisibleType {
 };
 
 enum class ResState {
-	Common,                 // ������Ԃ�ėp�I�ȏ�� (D3D12_RESOURCE_STATE_COMMON)
-	VertexAndConstantBuffer,// ���_�o�b�t�@�A�萔�o�b�t�@ (D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER)
-	IndexBuffer,            // �C���f�b�N�X�o�b�t�@ (D3D12_RESOURCE_STATE_INDEX_BUFFER)
-	RenderTarget,           // �����_�[�^�[�Q�b�g (D3D12_RESOURCE_STATE_RENDER_TARGET)
-	UnorderedAccess,        // UAV�i�R���s���[�g�V�F�[�_�[����̏������݂Ȃǁj (D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
-	NonPixelShaderResource, // SRV�iVS��CS�Ńe�N�X�`���E�o�b�t�@��ǂނƂ��j (D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE)
-	PixelShaderResource,    // SRV�i�s�N�Z���V�F�[�_�[�Ńe�N�X�`����ǂނƂ��j (D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
-	IndirectArgument,       // ExecuteIndirect �̈����o�b�t�@ (D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT)
-	CopyDest,               // CopyBufferRegion �Ȃǂ̃R�s�[�� (D3D12_RESOURCE_STATE_COPY_DEST)
-	CopySource,             // CopyBufferRegion �Ȃǂ̃R�s�[�� (D3D12_RESOURCE_STATE_COPY_SOURCE)
-	Present,                // ��ʕ\���p�i�X���b�v�`�F�[���j (D3D12_RESOURCE_STATE_PRESENT)
-	DepthWrite,             // �[�x�X�e���V���i�������݁j (D3D12_RESOURCE_STATE_DEPTH_WRITE)
-	DepthRead               // �[�x�X�e���V���i�ǂݎ��j (D3D12_RESOURCE_STATE_DEPTH_READ)
+	Common,                 // 初期状態や汎用的な状態 (D3D12_RESOURCE_STATE_COMMON)
+	VertexAndConstantBuffer,// 頂点バッファ、定数バッファ (D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER)
+	IndexBuffer,            // インデックスバッファ (D3D12_RESOURCE_STATE_INDEX_BUFFER)
+	RenderTarget,           // レンダーターゲット (D3D12_RESOURCE_STATE_RENDER_TARGET)
+	UnorderedAccess,        // UAV（コンピュートシェーダーからの書き込みなど） (D3D12_RESOURCE_STATE_UNORDERED_ACCESS)
+	NonPixelShaderResource, // SRV（VSやCSでテクスチャ・バッファを読むとき） (D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE)
+	PixelShaderResource,    // SRV（ピクセルシェーダーでテクスチャを読むとき） (D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE)
+	IndirectArgument,       // ExecuteIndirect の引数バッファ (D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT)
+	CopyDest,               // CopyBufferRegion などのコピー先 (D3D12_RESOURCE_STATE_COPY_DEST)
+	CopySource,             // CopyBufferRegion などのコピー元 (D3D12_RESOURCE_STATE_COPY_SOURCE)
+	Present,                // 画面表示用（スワップチェーン） (D3D12_RESOURCE_STATE_PRESENT)
+	DepthWrite,             // 深度ステンシル（書き込み） (D3D12_RESOURCE_STATE_DEPTH_WRITE)
+	DepthRead               // 深度ステンシル（読み取り） (D3D12_RESOURCE_STATE_DEPTH_READ)
 };

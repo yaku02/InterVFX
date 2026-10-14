@@ -3,15 +3,15 @@
 namespace RootParam {
 
 	// -------------------------------------------------------------
-	// 1. Root Parameter ‚ÌƒXƒƒbƒg’è‹` (Root Signature ‚ÌƒŒƒCƒAƒEƒg)
+	// 1. Root Parameter ã®ã‚¹ãƒ­ãƒƒãƒˆå®šç¾© (Root Signature ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ)
 	// -------------------------------------------------------------
 	enum class Slot : UINT{
-		CBVIndices = 0, // ‘S Compute ‹¤’Ê‚Ì Root Constants (1~2 DWORD)
+		CBVIndices = 0, // å…¨ Compute å…±é€šã® Root Constants (1~2 DWORD)
 		Count,
 	};
 
 	// -------------------------------------------------------------
-	// 2. Root Constants (Slot 0) ‚Å’¼‘—‚è‚·‚é‹¤’ÊƒCƒ“ƒfƒbƒNƒX
+	// 2. Root Constants (Slot 0) ã§ç›´é€ã‚Šã™ã‚‹å…±é€šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	// -------------------------------------------------------------
 	enum class CBVIndices : UINT{
 		GlobalCBVIndex = 0,

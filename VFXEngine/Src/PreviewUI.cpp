@@ -4,14 +4,18 @@
 #include "Dx12Wrapper.h"
 #include "GpuResourceManager.h"
 #include "Debugger.h"
-#include <imgui.h>
-#include <d3dx12.h>
+#include "PreviewCamera.h"
+#include "Timer.h"
 
-void PreviewUI::Init(InitDesc& initDesc)
+void PreviewUI::Init(InitDesc& desc)
 {
-    m_window = &initDesc.window;
-    m_dx12 = &initDesc.dx12;
-    m_gpuResMgr = &initDesc.gpuResMgr;
+    m_window = &desc.window;
+    m_dx12 = &desc.dx12;
+    m_gpuResMgr = &desc.gpuResMgr;
+
+    float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
+    PreviewCamera::Init(DirectX::XMConvertToRadians(45.0f), aspectRatio, 0.1f, 1000.0f);
+
 }
 
 void PreviewUI::Render()
@@ -113,6 +117,11 @@ void PreviewUI::DrawInParentUI()
             {
                 ImTextureID textureId = (ImTextureID)m_colorBuffer.srvHandle.ptr;
                 ImGui::Image(textureId, viewportSize);
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
+                {
+                    PreviewCamera::Update(Timer::GetGlobalDeltaTime());
+                }
+
             }
             else
             {

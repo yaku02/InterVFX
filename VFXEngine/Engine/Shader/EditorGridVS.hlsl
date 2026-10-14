@@ -1,4 +1,4 @@
-﻿#include "InSystem.hlsli"
+#include "InSystem.hlsli"
 
 struct VSOutput
 {

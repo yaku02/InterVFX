@@ -9,7 +9,7 @@
 #include "EditorGridPass.h"
 #include "Debugger.h"
 #include "Timer.h"
-#include "EditorCamera.h"
+#include "SceneCamera.h"
 #include "SceneUI.h"
 #include "PreviewUI.h"
 #include "PreviewCamera.h"
@@ -23,9 +23,6 @@ void GraphicsManager::Init(const InitDesc& desc)
 	m_dx12 = &desc.dx12;
 	m_gpuResMgr = &desc.gpuResMgr;
 	m_texMgr = &desc.texMgr;
-
-	float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
-	EditorCamera::Init(DirectX::XMConvertToRadians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
 	CreateGlobalCB(desc.gpuResMgr);
 
@@ -82,18 +79,18 @@ void GraphicsManager::Execute(RenderMode mode)
 	float dt = Timer::GetGlobalDeltaTime();
 	m_globalCBDesc.param.globalDeltaTime = dt;
 
-	EditorCamera::Update(dt);
-	DirectX::XMMATRIX viewProj = EditorCamera::GetViewProjMatrix();
-	DirectX::XMVECTOR det;
-	DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(&det, viewProj);
+		DirectX::XMMATRIX viewProj = SceneCamera::GetViewProjMatrix();
+		DirectX::XMVECTOR det;
+		DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(&det, viewProj);
 
-	DirectX::XMFLOAT3 cameraPos = EditorCamera::GetPosition();
-	DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.viewProj, DirectX::XMMatrixTranspose(viewProj));
-	DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.invViewProj, DirectX::XMMatrixTranspose(invViewProj));
-	m_globalCBDesc.param.cameraPos = cameraPos;
+		DirectX::XMFLOAT3 cameraPos = SceneCamera::GetPosition();
+		DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.viewProj, DirectX::XMMatrixTranspose(viewProj));
+		DirectX::XMStoreFloat4x4(&m_globalCBDesc.param.invViewProj, DirectX::XMMatrixTranspose(invViewProj));
+		m_globalCBDesc.param.cameraPos = cameraPos;
 
-	// 3. GPU (ConstantBuffer) ‚ÖƒAƒbƒvƒ[ƒh
-	m_globalCB.Upload(m_globalCBDesc);
+		// 3. GPU (ConstantBuffer) ã¸ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰
+		m_globalCB.Upload(m_globalCBDesc);
+	
 
 	{
 		EditorGridRenderer::RenderDesc renDesc{
@@ -103,8 +100,13 @@ void GraphicsManager::Execute(RenderMode mode)
 		m_editorGridPass->Execute(EditorGridPass::PassExecuteDesc{ .renderDesc = renDesc,});
 	}
 
-	m_vfxMgr->Execute(VFXManager::ExecuteDesc{ .grobalCBVIndex = m_globalCB.descriptorIndex, .mode = mode });
-
+	{
+		VFXManager::ExecuteDesc desc{
+			.grobalCBVIndex = m_globalCB.descriptorIndex,
+			.mode = mode,
+		};
+		m_vfxMgr->Execute(desc);
+	}
 }
 
 void GraphicsManager::ShutDown()

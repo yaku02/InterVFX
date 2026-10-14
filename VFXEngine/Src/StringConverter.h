@@ -7,9 +7,9 @@ public:
 			return L"";
 		}
 
-		// •K—v‚Èƒoƒbƒtƒ@ƒTƒCƒY‚ğæ“¾
+		// å¿…è¦ãªãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å–å¾—
 		int sizeNeeded = MultiByteToWideChar(
-			CP_UTF8,          // UTF-8‚©‚ç‚Ì•ÏŠ·iShift_JIS‚È‚Ç‚Ìê‡‚Í CP_ACP ‚É•ÏXj
+			CP_UTF8,          // UTF-8ã‹ã‚‰ã®å¤‰æ›ï¼ˆShift_JISãªã©ã®å ´åˆã¯ CP_ACP ã«å¤‰æ›´ï¼‰
 			0,
 			str.c_str(),
 			static_cast<int>(str.size()),
@@ -34,8 +34,8 @@ public:
 		return result;
 	}
 
-	// LPCWSTR ‚ğæ“¾‚·‚é—˜•Ö—pƒwƒ‹ƒp[i“à•”‚Å ToWString ‚ğŒÄ‚Ôj
-	// ’ˆÓ: –ß‚è’l‚Ì LPCWSTR ‚ÍAŒÄ‚Ño‚µŒ³‚ÌƒXƒR[ƒv‚Åg—p‚µ‚Ä‚­‚¾‚³‚¢
+	// LPCWSTR ã‚’å–å¾—ã™ã‚‹åˆ©ä¾¿ç”¨ãƒ˜ãƒ«ãƒ‘ãƒ¼ï¼ˆå†…éƒ¨ã§ ToWString ã‚’å‘¼ã¶ï¼‰
+	// æ³¨æ„: æˆ»ã‚Šå€¤ã® LPCWSTR ã¯ã€å‘¼ã³å‡ºã—å…ƒã®ã‚¹ã‚³ãƒ¼ãƒ—ã§ä½¿ç”¨ã—ã¦ãã ã•ã„
 	static std::wstring ToLPCWSTR(const std::string& str) {
 		return ToWString(str);
 	}

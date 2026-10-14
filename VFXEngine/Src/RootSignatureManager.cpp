@@ -14,10 +14,10 @@ HRESULT RootSignatureManager::CreateCommonRootSignature(ID3D12Device* dev)
 	);
 
 	CD3DX12_STATIC_SAMPLER_DESC staticSamplers[] = {
-		// s0: Point (Šù‘¶)
+		// s0: Point (æ—¢å­˜)
 		CD3DX12_STATIC_SAMPLER_DESC(0, D3D12_FILTER_MIN_MAG_MIP_POINT),
 
-		// ¡Œã‘‚â‚·—áiƒRƒƒ“ƒgƒAƒEƒg‚ğŠO‚·‚©’Ç‹LjF
+		// ä»Šå¾Œå¢—ã‚„ã™ä¾‹ï¼ˆã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã‚’å¤–ã™ã‹è¿½è¨˜ï¼‰ï¼š
 		// CD3DX12_STATIC_SAMPLER_DESC(1, D3D12_FILTER_MIN_MAG_MIP_LINEAR), // s1: Linear
 	};
 

@@ -3,12 +3,12 @@
 class GraphicsPipeline {
 public:
 	enum class BlendMode {
-		Alpha = 0,    // ’Êí‚ÌƒAƒ‹ƒtƒ@”¼“§–¾ (Dest: INV_SRC_ALPHA)
-		Additive = 1, // ‰ÁZ‡¬ (Dest: ONE)
+		Alpha = 0,    // é€šå¸¸ã®ã‚¢ãƒ«ãƒ•ã‚¡åŠé€æ˜ (Dest: INV_SRC_ALPHA)
+		Additive = 1, // åŠ ç®—åˆæˆ (Dest: ONE)
 	};
 
     struct Desc {
-        // --- “Æ©ŠÇ—FƒVƒF[ƒ_[ƒpƒXî•ñ ---
+        // --- ç‹¬è‡ªç®¡ç†ï¼šã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ‘ã‚¹æƒ…å ± ---
         std::string vsPath = "";
         std::string vsEntry = "VSMain";
         std::string vsModel = "vs_6_6";
@@ -17,14 +17,14 @@ public:
         std::string psEntry = "PSMain";
         std::string psModel = "ps_6_6";
 
-        // --- “Æ©ŠÇ—FŠÈˆÕİ’è—p ---
+        // --- ç‹¬è‡ªç®¡ç†ï¼šç°¡æ˜“è¨­å®šç”¨ ---
         BlendMode blendMode = BlendMode::Alpha;
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 
-        // --- ƒlƒCƒeƒBƒu\‘¢‘Ì‚ğ“à•ï‚µ‚Ä’¼Ú×‚©‚­İ’è‚à‰Â”\‚É‚·‚é ---
+        // --- ãƒã‚¤ãƒ†ã‚£ãƒ–æ§‹é€ ä½“ã‚’å†…åŒ…ã—ã¦ç›´æ¥ç´°ã‹ãè¨­å®šã‚‚å¯èƒ½ã«ã™ã‚‹ ---
         D3D12_GRAPHICS_PIPELINE_STATE_DESC d3dDesc{};
 
-        // ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åu‚æ‚­g‚¤ˆÀ‘S‚ÈƒfƒtƒHƒ‹ƒg’lv‚ğ©“®ƒZƒbƒg‚µ‚Ä‚¨‚­
+        // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§ã€Œã‚ˆãä½¿ã†å®‰å…¨ãªãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã€ã‚’è‡ªå‹•ã‚»ãƒƒãƒˆã—ã¦ãŠã
         Desc() {
             d3dDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
             d3dDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;

@@ -9,13 +9,13 @@ GraphicsPipeline GraphicsPipeline::Create(ID3D12Device* dev, const Desc& desc)
     GraphicsPipeline result;
     ShaderCompiler compiler;
 
-    // 1. ƒx[ƒX‚Æ‚µ‚ÄŒÄ‚Ño‚µŒ³‚Ì d3dDesc ‚ðƒRƒs[iƒfƒtƒHƒ‹ƒg’l‚âŒÂ•ÊƒJƒXƒ^ƒ€Ý’è‚ðŒp³j
+    // 1. ãƒ™ãƒ¼ã‚¹ã¨ã—ã¦å‘¼ã³å‡ºã—å…ƒã® d3dDesc ã‚’ã‚³ãƒ”ãƒ¼ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚„å€‹åˆ¥ã‚«ã‚¹ã‚¿ãƒ è¨­å®šã‚’ç¶™æ‰¿ï¼‰
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = desc.d3dDesc;
 
-    // 2. ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ‚ÌƒZƒbƒg
+    // 2. ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã®ã‚»ãƒƒãƒˆ
     psoDesc.pRootSignature = desc.rootSignature.Get();
 
-    // 3. ƒVƒF[ƒ_[ƒRƒ“ƒpƒCƒ‹ & ƒoƒCƒgƒR[ƒhƒZƒbƒg
+    // 3. ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ³ãƒ‘ã‚¤ãƒ« & ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã‚»ãƒƒãƒˆ
     auto vsBlob = compiler.CompileShader(desc.vsPath, desc.vsEntry, desc.vsModel);
     auto psBlob = compiler.CompileShader(desc.psPath, desc.psEntry, desc.psModel);
 
@@ -26,7 +26,7 @@ GraphicsPipeline GraphicsPipeline::Create(ID3D12Device* dev, const Desc& desc)
         psoDesc.PS = { psBlob->GetBufferPointer(), psBlob->GetBufferSize() };
     }
 
-    // 4. ƒuƒŒƒ“ƒhƒXƒe[ƒg‚ÌŽ©“®\’ziblendMode ‚É‰ž‚¶‚ÄÝ’èj
+    // 4. ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¹ãƒ†ãƒ¼ãƒˆã®è‡ªå‹•æ§‹ç¯‰ï¼ˆblendMode ã«å¿œã˜ã¦è¨­å®šï¼‰
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     D3D12_RENDER_TARGET_BLEND_DESC& rtBlend = psoDesc.BlendState.RenderTarget[0];
     rtBlend.BlendEnable = TRUE;
@@ -35,26 +35,26 @@ GraphicsPipeline GraphicsPipeline::Create(ID3D12Device* dev, const Desc& desc)
     rtBlend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
     if (desc.blendMode == BlendMode::Additive) {
-        // ‰ÁŽZ‡¬
+        // åŠ ç®—åˆæˆ
         rtBlend.DestBlend = D3D12_BLEND_ONE;
         rtBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
         rtBlend.DestBlendAlpha = D3D12_BLEND_ONE;
         rtBlend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
     }
     else {
-        // ƒAƒ‹ƒtƒ@”¼“§–¾
+        // ã‚¢ãƒ«ãƒ•ã‚¡åŠé€æ˜Ž
         rtBlend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
         rtBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
         rtBlend.DestBlendAlpha = D3D12_BLEND_ZERO;
         rtBlend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
     }
 
-    // 5. DSVFormat‚ªNONE/UNKNOWN‚Ìê‡‚ÍŽ©“®‚ÅDepthEnable‚ðOFF‚É‚·‚é•â³
+    // 5. DSVFormatãŒNONE/UNKNOWNã®å ´åˆã¯è‡ªå‹•ã§DepthEnableã‚’OFFã«ã™ã‚‹è£œæ­£
     if (psoDesc.DSVFormat == DXGI_FORMAT_UNKNOWN) {
         psoDesc.DepthStencilState.DepthEnable = FALSE;
     }
 
-    // 6. PSO‚Ì¶¬
+    // 6. PSOã®ç”Ÿæˆ
     result.rootSignature = desc.rootSignature;
     HRESULT hr = dev->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&result.pipelineState));
 
@@ -63,7 +63,7 @@ GraphicsPipeline GraphicsPipeline::Create(ID3D12Device* dev, const Desc& desc)
         return result;
     }
 
-    // ƒfƒoƒbƒO—p‚Ì–¼‘OÝ’è
+    // ãƒ‡ãƒãƒƒã‚°ç”¨ã®åå‰è¨­å®š
     std::string psoName = desc.vsEntry + "/" + desc.psEntry;
     result.pipelineState->SetName(StringConverter::ToLPCWSTR(psoName).c_str());
 

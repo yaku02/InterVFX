@@ -11,22 +11,22 @@ public:
 
     ConstantBuffer() = default;
 
-    // --- ƒRƒs[‹Ö~ ---
+    // --- ã‚³ãƒ”ãƒ¼ç¦æ­¢ ---
     ConstantBuffer(const ConstantBuffer&) = delete;
     ConstantBuffer& operator=(const ConstantBuffer&) = delete;
 
-    // --- ƒ€[ƒu‹–‰Â ---
+    // --- ãƒ ãƒ¼ãƒ–è¨±å¯ ---
     ConstantBuffer(ConstantBuffer&& other) noexcept
         : resource(std::move(other.resource))
         , descriptorIndex(other.descriptorIndex)
         , mapData(other.mapData) {
         other.descriptorIndex = UINT32_MAX;
-        other.mapData = nullptr; // Š—LŒ ‚ğˆÚ“®‚µ‚½‚½‚ßŒ³‚Ìƒ|ƒCƒ“ƒ^‚ğƒNƒŠƒA
+        other.mapData = nullptr; // æ‰€æœ‰æ¨©ã‚’ç§»å‹•ã—ãŸãŸã‚å…ƒã®ãƒã‚¤ãƒ³ã‚¿ã‚’ã‚¯ãƒªã‚¢
     }
 
     ConstantBuffer& operator=(ConstantBuffer&& other) noexcept {
         if (this != &other) {
-            Unmap(); // ©g‚ªƒ}ƒbƒv’†‚È‚ç‰ğœ
+            Unmap(); // è‡ªèº«ãŒãƒãƒƒãƒ—ä¸­ãªã‚‰è§£é™¤
             resource = std::move(other.resource);
             descriptorIndex = other.descriptorIndex;
             mapData = other.mapData;
@@ -57,10 +57,10 @@ public:
     static ConstantBuffer<T> Create(GpuResourceManager& gpuResMgr) {
         ConstantBuffer<T> cb;
 
-        // 256ƒoƒCƒg‹«ŠEƒAƒ‰ƒCƒ“ƒƒ“ƒgŒvZ
+        // 256ãƒã‚¤ãƒˆå¢ƒç•Œã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆè¨ˆç®—
         uint32_t bufferSize = (sizeof(T) + 255) & ~255;
 
-        // ’è”ƒoƒbƒtƒ@‚ğì¬i¦void**“™‚Åó‚¯‚éê‡‚Í reinterpret_cast ‚ª•K—v‚Èê‡‚ª‚ ‚è‚Ü‚·j
+        // å®šæ•°ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆï¼ˆâ€»void**ç­‰ã§å—ã‘ã‚‹å ´åˆã¯ reinterpret_cast ãŒå¿…è¦ãªå ´åˆãŒã‚ã‚Šã¾ã™ï¼‰
         gpuResMgr.CreateConstantBuffer<T>(
             cb.resource,
             bufferSize,
@@ -69,12 +69,12 @@ public:
         );
 
         cb.descriptorIndex = gpuResMgr.CreateCBV(cb.resource, bufferSize);
-        return cb; // ƒ€[ƒuƒRƒ“ƒXƒgƒ‰ƒNƒ^Œo—R‚ÅˆÀ‘S‚É•Ô‹p‚³‚ê‚é
+        return cb; // ãƒ ãƒ¼ãƒ–ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿çµŒç”±ã§å®‰å…¨ã«è¿”å´ã•ã‚Œã‚‹
     }
 
     void Upload(const T& data) {
         if (mapData) {
-            *mapData = data; // memcpy(mapData, &data, sizeof(T)); ‚Æ“¯“™
+            *mapData = data; // memcpy(mapData, &data, sizeof(T)); ã¨åŒç­‰
         }
     }
 };

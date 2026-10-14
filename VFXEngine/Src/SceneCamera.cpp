@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "EditorCamera.h"
+#include "SceneCamera.h"
 
 using namespace DirectX;
 
-void EditorCamera::Init(float fovAngleY, float aspectRatio, float nearZ, float farZ)
+void SceneCamera::Init(float fovAngleY, float aspectRatio, float nearZ, float farZ)
 {
     s_fovAngleY = fovAngleY;
     s_aspectRatio = aspectRatio;
@@ -14,13 +14,13 @@ void EditorCamera::Init(float fovAngleY, float aspectRatio, float nearZ, float f
     UpdateViewMatrix();
 }
 
-void EditorCamera::SetAspectRatio(float aspectRatio)
+void SceneCamera::SetAspectRatio(float aspectRatio)
 {
     s_aspectRatio = aspectRatio;
     UpdateProjectionMatrix();
 }
 
-void EditorCamera::Update(float deltaTime)
+void SceneCamera::Update(float deltaTime)
 {
     // 右クリック長押し中のみカメラ操作を受け付ける
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
@@ -73,35 +73,35 @@ void EditorCamera::Update(float deltaTime)
     UpdateViewMatrix();
 }
 
-XMMATRIX EditorCamera::GetViewMatrix()
+XMMATRIX SceneCamera::GetViewMatrix()
 {
     return XMLoadFloat4x4(&s_viewMatrix);
 }
 
-XMMATRIX EditorCamera::GetProjMatrix()
+XMMATRIX SceneCamera::GetProjMatrix()
 {
     return XMLoadFloat4x4(&s_projMatrix);
 }
 
-XMMATRIX EditorCamera::GetViewProjMatrix()
+XMMATRIX SceneCamera::GetViewProjMatrix()
 {
     return XMMatrixMultiply(GetViewMatrix(), GetProjMatrix());
 }
 
-XMFLOAT4X4 EditorCamera::GetViewProjFloat4x4()
+XMFLOAT4X4 SceneCamera::GetViewProjFloat4x4()
 {
     XMFLOAT4X4 result;
     XMStoreFloat4x4(&result, GetViewProjMatrix());
     return result;
 }
 
-void EditorCamera::SetPosition(const XMFLOAT3& pos)
+void SceneCamera::SetPosition(const XMFLOAT3& pos)
 {
     s_position = pos;
     UpdateViewMatrix();
 }
 
-void EditorCamera::UpdateViewMatrix()
+void SceneCamera::UpdateViewMatrix()
 {
     XMMATRIX rotation = XMMatrixRotationRollPitchYaw(s_pitch, s_yaw, 0.0f);
     XMVECTOR targetOffset = XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
@@ -115,7 +115,7 @@ void EditorCamera::UpdateViewMatrix()
     XMStoreFloat4x4(&s_viewMatrix, view);
 }
 
-void EditorCamera::UpdateProjectionMatrix()
+void SceneCamera::UpdateProjectionMatrix()
 {
     XMMATRIX proj = XMMatrixPerspectiveFovLH(s_fovAngleY, s_aspectRatio, s_nearZ, s_farZ);
     XMStoreFloat4x4(&s_projMatrix, proj);

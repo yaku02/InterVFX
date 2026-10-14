@@ -1,4 +1,4 @@
-﻿#include "VFXSystem.hlsli"
+#include "VFXSystem.hlsli"
 
 struct VSOutput
 {

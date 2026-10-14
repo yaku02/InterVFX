@@ -1,6 +1,6 @@
 #pragma once
 
-class EditorCamera {
+class SceneCamera {
 public:
     // 初期化（FOV、アスペクト比、Near/Far面）
     static void Init(float fovAngleY, float aspectRatio, float nearZ, float farZ);
@@ -23,7 +23,11 @@ public:
     static DirectX::XMFLOAT3 GetPosition() { return s_position; }
     static void SetPosition(const DirectX::XMFLOAT3& pos);
 
+    static uint32_t GetID() { return id; }
+
 private:
+    inline static uint32_t id = 1;
+
     static void UpdateViewMatrix();
     static void UpdateProjectionMatrix();
 

@@ -3,18 +3,18 @@
 class ComputePipeline {
 public:
     struct Desc {
-        // --- ƒVƒF[ƒ_[ŠÖ˜A ---
+        // --- ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é–¢é€£ ---
         std::string csPath = "";
         std::string csEntry = "CSMain";
         std::string csModel = "cs_6_6";
 
-        // --- ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ ---
+        // --- ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ ---
         Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 
-        // --- ƒlƒCƒeƒBƒu\‘¢‘ÌiÚ×İ’è—pj ---
+        // --- ãƒã‚¤ãƒ†ã‚£ãƒ–æ§‹é€ ä½“ï¼ˆè©³ç´°è¨­å®šç”¨ï¼‰ ---
         D3D12_COMPUTE_PIPELINE_STATE_DESC d3dDesc{};
 
-        // ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅƒfƒtƒHƒ‹ƒg’l‚ğİ’è
+        // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’è¨­å®š
         Desc() {
             d3dDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
             d3dDesc.NodeMask = 0;

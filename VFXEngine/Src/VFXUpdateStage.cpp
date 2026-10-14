@@ -35,7 +35,7 @@ void VFXUpdateStage::CreatePipeline(ID3D12Device* dev)
 
 void VFXUpdateStage::Update(const UpdateDesc& desc)
 {
-    // 1. ˆÀ‘S‘Îô: ’ÊíƒCƒ“ƒXƒ^ƒ“ƒXŒQ‚Ü‚½‚ÍƒvƒŒƒrƒ…[‚Ì‚Ç‚¿‚ç‚©‚Í‘¶İ‚·‚é•K—v‚ª‚ ‚é
+    // 1. å®‰å…¨å¯¾ç­–: é€šå¸¸ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç¾¤ã¾ãŸã¯ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ã®ã©ã¡ã‚‰ã‹ã¯å­˜åœ¨ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
     bool hasInstances = (desc.instances != nullptr && desc.assetsMap != nullptr);
     bool hasPreview = (desc.preview != nullptr && desc.preview->IsValid());
 
@@ -43,12 +43,12 @@ void VFXUpdateStage::Update(const UpdateDesc& desc)
 
     auto cmdList = m_dx12->GetCmdList().Get();
 
-    // ƒp[ƒeƒBƒNƒ‹XV
+    // ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«æ›´æ–°
     m_updatePipeline.SetPipeline(cmdList);
     cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.globalCBVIndex, (UINT)RootParam::CBVIndices::GlobalCBVIndex);
     cmdList->SetComputeRoot32BitConstants((UINT)RootParam::Slot::CBVIndices, 1, &desc.passCBVIndex, (UINT)RootParam::CBVIndices::PassCBVIndex);
 
-    // ’Pˆê—v‘f‚ÌXV—pƒwƒ‹ƒp[iŠù‘¶‚Ìƒ‹[ƒgƒpƒ‰ƒ[ƒ^w’è‚ğ‚»‚Ì‚Ü‚Üg—pj
+    // å˜ä¸€è¦ç´ ã®æ›´æ–°ç”¨ãƒ˜ãƒ«ãƒ‘ãƒ¼ï¼ˆæ—¢å­˜ã®ãƒ«ãƒ¼ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æŒ‡å®šã‚’ãã®ã¾ã¾ä½¿ç”¨ï¼‰
     auto UpdateSingleInstance = [&](VFXInstance* inst, VFXAsset* asset) {
         if (!inst || !asset) return;
 
@@ -64,7 +64,7 @@ void VFXUpdateStage::Update(const UpdateDesc& desc)
         cmdList->Dispatch(threadGroupX, 1, 1);
         };
 
-    // --- A. ’ÊíƒCƒ“ƒXƒ^ƒ“ƒXŒQ‚ÌXV ---
+    // --- A. é€šå¸¸ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ç¾¤ã®æ›´æ–° ---
     if (hasInstances)
     {
         for (auto& inst : *desc.instances)
@@ -82,16 +82,16 @@ void VFXUpdateStage::Update(const UpdateDesc& desc)
         }
     }
 
-    // --- B. ƒvƒŒƒrƒ…[—pƒCƒ“ƒXƒ^ƒ“ƒX‚ÌXV ---
+    // --- B. ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®æ›´æ–° ---
     if (hasPreview)
     {
         UpdateSingleInstance(desc.preview->GetInstance(), desc.preview->GetAsset().get());
     }
 
-    // --- C. ƒŠƒ\[ƒXƒoƒŠƒAiUAV -> NON_PIXEL_SHADER_RESOURCEj‚Ì“K—p ---
+    // --- C. ãƒªã‚½ãƒ¼ã‚¹ãƒãƒªã‚¢ï¼ˆUAV -> NON_PIXEL_SHADER_RESOURCEï¼‰ã®é©ç”¨ ---
     std::vector<D3D12_RESOURCE_BARRIER> transitions;
 
-    // ’ÊíƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒoƒŠƒA’Ç‰Á
+    // é€šå¸¸ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒªã‚¢è¿½åŠ 
     if (hasInstances)
     {
         for (auto& inst : *desc.instances) {
@@ -104,7 +104,7 @@ void VFXUpdateStage::Update(const UpdateDesc& desc)
         }
     }
 
-    // ƒvƒŒƒrƒ…[—pƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒoƒŠƒA’Ç‰Á
+    // ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒªã‚¢è¿½åŠ 
     if (hasPreview)
     {
         VFXInstance* prevInst = desc.preview->GetInstance();

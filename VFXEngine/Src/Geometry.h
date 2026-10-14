@@ -21,7 +21,7 @@ struct AABB {
         XMVECTOR minV = XMVectorSet(FLT_MAX, FLT_MAX, FLT_MAX, 0.0f);
         XMVECTOR maxV = XMVectorSet(-FLT_MAX, -FLT_MAX, -FLT_MAX, 0.0f);
 
-        // 8���_�����ׂĕϊ����A���̒��ł̍ŏ��E�ő���Čv�Z
+        // 8頂点をすべて変換し、その中での最小・最大を再計算
         for (int i = 0; i < 8; ++i) {
             XMVECTOR transformed = XMVector3Transform(corners[i], matrix);
             minV = XMVectorMin(minV, transformed);
@@ -36,7 +36,7 @@ struct AABB {
 };
 
 struct Frustum {
-    DirectX::XMVECTOR planes[6]; // ���A�E�A���A��A�߁A��
+    DirectX::XMVECTOR planes[6]; // 左、右、下、上、近、遠
 };
 
 

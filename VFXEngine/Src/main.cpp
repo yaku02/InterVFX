@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "Window.h"
 #include "Dx12Wrapper.h"
 #include "FrameSyncManager.h"

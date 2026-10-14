@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "VFXAssetEditor.h"
 #include "VFXAsset.h"
 #include "IDGenerator.h"
@@ -35,8 +35,6 @@ void VFXAssetEditor::Open(VFXAsset& asset)
 	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.55f, 0.6f, 0.7f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.55f, 0.7f, 0.8f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.55f, 0.8f, 0.9f));
-
-	ImGui::Button(reinterpret_cast<const char*>(u8"ノードエディタに切り替え"));
 
 	if (ImGui::Button("ノードエディタに切り替え", ImVec2(-FLT_MIN, 0)))
 	{

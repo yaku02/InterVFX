@@ -1,4 +1,4 @@
-﻿#include "VFXSystem.hlsli"
+#include "VFXSystem.hlsli"
 
 [numthreads(64, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)

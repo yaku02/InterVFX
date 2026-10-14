@@ -7,7 +7,7 @@ class GpuResourceManager {
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 private:
-	const UINT MAX_DESC_COUNT = 4096; // ƒfƒBƒXƒNƒŠƒvƒ^‚ÌÅ‘å”
+	const UINT MAX_DESC_COUNT = 4096; // ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã®æœ€å¤§æ•°
 	UINT IncSize = 0;
 	UINT RtvIncSize = 0;
 	UINT DsvIncSize = 0;
@@ -111,7 +111,7 @@ public:
 	uint32_t CreateCBV(Microsoft::WRL::ComPtr<ID3D12Resource>& target, uint32_t strideSize);
 	uint32_t CreateAppendUAV(Microsoft::WRL::ComPtr<ID3D12Resource>& target, Microsoft::WRL::ComPtr<ID3D12Resource>& counterResource, uint32_t numElements, uint32_t strideSize);
 
-	// ƒfƒBƒXƒNƒŠƒvƒ^ƒCƒ“ƒfƒbƒNƒX‚Ì‰ğ•ú‚ğ‚·‚é
+	// ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è§£æ”¾ã‚’ã™ã‚‹
 	void FreeDescriptor(uint32_t index);
 	std::wstring GetDebugName(ID3D12Object* object)
 	{

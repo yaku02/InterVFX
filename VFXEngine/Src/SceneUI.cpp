@@ -3,6 +3,8 @@
 #include "Window.h"
 #include "Dx12Wrapper.h"
 #include "GpuResourceManager.h"
+#include "SceneCamera.h"
+#include "Timer.h"
 
 void SceneUI::Render()
 {
@@ -81,17 +83,26 @@ void SceneUI::ShowUI()
 		{
 			ImTextureID textureId = (ImTextureID)m_colorBuffer.srvHandle.ptr;
 			ImGui::Image(textureId, viewportSize);
+
+			// ★ 追加：Image（3Dビューポート）の上にマウスがあり、かつ右クリックされている時だけカメラを更新
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
+			{
+				SceneCamera::Update(Timer::GetGlobalDeltaTime());
+			}
 		}
 	}
 
 	ImGui::End();
 }
 
-void SceneUI::Init(InitDesc& initDesc)
+void SceneUI::Init(InitDesc& desc)
 {
-	m_window = &initDesc.window;
-	m_dx12 = &initDesc.dx12;
-	m_gpuResMgr = &initDesc.gpuResMgr;
+	m_window = &desc.window;
+	m_dx12 = &desc.dx12;
+	m_gpuResMgr = &desc.gpuResMgr;
+
+	float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
+	SceneCamera::Init(DirectX::XMConvertToRadians(45.0f), aspectRatio, 0.1f, 1000.0f);
 }
 
 HRESULT SceneUI::CreateColorBuffer(uint32_t width, uint32_t height)

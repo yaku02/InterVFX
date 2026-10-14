@@ -10,7 +10,7 @@ public:
 		QueryPerformanceCounter(&lastTime);
 	}
 
-	// –ˆƒtƒŒ[ƒ€‚Ì–`“ª‚Å1‰ñ‚¾‚¯ŒÄ‚ÔXVˆ—
+	// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã®å†’é ­ã§1å›ã ã‘å‘¼ã¶æ›´æ–°å‡¦ç†
 	void Update() {
 		LARGE_INTEGER currentTime;
 		QueryPerformanceCounter(&currentTime);
@@ -21,7 +21,7 @@ public:
 		lastTime = currentTime;
 	}
 
-	// ŒÂ•Ê‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€æ“¾iŠù‘¶‚ÌŠÖ”j
+	// å€‹åˆ¥ã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ å–å¾—ï¼ˆæ—¢å­˜ã®é–¢æ•°ï¼‰
 	float GetDeltaTime() {
 		LARGE_INTEGER currentTime;
 		QueryPerformanceCounter(&currentTime);
@@ -33,14 +33,14 @@ public:
 		return deltaTime;
 	}
 
-	// š ƒGƒ“ƒWƒ“‘S‘Ì‚Å‹¤—L‚·‚éDeltaTime‚ğæ“¾‚·‚é static ŠÖ”
+	// â˜… ã‚¨ãƒ³ã‚¸ãƒ³å…¨ä½“ã§å…±æœ‰ã™ã‚‹DeltaTimeã‚’å–å¾—ã™ã‚‹ static é–¢æ•°
 	static float GetGlobalDeltaTime() {
 		return s_deltaTime;
 	}
 
 private:
 	inline static LARGE_INTEGER frequency{};
-	inline static float s_deltaTime = 0.0f; // š ‘S‘Ì‚Å‹¤—L‚·‚éDelta Time
+	inline static float s_deltaTime = 0.0f; // â˜… å…¨ä½“ã§å…±æœ‰ã™ã‚‹Delta Time
 
 	LARGE_INTEGER lastTime{};
 };

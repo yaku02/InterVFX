@@ -72,7 +72,7 @@ void PreviewCamera::SetLookAt(const XMFLOAT3& eye, const XMFLOAT3& target, const
 
 void PreviewCamera::UpdateViewMatrix()
 {
-    // 従来の EditorCamera と同様に Yaw/Pitch から視線を決定する場合
+    // 従来の SceneCamera と同様に Yaw/Pitch から視線を決定する場合
     XMMATRIX rotation = XMMatrixRotationRollPitchYaw(s_pitch, s_yaw, 0.0f);
     XMVECTOR targetOffset = XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
     XMVECTOR eye = XMLoadFloat3(&s_position);

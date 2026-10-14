@@ -26,7 +26,11 @@ public:
     // 位置と注視点を指定してカメラの姿勢を決定する
     static void SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& target, const DirectX::XMFLOAT3& up = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 
+    static uint32_t GetID() { return id; }
+
 private:
+    inline static uint32_t id = 0;
+
     static void UpdateViewMatrix();
     static void UpdateProjectionMatrix();
 

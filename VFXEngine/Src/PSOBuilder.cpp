@@ -39,7 +39,7 @@ PipelineObject PSOBuilder::CreateGraphicsPSO(ID3D12Device* dev, const GraphicsPS
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.pRootSignature = desc.rootSignature.Get();
 
-	// 2. ƒVƒF[ƒ_[ƒoƒCƒgƒR[ƒh‚ÌƒZƒbƒg
+	// 2. ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã®ã‚»ãƒƒãƒˆ
 	if (vsBlob) {
 		psoDesc.VS = { vsBlob->GetBufferPointer(), vsBlob->GetBufferSize() };
 	}
@@ -47,7 +47,7 @@ PipelineObject PSOBuilder::CreateGraphicsPSO(ID3D12Device* dev, const GraphicsPS
 		psoDesc.PS = { psBlob->GetBufferPointer(), psBlob->GetBufferSize() };
 	}
 
-	// 3. ƒuƒŒƒ“ƒhƒXƒe[ƒg‚ÌÝ’è
+	// 3. ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	D3D12_RENDER_TARGET_BLEND_DESC& rtBlend = psoDesc.BlendState.RenderTarget[0];
 	rtBlend.BlendEnable = TRUE;
@@ -56,34 +56,34 @@ PipelineObject PSOBuilder::CreateGraphicsPSO(ID3D12Device* dev, const GraphicsPS
 	rtBlend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 	if (desc.blendMode == BlendMode::Additive) {
-		// ‰ÁŽZ‡¬Ý’è
+		// åŠ ç®—åˆæˆè¨­å®š
 		rtBlend.DestBlend = D3D12_BLEND_ONE;
 		rtBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
 		rtBlend.DestBlendAlpha = D3D12_BLEND_ONE;
 		rtBlend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	}
 	else {
-		// ’Êí‚ÌƒAƒ‹ƒtƒ@”¼“§–¾Ý’è
+		// é€šå¸¸ã®ã‚¢ãƒ«ãƒ•ã‚¡åŠé€æ˜Žè¨­å®š
 		rtBlend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 		rtBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
 		rtBlend.DestBlendAlpha = D3D12_BLEND_ZERO;
 		rtBlend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	}
 
-	// 4. ƒ‰ƒXƒ^ƒ‰ƒCƒU[ƒXƒe[ƒg‚ÌÝ’è (ƒJƒŠƒ“ƒO‚È‚µE— •\•`‰æ)
+	// 4. ãƒ©ã‚¹ã‚¿ãƒ©ã‚¤ã‚¶ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š (ã‚«ãƒªãƒ³ã‚°ãªã—ãƒ»è£è¡¨æç”»)
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; // VFX‚Í—¼–Ê•`‰æ‚ª‘½‚¢
+	psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE; // VFXã¯ä¸¡é¢æç”»ãŒå¤šã„
 
-	// 5. ƒfƒvƒXƒXƒeƒ“ƒVƒ‹ƒXƒe[ƒg‚ÌÝ’è (ZƒeƒXƒg‚ ‚è / Z‘‚«ž‚ÝØ‚è‘Ö‚¦)
+	// 5. ãƒ‡ãƒ—ã‚¹ã‚¹ãƒ†ãƒ³ã‚·ãƒ«ã‚¹ãƒ†ãƒ¼ãƒˆã®è¨­å®š (Zãƒ†ã‚¹ãƒˆã‚ã‚Š / Zæ›¸ãè¾¼ã¿åˆ‡ã‚Šæ›¿ãˆ)
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthEnable = (desc.dsvFormat != DXGI_FORMAT_UNKNOWN);
 	psoDesc.DepthStencilState.DepthWriteMask = desc.isDepthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
-	// 6. “ü—ÍƒŒƒCƒAƒEƒg (Bindless ‚â SV_VertexID •`‰æ‚È‚ç‹ó‚ÅOK)
+	// 6. å…¥åŠ›ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ (Bindless ã‚„ SV_VertexID æç”»ãªã‚‰ç©ºã§OK)
 	psoDesc.InputLayout = { nullptr, 0 };
 
-	// 7. ƒgƒ|ƒƒWEƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgÝ’è
+	// 7. ãƒˆãƒãƒ­ã‚¸ãƒ»ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆè¨­å®š
 	psoDesc.PrimitiveTopologyType = desc.topologyType;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = desc.rtvFormat;
@@ -91,7 +91,7 @@ PipelineObject PSOBuilder::CreateGraphicsPSO(ID3D12Device* dev, const GraphicsPS
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.SampleDesc.Count = 1;
 
-	// 8. PSO‚Ì¶¬
+	// 8. PSOã®ç”Ÿæˆ
 	PipelineObject pObj;
 	pObj.rootSignature = desc.rootSignature;
 	HRESULT hr = dev->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pObj.pipelineState));

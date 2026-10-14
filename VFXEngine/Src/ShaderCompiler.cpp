@@ -28,22 +28,22 @@ ComPtr<IDxcBlob> ShaderCompiler::CompileShader(const std::string& filePath, cons
 	DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils));
 	DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler));
 
-	// ƒfƒtƒHƒ‹ƒg‚ÌƒCƒ“ƒNƒ‹[ƒhƒnƒ“ƒhƒ‰‚ğì¬
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒãƒ³ãƒ‰ãƒ©ã‚’ä½œæˆ
 	ComPtr<IDxcIncludeHandler> includeHandler;
 	utils->CreateDefaultIncludeHandler(&includeHandler);
 
 	if (!fs::exists(filePath)) {
 		std::string errorMsg = "[Shader Error] File NOT found: " + filePath + "\n";
 
-		// â‘ÎƒpƒX‚ğ•\¦‚µ‚ÄAƒvƒƒOƒ‰ƒ€‚ªu‚Ç‚±‚ğ’T‚µ‚És‚Á‚Ä¸”s‚µ‚½‚©v‚ğ–\‚­
+		// çµ¶å¯¾ãƒ‘ã‚¹ã‚’è¡¨ç¤ºã—ã¦ã€ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãŒã€Œã©ã“ã‚’æ¢ã—ã«è¡Œã£ã¦å¤±æ•—ã—ãŸã‹ã€ã‚’æš´ã
 		errorMsg += "Looked at: " + fs::absolute(filePath).string() + "\n";
 
 		OutputDebugStringA(errorMsg.c_str());
-		return nullptr; // ‘¶İ‚µ‚È‚¢‚È‚ç‚±‚êˆÈãi‚Ü‚È‚¢
+		return nullptr; // å­˜åœ¨ã—ãªã„ãªã‚‰ã“ã‚Œä»¥ä¸Šé€²ã¾ãªã„
 	}
 
 	ComPtr<IDxcBlobEncoding> source;
-	// LoadFile‚Ì–ß‚è’liHRESULTj‚àó‚¯æ‚Á‚Äƒ`ƒFƒbƒN‚Å‚«‚é‚æ‚¤‚É‚·‚é
+	// LoadFileã®æˆ»ã‚Šå€¤ï¼ˆHRESULTï¼‰ã‚‚å—ã‘å–ã£ã¦ãƒã‚§ãƒƒã‚¯ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
 	HRESULT hr = utils->LoadFile(wFilename.c_str(), nullptr, &source);
 
 	if (FAILED(hr) || !source) {
@@ -75,25 +75,25 @@ ComPtr<IDxcBlob> ShaderCompiler::CompileShader(const std::string& filePath, cons
 	compiler->Compile(
 		&buffer, 
 		args.data(),
-		static_cast<UINT32>(args.size()), // ˆø”‚ÌŒÂ”
+		static_cast<UINT32>(args.size()), // å¼•æ•°ã®å€‹æ•°
 		includeHandler.Get(),
 		IID_PPV_ARGS(&loadResult));
 
-	// 1. ƒRƒ“ƒpƒCƒ‹Œ‹‰Ê‚ÌƒXƒe[ƒ^ƒXi¬Œ÷‚µ‚½‚©‚Ç‚¤‚©j‚ğŒµ–§‚Éƒ`ƒFƒbƒN‚·‚é
+	// 1. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«çµæœã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ï¼ˆæˆåŠŸã—ãŸã‹ã©ã†ã‹ï¼‰ã‚’å³å¯†ã«ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	HRESULT compileStatus = S_OK;
 	loadResult->GetStatus(&compileStatus);
 
-	// 2. ƒGƒ‰[ƒƒO‚Ì’Šo
+	// 2. ã‚¨ãƒ©ãƒ¼ãƒ­ã‚°ã®æŠ½å‡º
 	ComPtr<IDxcBlobUtf8> errorblob;
 	loadResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&errorblob), nullptr);
 
 	if (errorblob && errorblob->GetStringLength() > 0) {
-		// o—ÍƒEƒBƒ“ƒhƒE‚ÉƒGƒ‰[‚ÌÚ×i‰½s–Ú‚ªƒGƒ‰[‚©‚È‚Çj‚ğ—¬‚·
+		// å‡ºåŠ›ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ã‚¨ãƒ©ãƒ¼ã®è©³ç´°ï¼ˆä½•è¡Œç›®ãŒã‚¨ãƒ©ãƒ¼ã‹ãªã©ï¼‰ã‚’æµã™
 		Debugger::Log("\n--- [HLSL Compile Error Log] ---\n");
 		Debugger::Log(errorblob->GetStringPointer());
 	}
 
-	// 3. ƒRƒ“ƒpƒCƒ‹©‘Ì‚ª¸”siStatus‚ªFAILEDj‚È‚çAOBJECT‚ğæ‚è‚És‚©‚¸‚É‘¦ƒŠƒ^[ƒ“
+	// 3. ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«è‡ªä½“ãŒå¤±æ•—ï¼ˆStatusãŒFAILEDï¼‰ãªã‚‰ã€OBJECTã‚’å–ã‚Šã«è¡Œã‹ãšã«å³ãƒªã‚¿ãƒ¼ãƒ³
 	if (FAILED(compileStatus)) {
 		std::string msg = "[Shader Error] Compile failed for: " + filePath + "\n";
 		Debugger::Log(msg.c_str());

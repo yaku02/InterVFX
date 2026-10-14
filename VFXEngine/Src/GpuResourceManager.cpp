@@ -6,7 +6,7 @@
 
 void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 {
-	// B. ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ìì¬ (‘Sˆõ•ª‚Ü‚Æ‚ß‚ÄŠm•Û)
+	// B. ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®ä½œæˆ (å…¨å“¡åˆ†ã¾ã¨ã‚ã¦ç¢ºä¿)
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
 		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -19,12 +19,12 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 		if (FAILED(result)) { return; }
 
 		IncSize = m_dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		// ƒq[ƒv‚Ìæ“ªƒnƒ“ƒhƒ‹‚ğæ“¾
+		// ãƒ’ãƒ¼ãƒ—ã®å…ˆé ­ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 		m_visibleHeap.cpuHandle = m_visibleHeap.heap->GetCPUDescriptorHandleForHeapStart();
 		m_visibleHeap.gpuHandle = m_visibleHeap.heap->GetGPUDescriptorHandleForHeapStart();
 	}
 
-	// NonShaderVisible‚Èƒq[ƒvì¬
+	// NonShaderVisibleãªãƒ’ãƒ¼ãƒ—ä½œæˆ
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
 		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -40,7 +40,7 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 		m_nonVisibleHeap.gpuHandle = { 0 };
 	}
 
-	// RtvHeapì¬
+	// RtvHeapä½œæˆ
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
 		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -51,35 +51,35 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 		auto result = m_dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&m_rtvHeap.heap));
 		if (FAILED(result)) { return; }
 
-		// RTV—p‚Ì³‚µ‚¢ƒCƒ“ƒNƒŠƒƒ“ƒgƒTƒCƒY‚ğæ“¾
+		// RTVç”¨ã®æ­£ã—ã„ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’å–å¾—
 		RtvIncSize = m_dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-		// ƒq[ƒv‚Ìæ“ªCPUƒnƒ“ƒhƒ‹‚Ì‚İæ“¾iGPUƒnƒ“ƒhƒ‹‚ÍRTV‚Å‚Íg—p‚µ‚È‚¢j
+		// ãƒ’ãƒ¼ãƒ—ã®å…ˆé ­CPUãƒãƒ³ãƒ‰ãƒ«ã®ã¿å–å¾—ï¼ˆGPUãƒãƒ³ãƒ‰ãƒ«ã¯RTVã§ã¯ä½¿ç”¨ã—ãªã„ï¼‰
 		m_rtvHeap.cpuHandle = m_rtvHeap.heap->GetCPUDescriptorHandleForHeapStart();
-		m_rtvHeap.gpuHandle = { 0 }; // –³Œø‰»‚Ü‚½‚Íİ’è‚µ‚È‚¢
+		m_rtvHeap.gpuHandle = { 0 }; // ç„¡åŠ¹åŒ–ã¾ãŸã¯è¨­å®šã—ãªã„
 	}
 
 	
-	// DsvHeapì¬ (Depth Stencil View —p)
+	// DsvHeapä½œæˆ (Depth Stencil View ç”¨)
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
-		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV; // © DSV ê—p‚ÌŒ^‚ğw’è
+		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV; // â† DSV å°‚ç”¨ã®å‹ã‚’æŒ‡å®š
 		descHeapDesc.NumDescriptors = MAX_DESC_COUNT;
 		descHeapDesc.NodeMask = 0;
-		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Shader Visible •s—v
+		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // Shader Visible ä¸è¦
 
 		auto result = m_dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&m_dsvHeap.heap));
 		if (FAILED(result)) { return; }
 
-		// DSV —p‚Ì³‚µ‚¢ƒCƒ“ƒNƒŠƒƒ“ƒgƒTƒCƒY‚ğæ“¾
+		// DSV ç”¨ã®æ­£ã—ã„ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’å–å¾—
 		DsvIncSize = m_dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
-		// ƒq[ƒv‚Ìæ“ª CPU ƒnƒ“ƒhƒ‹‚ğæ“¾
+		// ãƒ’ãƒ¼ãƒ—ã®å…ˆé ­ CPU ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 		m_dsvHeap.cpuHandle = m_dsvHeap.heap->GetCPUDescriptorHandleForHeapStart();
-		m_dsvHeap.gpuHandle = { 0 }; // DSV ‚Å‚Í GPU ƒnƒ“ƒhƒ‹‚Íg—p‚µ‚È‚¢
+		m_dsvHeap.gpuHandle = { 0 }; // DSV ã§ã¯ GPU ãƒãƒ³ãƒ‰ãƒ«ã¯ä½¿ç”¨ã—ãªã„
 	}
 
-	// ImGui—pƒq[ƒvì¬
+	// ImGuiç”¨ãƒ’ãƒ¼ãƒ—ä½œæˆ
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC dhDesc = {};
 		dhDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -90,32 +90,33 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 		m_imguiHeap.cpuHandle = m_imguiHeap.heap->GetCPUDescriptorHandleForHeapStart();
 		m_imguiHeap.gpuHandle = m_imguiHeap.heap->GetGPUDescriptorHandleForHeapStart();
 
-		// ƒZƒbƒgƒAƒbƒv
+		// ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		// 2. CPU‘¤‚ÅƒtƒHƒ“ƒg‚ğƒrƒ‹ƒh
+		// 2. CPUå´ã§ãƒ•ã‚©ãƒ³ãƒˆã‚’ãƒ“ãƒ«ãƒ‰
 		ImGuiIO& io = ImGui::GetIO();
 		unsigned char* pixels;
 		int width, height;
 
 		ImFont* font = io.Fonts->AddFontFromFileTTF(
 			"Engine/Font/ZenKakuGothicNew-Medium.ttf",
-			16.0f,
+			18.0f,
 			nullptr,
 			io.Fonts->GetGlyphRangesJapanese()
 		);
 
-		// ƒtƒHƒ“ƒg‚ª³‚µ‚­“Ç‚İ‚ß‚Ä‚¢‚é‚©Šm”F
+		// ãƒ•ã‚©ãƒ³ãƒˆãŒæ­£ã—ãèª­ã¿è¾¼ã‚ã¦ã„ã‚‹ã‹ç¢ºèª
 		IM_ASSERT(font != nullptr);
 
-		// ’Ç‰Á‚µ‚½ƒtƒHƒ“ƒg‚ğƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒg‚Æ‚µ‚Ä–¾¦“I‚Éw’è‚·‚é
+		// è¿½åŠ ã—ãŸãƒ•ã‚©ãƒ³ãƒˆã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ•ã‚©ãƒ³ãƒˆã¨ã—ã¦æ˜ç¤ºçš„ã«æŒ‡å®šã™ã‚‹
 		io.FontDefault = font;
+		ImGui::GetStyle().ScaleAllSizes(0.5f);
 
 		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-		// ª ‚±‚ê‚ğŒÄ‚Ô‚Æ“à•”‚Å TexIsBuilt = true ‚É‚È‚é
+		// â†‘ ã“ã‚Œã‚’å‘¼ã¶ã¨å†…éƒ¨ã§ TexIsBuilt = true ã«ãªã‚‹
 
 
-		// 3. ‚»‚ÌŒã‚Å Init
+		// 3. ãã®å¾Œã§ Init
 		ImGui_ImplWin32_Init(hwnd);
 
 
@@ -127,7 +128,7 @@ void GpuResourceManager::SetUpDescHeap(HWND hwnd)
 			m_imguiHeap.heap->GetCPUDescriptorHandleForHeapStart(),
 			m_imguiHeap.heap->GetGPUDescriptorHandleForHeapStart()
 		);
-		// ImGui ‚ª Index 0 ‚ğg—p‚·‚é‚½‚ßAƒAƒƒP[ƒ^‚ÌŠJnˆÊ’u‚ğ 1 ‚Éi‚ß‚é
+		// ImGui ãŒ Index 0 ã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã€ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ã®é–‹å§‹ä½ç½®ã‚’ 1 ã«é€²ã‚ã‚‹
 		m_imguiHeap.currentIdx = 1;
 		ImGui_ImplDX12_CreateDeviceObjects();
 	}
@@ -139,11 +140,11 @@ D3D12_CPU_DESCRIPTOR_HANDLE GpuResourceManager::AllocateDescriptor(D3D12_GPU_DES
 
 	auto& targetDescHeap = GetDescHeap(heapType);
 
-	// ‚à‚µ‰ß‹‚É•Ô‹p‚³‚ê‚½‹ó‚«ƒCƒ“ƒfƒbƒNƒX‚ª‚ ‚ê‚ÎA‚»‚±‚ğÄ—˜—p‚·‚é
+	// ã‚‚ã—éå»ã«è¿”å´ã•ã‚ŒãŸç©ºãã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒã‚ã‚Œã°ã€ãã“ã‚’å†åˆ©ç”¨ã™ã‚‹
 	if (!freeDescIndices.empty())
 	{
-		targetIdx = freeDescIndices.front(); // ƒLƒ…[‚Ìæ“ª‚©‚çƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
-		freeDescIndices.pop();              // ƒLƒ…[‚©‚çíœ
+		targetIdx = freeDescIndices.front(); // ã‚­ãƒ¥ãƒ¼ã®å…ˆé ­ã‹ã‚‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
+		freeDescIndices.pop();              // ã‚­ãƒ¥ãƒ¼ã‹ã‚‰å‰Šé™¤
 	}
 	else 
 	{
@@ -152,7 +153,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE GpuResourceManager::AllocateDescriptor(D3D12_GPU_DES
 			OutputDebugStringA("Error: Descriptor Heap is full!\n");
 		}
 		targetIdx = targetDescHeap.currentIdx;
-		targetDescHeap.currentIdx++; // V‹K‚Ì‚İƒJƒEƒ“ƒ^‚ği‚ß‚é
+		targetDescHeap.currentIdx++; // æ–°è¦ã®ã¿ã‚«ã‚¦ãƒ³ã‚¿ã‚’é€²ã‚ã‚‹
 	}
 
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = targetDescHeap.cpuHandle;
@@ -173,10 +174,10 @@ D3D12_CPU_DESCRIPTOR_HANDLE GpuResourceManager::AllocateDescriptor(D3D12_GPU_DES
 
 void GpuResourceManager::FreeDescriptor(uint32_t index)
 {
-	// ˆÀ‘S«‚Ì‚½‚ß‚Ìƒ`ƒFƒbƒNi–³Œø‚È’l‚ğ’e‚­j
+	// å®‰å…¨æ€§ã®ãŸã‚ã®ãƒã‚§ãƒƒã‚¯ï¼ˆç„¡åŠ¹ãªå€¤ã‚’å¼¾ãï¼‰
 	if (index == -1 || index >= MAX_DESC_COUNT) return;
 
-	// ‹ó‚¢‚½ƒCƒ“ƒfƒbƒNƒX‚ğƒLƒ…[‚Éƒ|ƒC‚Á‚Æ“ü‚ê‚Ä‚¨‚­
+	// ç©ºã„ãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚­ãƒ¥ãƒ¼ã«ãƒã‚¤ã£ã¨å…¥ã‚Œã¦ãŠã
 	freeDescIndices.push(index);
 }
 
@@ -262,10 +263,10 @@ uint32_t GpuResourceManager::CreateAppendUAV(
 		return UINT32_MAX;
 	}
 
-	// š ‘æ2ˆø”ipCounterResourcej‚ÉƒJƒEƒ“ƒ^[—pƒŠƒ\[ƒX‚ğ“n‚·
+	// â˜… ç¬¬2å¼•æ•°ï¼ˆpCounterResourceï¼‰ã«ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ç”¨ãƒªã‚½ãƒ¼ã‚¹ã‚’æ¸¡ã™
 	m_dev->CreateUnorderedAccessView(
 		target.Get(),
-		counterResource.Get(), // © ‚±‚±‚ÉƒJƒEƒ“ƒ^[ƒoƒbƒtƒ@‚ğw’è
+		counterResource.Get(), // â† ã“ã“ã«ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼ãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®š
 		&uavDesc,
 		uavHandleCPU);
 
@@ -306,7 +307,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE GpuResourceManager::GetCPUDescriptorHandle(uint32_t 
 	return handle;
 }
 
-// --- ƒCƒ“ƒfƒbƒNƒX‚©‚ç GPU ƒnƒ“ƒhƒ‹‚ğæ“¾ ---
+// --- ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‹ã‚‰ GPU ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾— ---
 D3D12_GPU_DESCRIPTOR_HANDLE GpuResourceManager::GetGPUDescriptorHandle(uint32_t index, HeapType heapType)
 {
 	auto& targetDescHeap = GetDescHeap(heapType);
