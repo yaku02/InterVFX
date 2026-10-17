@@ -197,6 +197,7 @@
     </ClCompile>
     <ClCompile Include="Src\AssetUI.cpp" />
     <ClCompile Include="Src\BackBufferManager.cpp" />
+    <ClCompile Include="Src\Camera.cpp" />
     <ClCompile Include="Src\ComputePipeline.cpp" />
     <ClCompile Include="Src\Debugger.cpp" />
     <ClCompile Include="Src\Dx12Wrapper.cpp" />
@@ -239,6 +240,8 @@
     <ClInclude Include="Src\AssetUI.h" />
     <ClInclude Include="Src\BackBufferManager.h" />
     <ClInclude Include="Src\BackBufferSetting.h" />
+    <ClInclude Include="Src\Camera.h" />
+    <ClInclude Include="Src\CameraStructs.h" />
     <ClInclude Include="Src\ComputePipeline.h" />
     <ClInclude Include="Src\ConstantBuffer.h" />
     <ClInclude Include="Src\Debugger.h" />
