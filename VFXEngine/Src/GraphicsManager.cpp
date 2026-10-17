@@ -79,6 +79,7 @@ void GraphicsManager::Execute(RenderMode mode)
 	float dt = Timer::GetGlobalDeltaTime();
 	m_globalCBDesc.param.globalDeltaTime = dt;
 
+	/*
 		DirectX::XMMATRIX viewProj = SceneCamera::GetViewProjMatrix();
 		DirectX::XMVECTOR det;
 		DirectX::XMMATRIX invViewProj = DirectX::XMMatrixInverse(&det, viewProj);
@@ -91,6 +92,7 @@ void GraphicsManager::Execute(RenderMode mode)
 		// 3. GPU (ConstantBuffer) へアップロード
 		m_globalCB.Upload(m_globalCBDesc);
 	
+	*/
 
 	{
 		EditorGridRenderer::RenderDesc renDesc{

@@ -1,6 +1,7 @@
 #pragma once
 #include "ConstantBuffer.h"
 #include "RenderStructs.h"
+#include "CameraStructs.h"
 
 class Window;
 class Dx12Wrapper;
@@ -20,10 +21,9 @@ private:
 
 	struct GlobalCBDesc {
 		struct Param{
-			DirectX::XMFLOAT4X4 viewProj;    // 64バイト (Matrix)
-			DirectX::XMFLOAT4X4 invViewProj; // 64バイト (★追加: レイ復元用)
-			DirectX::XMFLOAT3   cameraPos;   // 12バイト (★追加: グリッド視線計算用)
+			CameraParam camera{};
 			float               globalDeltaTime; // 4バイト (計16バイトのブロックに収まる)
+			float padding[3];
 		}param{};
 		struct DescIndices {
 			float dummy[4];
@@ -49,7 +49,7 @@ public:
 	};
 	void Init(const InitDesc& desc);
 	
-	void Execute(RenderMode mode);
+	void Execute(RenderMode mode, CameraParam& param);
 
 	void ShutDown();
 };

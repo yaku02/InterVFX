@@ -7,6 +7,7 @@
 class Window;
 class Dx12Wrapper;
 class GpuResourceManager;
+class PreviewCamera;
 
 class PreviewUI {
 	using RenderCallback = std::function<void()>;
@@ -15,6 +16,8 @@ private:
 	Window* m_window = nullptr;
 	Dx12Wrapper* m_dx12 = nullptr;
 	GpuResourceManager* m_gpuResMgr = nullptr;
+
+	std::unique_ptr<PreviewCamera> m_camera = nullptr;
 
 	uint32_t m_bufferWidth = 0;
 	uint32_t m_bufferHeight = 0;

@@ -13,9 +13,17 @@ void PreviewUI::Init(InitDesc& desc)
     m_dx12 = &desc.dx12;
     m_gpuResMgr = &desc.gpuResMgr;
 
-    float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
-    PreviewCamera::Init(DirectX::XMConvertToRadians(45.0f), aspectRatio, 0.1f, 1000.0f);
+    {
+        float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
+        PreviewCamera::InitDesc desc{
+            .fovAngleY = DirectX::XM_PIDIV4,
+            .aspectRatio = aspectRatio,
+            .nearZ = 0.1f,
+            .farZ = 1000.0f,
+        };
 
+        m_camera = std::make_unique<PreviewCamera>(desc);
+    }
 }
 
 void PreviewUI::Render()
@@ -119,7 +127,7 @@ void PreviewUI::DrawInParentUI()
                 ImGui::Image(textureId, viewportSize);
                 if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
                 {
-                    PreviewCamera::Update(Timer::GetGlobalDeltaTime());
+                    m_camera->Update(Timer::GetGlobalDeltaTime());
                 }
 
             }

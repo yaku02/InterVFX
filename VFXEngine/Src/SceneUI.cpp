@@ -87,7 +87,10 @@ void SceneUI::ShowUI()
 			// ★ 追加：Image（3Dビューポート）の上にマウスがあり、かつ右クリックされている時だけカメラを更新
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
 			{
-				SceneCamera::Update(Timer::GetGlobalDeltaTime());
+				if (m_camera)
+				{
+					m_camera->Update(Timer::GetGlobalDeltaTime());
+				}
 			}
 		}
 	}
@@ -101,8 +104,17 @@ void SceneUI::Init(InitDesc& desc)
 	m_dx12 = &desc.dx12;
 	m_gpuResMgr = &desc.gpuResMgr;
 
-	float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
-	SceneCamera::Init(DirectX::XMConvertToRadians(45.0f), aspectRatio, 0.1f, 1000.0f);
+	{
+		float aspectRatio = static_cast<float>(desc.window.GetWindowWidth()) / static_cast<float>(desc.window.GetWindowHeight());
+		SceneCamera::InitDesc desc{
+			.fovAngleY = DirectX::XM_PIDIV4,
+			.aspectRatio = aspectRatio,
+			.nearZ = 0.1f,
+			.farZ = 1000.0f,
+		};
+
+		m_camera = std::make_unique<SceneCamera>(desc);
+	}
 }
 
 HRESULT SceneUI::CreateColorBuffer(uint32_t width, uint32_t height)

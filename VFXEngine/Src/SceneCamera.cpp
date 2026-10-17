@@ -3,42 +3,24 @@
 
 using namespace DirectX;
 
-void SceneCamera::Init(float fovAngleY, float aspectRatio, float nearZ, float farZ)
-{
-    s_fovAngleY = fovAngleY;
-    s_aspectRatio = aspectRatio;
-    s_nearZ = nearZ;
-    s_farZ = farZ;
-
-    UpdateProjectionMatrix();
-    UpdateViewMatrix();
-}
-
-void SceneCamera::SetAspectRatio(float aspectRatio)
-{
-    s_aspectRatio = aspectRatio;
-    UpdateProjectionMatrix();
-}
-
 void SceneCamera::Update(float deltaTime)
 {
-    // 右クリック長押し中のみカメラ操作を受け付ける
+    // --- 元のUpdate処理（ImGuiを使ったマウス・キーボード操作） ---
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
     {
         // --- 1. マウス移動による視界回転（Yaw / Pitch） ---
         ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
-        const float mouseSensitivity = 0.003f; // マウス感度
+        const float mouseSensitivity = 0.003f;
 
-        s_yaw += mouseDelta.x * mouseSensitivity;
-        s_pitch += mouseDelta.y * mouseSensitivity;
+        yaw += mouseDelta.x * mouseSensitivity;
+        pitch += mouseDelta.y * mouseSensitivity;
 
-        // 上下回転の首振り制限（-89度〜+89度）
         const float pitchLimit = XMConvertToRadians(89.0f);
-        if (s_pitch > pitchLimit)  s_pitch = pitchLimit;
-        if (s_pitch < -pitchLimit) s_pitch = -pitchLimit;
+        if (pitch > pitchLimit)  pitch = pitchLimit;
+        if (pitch < -pitchLimit) pitch = -pitchLimit;
 
         // --- 2. WASD / QE キーによるカメラ移動 ---
-        XMMATRIX rotation = XMMatrixRotationRollPitchYaw(s_pitch, s_yaw, 0.0f);
+        XMMATRIX rotation = XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f);
 
         XMVECTOR forward = XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
         XMVECTOR right = XMVector3TransformCoord(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), rotation);
@@ -46,7 +28,6 @@ void SceneCamera::Update(float deltaTime)
 
         XMVECTOR moveDir = XMVectorZero();
 
-        // Shiftキーで加速
         float moveSpeed = 10.0f;
         if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
         {
@@ -64,59 +45,12 @@ void SceneCamera::Update(float deltaTime)
         {
             moveDir = XMVector3Normalize(moveDir);
 
-            XMVECTOR pos = XMLoadFloat3(&s_position);
+            XMVECTOR pos = XMLoadFloat3(&position);
             pos += moveDir * moveSpeed * deltaTime;
-            XMStoreFloat3(&s_position, pos);
+            XMStoreFloat3(&position, pos);
         }
     }
 
+    // 最後に基底クラスのビュー行列更新を呼び出す
     UpdateViewMatrix();
-}
-
-XMMATRIX SceneCamera::GetViewMatrix()
-{
-    return XMLoadFloat4x4(&s_viewMatrix);
-}
-
-XMMATRIX SceneCamera::GetProjMatrix()
-{
-    return XMLoadFloat4x4(&s_projMatrix);
-}
-
-XMMATRIX SceneCamera::GetViewProjMatrix()
-{
-    return XMMatrixMultiply(GetViewMatrix(), GetProjMatrix());
-}
-
-XMFLOAT4X4 SceneCamera::GetViewProjFloat4x4()
-{
-    XMFLOAT4X4 result;
-    XMStoreFloat4x4(&result, GetViewProjMatrix());
-    return result;
-}
-
-void SceneCamera::SetPosition(const XMFLOAT3& pos)
-{
-    s_position = pos;
-    UpdateViewMatrix();
-}
-
-void SceneCamera::UpdateViewMatrix()
-{
-    XMMATRIX rotation = XMMatrixRotationRollPitchYaw(s_pitch, s_yaw, 0.0f);
-    XMVECTOR targetOffset = XMVector3TransformCoord(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), rotation);
-    XMVECTOR eye = XMLoadFloat3(&s_position);
-    XMVECTOR target = eye + targetOffset;
-
-    // 【修正箇所】Up ベクトルは常にワールドの Y 上方向 (0, 1, 0) に固定
-    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-    XMMATRIX view = XMMatrixLookAtLH(eye, target, up);
-    XMStoreFloat4x4(&s_viewMatrix, view);
-}
-
-void SceneCamera::UpdateProjectionMatrix()
-{
-    XMMATRIX proj = XMMatrixPerspectiveFovLH(s_fovAngleY, s_aspectRatio, s_nearZ, s_farZ);
-    XMStoreFloat4x4(&s_projMatrix, proj);
 }
